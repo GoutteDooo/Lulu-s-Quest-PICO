@@ -32,7 +32,7 @@ end
 
 function init_player()
 	pl = {
-		x = 1 * 8,
+		x = 3 * 8,
 		y = 14 * 8,
 		h = 8,
 		w = 8,
@@ -315,8 +315,10 @@ end
 --helper functions
 
 function debug_print()
-	if sqrt((pl.x + 4 - lights[1].x + 26) ^ 2 + (pl.y + 4 - lights[1].y + 26) ^ 2) < lights[1].radius then
+	-- if sqrt((pl.x + 4 - lights[1].x - 16) ^ 2 + (pl.y - lights[1].y - 16) ^ 2) < lights[1].radius / 2 then
+	if collision_light(pl, lights[1]) then
 		print("collision", 10, 20, 7)
+		-- circfill(lights[1].x + 16, lights[1].y + 16, lights[1].radius / 2, 9)
 	end
 end
 
@@ -328,11 +330,9 @@ function collision(a, b)
 				or a.y + a.h < b.y)
 end
 
-function collision_light(a, b)
-	return not (a.x > b.x + b.radius
-				or a.y > b.y + b.radius
-				or a.x + a.w < b.x
-				or a.y + a.h < b.y)
+function collision_light(p, l)
+	result = sqrt((p.x + 4 - l.x - l.radius / 2) ^ 2 + (p.y - l.y - l.radius / 2) ^ 2) < l.radius / 2
+	return result
 end
 
 __gfx__
