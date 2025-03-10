@@ -32,8 +32,8 @@ end
 
 function init_player()
 	pl = {
-		x = 3 * 8,
-		y = 14 * 8,
+		x = 1 * 8,
+		y = 2 * 8,
 		h = 8,
 		w = 8,
 		dx = 0,
@@ -186,11 +186,11 @@ function init_light()
 		color = 9
 	}
 	lights = {}
-	create_light(2 * 8, 11 * 8, 32)
-	-- create_light(-2 * 8, 1 * 8, 64)
-	-- create_light(-2 * 8, 8 * 8, 52)
-	-- create_light(6 * 8, 13 * 8, 16)
-	-- create_light(10 * 8, 12 * 8, 32)
+	-- create_light(2 * 8, 11 * 8, 32)
+	create_light(-2 * 8, 1 * 8, 64)
+	create_light(-2 * 8, 8 * 8, 52)
+	create_light(6 * 8, 13 * 8, 16)
+	create_light(9 * 8, 12 * 8, 32)
 end
 
 function update_light()
@@ -258,10 +258,7 @@ end
 function draw_lights()
 	foreach(
 		lights, function(l)
-			-- circfill(l.x, l.y, l.radius + 1, 6)
-			-- circfill(l.x, l.y, l.radius, l.color)
 			sspr(12 * 8, 0, l.w, l.h, l.x, l.y, l.radius, l.radius)
-			-- spr(12, l.x, l.y, l.w / 8, l.h / 8)
 		end
 	)
 end
@@ -315,10 +312,10 @@ end
 --helper functions
 
 function debug_print()
-	-- if sqrt((pl.x + 4 - lights[1].x - 16) ^ 2 + (pl.y - lights[1].y - 16) ^ 2) < lights[1].radius / 2 then
-	if collision_light(pl, lights[1]) then
-		print("collision", 10, 20, 7)
-		-- circfill(lights[1].x + 16, lights[1].y + 16, lights[1].radius / 2, 9)
+	for l in all(lights) do
+		if collision_light(pl, l) then
+			print("collision", 10, 20, 7)
+		end
 	end
 end
 
@@ -331,7 +328,7 @@ function collision(a, b)
 end
 
 function collision_light(p, l)
-	result = sqrt((p.x + 4 - l.x - l.radius / 2) ^ 2 + (p.y - l.y - l.radius / 2) ^ 2) < l.radius / 2
+	result = sqrt((p.x + p.h / 2 - l.x - l.radius / 2) ^ 2 + (p.y - l.y - l.radius / 2) ^ 2) < l.radius / 2
 	return result
 end
 
