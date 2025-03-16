@@ -26,6 +26,17 @@ function _draw()
 	draw_player()
 	draw_room()
 	debug_print()
+	-- line()
+	if btn(🅾️) and pl.select then
+		-- Dessiner la grid de la map
+		for i=0,1 do
+			for j=0,16 do
+				if (i == 0) line(0, max(0,(j*8)),128,max(0,(j*8)), 8)
+				if (i == 1) line(max(0,(j*8)),0,max(0,(j*8)),128,8)
+			end
+		end
+		pset(ima_light.x,ima_light.y,11)
+	end
 end
 
 -->8
@@ -48,6 +59,7 @@ function init_player()
 		flipx = false,
 		select = true,
 		in_light = true,
+		using_light = false, --to know if player is holding C key
 		id = "lulu"
 	}
 	ph = {
@@ -215,82 +227,62 @@ function update_light()
 
 	-- after
 	-- dresser la grille de la map (dans draw)
-	-- x et y de ima_light doivent れちtre au plus proche du x et y de lulu
-	-- lorsqu'une direction est pressれたe, dれたplacer l'ima_light
+	-- TODO x et y de ima_light doivent être au plus proche du x et y de lulu
+
+	-- TODO lorsqu'une direction est pressée, déplacer l'ima_light
 	-- 
 	-- before
-	if btn(🅾️) and pl.select then
-		ima_light.x = pl.x + 4
-		ima_light.y = pl.y + 8 - (ima_light.radius / 2)
-		local xsign = 0
-		local ysign = 0
-		local dirpressed = false
-		if btn(⬅️) then
-			xsign = -1
-		end
-		if btn(➡️) then
-			xsign = 1
-		end
-		if btn(⬆️) then
-			ysign = -1
-		end
-		if btn(⬇️) then
-			ysign = 1
-		end
-		if btn(⬅️)
-			or btn(➡️)
-			or btn(⬆️)
-			or btn(⬇️) 
-		then
-			dirpressed = true
-		end
-		if dirpressed then
-			-- checks for collisions
-			-- moves at the farthest possible until we hit a wall
-			local x = ima_light.x + xsign
-			local y = ima_light.y + ysign
-			while not check_flag(0, x, y) do
-				x += xsign
-				y += ysign
-				ima_light.x = x
-				ima_light.y = y
-				if check_flag(0, x, y) then
-					ima_light.x -= xsign * (ima_light.radius / 2)
-					ima_light.y -= ysign * (ima_light.radius / 2)
-				end
-				if x < room.x or x > room.w or y < room.y or y > room.h then
-					-- no walls left
-					break
+		if btn(🅾️) and pl.select then
+			ima_light.x = pl.x_g
+			ima_light.y = pl.y_g + 8 - (ima_light.radius / 2)
+			local xsign = 0
+			local ysign = 0
+			local dirpressed = false
+			
+			if (btn(⬅️)) xsign = -1
+			if (btn(➡️)) xsign = 1
+			if (btn(⬆️)) ysign = -1
+			if (btn(⬇️)) ysign = 1
+			if ((btn(⬅️)) or (btn(➡️)) or (btn(⬆️)) or (btn(⬇️))) dirpressed = true
+
+			if dirpressed then
+				-- checks for collisions
+				-- moves at the farthest possible until we hit a wall
+				local x = ima_light.x + (xsign * 8)
+				local y = ima_light.y + (ysign * 8)
+				if not check_flag(0, x, y) do
+					x += mid(room.x, xsign, room.w)
+					y += mid(room.y, ysign, room.h)
+					ima_light.x = x
+					ima_light.y = y
+					--[[if check_flag(0, x, y) then
+						ima_light.x -= xsign * (ima_light.radius / 2)
+						ima_light.y -= ysign * (ima_light.radius / 2)
+					end
+					if x < room.x or x > room.w or y < room.y or y > room.h then
+						-- no walls left
+						-- break
+					end
+					]]
 				end
 			end
+			if btn(❎) and pl.select then
+				local x = ima_light.x - (ima_light.radius / 2)
+				local y = ima_light.y - (ima_light.radius / 2)
+				create_light(x, y, ima_light.radius)
+			end
 		end
-		if btn(❎) and pl.select then
-			local x = ima_light.x - (ima_light.radius / 2)
-			local y = ima_light.y - (ima_light.radius / 2)
-			create_light(x, y, ima_light.radius)
-		end
-	end
 end
 
 function draw_light()
 	draw_lights()
 	draw_imaginary_light()
-	-- line()
-	if btn(🅾️) and pl.select then
-		-- Dessiner la grid de la map
-		for i=0,1 do
-			for j=0,16 do
-				if (i == 0) line(0,j*8,128, j*8, 8)
-				if (i == 1) line(j*8,0,j*8,128,8)
-			end
-		end
-	end
-
 end
 
 function draw_imaginary_light()
 	if btn(🅾️) and pl.select then
 		circfill(ima_light.x, ima_light.y, ima_light.radius / 2, ima_light.color)
+		pset(ima_light.x,ima_light.y,8)
 	end
 end
 
