@@ -228,9 +228,11 @@ function update_light()
 
 	-- after
 	-- dresser la grille de la map (dans draw)
-	-- TODO x et y de ima_light doivent être au plus proche du x et y de lulu
+	-- x et y de ima_light doivent れちtre au plus proche du x et y de lulu
+	-- lorsqu'une direction est pressれたe, dれたplacer l'ima_light
 
-	-- TODO lorsqu'une direction est pressée, déplacer l'ima_light
+	-- TODO: Ima light doit れちtre : 
+	-- TODO: "accrochれたe a Lulu, et ne pas se dれたplacer れき plus de ima_range"
 	-- 
 	-- before
 		if btn(🅾️) and pl.select then
@@ -238,7 +240,8 @@ function update_light()
 				--setting position of light
 				ima_light.y = pl.y_g + 8 - (ima_light.radius / 2)
 				ima_light.x = pl.x_g
-				-- pl.using_light = true
+				pl.ima_range = 12
+				pl.using_light = true
 			end
 
 			local xsign = 0
@@ -254,11 +257,10 @@ function update_light()
 			if dirpressed then
 				-- checks for collisions
 				-- moves at the farthest possible until we hit a wall
-				local x = ima_light.x + xsign * 8
-				local y = ima_light.y + ysign * 8
-				if not check_flag(0, x, y) do
-					x += xsign * 8
-					y += ysign * 8
+				pl.ima_range -= 1
+				local x = ima_light.x + xsign * 4
+				local y = ima_light.y + ysign * 4
+				if not check_flag(0, x, y) and pl.ima_range > 0 do
 					ima_light.x = mid(room.x, x, room.w)
 					ima_light.y = mid(room.y, y, room.h)
 					--[[if check_flag(0, x, y) then
@@ -278,7 +280,7 @@ function update_light()
 				create_light(x, y, ima_light.radius)
 			end
 		else
-			-- pl.using_light = false
+			pl.using_light = false
 		end
 end
 
