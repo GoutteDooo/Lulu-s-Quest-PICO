@@ -60,7 +60,7 @@ function init_player()
 		select = true,
 		in_light = true,
 		using_light = false, --to know if player is holding C key
-		ima_range = 3, --range of ima_light
+		ima_range = 24, --range of ima_light
 		id = "lulu"
 	}
 	ph = {
@@ -232,7 +232,7 @@ function update_light()
 	-- lorsqu'une direction est pressれたe, dれたplacer l'ima_light
 
 	-- TODO: Ima light doit れちtre : 
-	-- TODO: "accrochれたe a Lulu, et ne pas se dれたplacer れき plus de ima_range"
+	-- TODO: "accrochée a Lulu, et ne pas se déplacer à plus de ima_range"
 	-- 
 	-- before
 		if btn(🅾️) and pl.select then
@@ -240,7 +240,6 @@ function update_light()
 				--setting position of light
 				ima_light.y = pl.y_g + 8 - (ima_light.radius / 2)
 				ima_light.x = pl.x_g
-				pl.ima_range = 12
 				pl.using_light = true
 			end
 
@@ -255,25 +254,28 @@ function update_light()
 			if ((btn(⬅️)) or (btn(➡️)) or (btn(⬆️)) or (btn(⬇️))) dirpressed = true
 
 			if dirpressed then
-				-- checks for collisions
-				-- moves at the farthest possible until we hit a wall
-				pl.ima_range -= 1
-				local x = ima_light.x + xsign * 4
-				local y = ima_light.y + ysign * 4
-				if not check_flag(0, x, y) and pl.ima_range > 0 do
-					ima_light.x = mid(room.x, x, room.w)
-					ima_light.y = mid(room.y, y, room.h)
-					--[[if check_flag(0, x, y) then
-						ima_light.x -= xsign * (ima_light.radius / 2)
-						ima_light.y -= ysign * (ima_light.radius / 2)
+					local x = ima_light.x + xsign * 4
+					local y = ima_light.y + ysign * 4
+					
+					-- Vérification du déplacement normal
+					if not check_flag(0, x, y) then
+						ima_light.x = mid(room.x, x, room.w)
+						ima_light.y = mid(room.y, y, room.h)
 					end
-					if x < room.x or x > room.w or y < room.y or y > room.h then
-						-- no walls left
-						-- break
-					end
-					]]
+
+				-- Vérification de la distance par rapport au joueur (pl)
+				local dx = ima_light.x - pl.x_g
+				local dy = ima_light.y - pl.y_g
+				local dist = sqrt(dx * dx + dy * dy)
+		
+				if dist > pl.ima_range then
+						-- Limiter la position sur le cercle
+						local angle = atan2(dy, dx)
+						ima_light.x = pl.x_g + cos(angle) * pl.ima_range
+						ima_light.y = pl.y_g + sin(angle) * pl.ima_range
 				end
-			end
+		end
+		
 			if btn(❎) and pl.select then
 				local x = ima_light.x - (ima_light.radius / 2)
 				local y = ima_light.y - (ima_light.radius / 2)
