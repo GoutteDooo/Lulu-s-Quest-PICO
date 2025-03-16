@@ -60,6 +60,7 @@ function init_player()
 		select = true,
 		in_light = true,
 		using_light = false, --to know if player is holding C key
+		ima_range = 3, --range of ima_light
 		id = "lulu"
 	}
 	ph = {
@@ -233,8 +234,13 @@ function update_light()
 	-- 
 	-- before
 		if btn(🅾️) and pl.select then
-			ima_light.x = pl.x_g
-			ima_light.y = pl.y_g + 8 - (ima_light.radius / 2)
+			if not pl.using_light then
+				--setting position of light
+				ima_light.y = pl.y_g + 8 - (ima_light.radius / 2)
+				ima_light.x = pl.x_g
+				-- pl.using_light = true
+			end
+
 			local xsign = 0
 			local ysign = 0
 			local dirpressed = false
@@ -248,13 +254,13 @@ function update_light()
 			if dirpressed then
 				-- checks for collisions
 				-- moves at the farthest possible until we hit a wall
-				local x = ima_light.x + (xsign * 8)
-				local y = ima_light.y + (ysign * 8)
+				local x = ima_light.x + xsign * 8
+				local y = ima_light.y + ysign * 8
 				if not check_flag(0, x, y) do
-					x += mid(room.x, xsign, room.w)
-					y += mid(room.y, ysign, room.h)
-					ima_light.x = x
-					ima_light.y = y
+					x += xsign * 8
+					y += ysign * 8
+					ima_light.x = mid(room.x, x, room.w)
+					ima_light.y = mid(room.y, y, room.h)
 					--[[if check_flag(0, x, y) then
 						ima_light.x -= xsign * (ima_light.radius / 2)
 						ima_light.y -= ysign * (ima_light.radius / 2)
@@ -271,6 +277,8 @@ function update_light()
 				local y = ima_light.y - (ima_light.radius / 2)
 				create_light(x, y, ima_light.radius)
 			end
+		else
+			-- pl.using_light = false
 		end
 end
 
