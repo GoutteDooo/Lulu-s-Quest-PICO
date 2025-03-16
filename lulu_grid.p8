@@ -35,6 +35,8 @@ function init_player()
 	pl = {
 		x = 1 * 8,
 		y = 2 * 8,
+		x_g = x,
+		y_g = y,
 		h = 8,
 		w = 8,
 		dx = 0,
@@ -51,6 +53,8 @@ function init_player()
 	ph = {
 		x = 15 * 8,
 		y = 14 * 8,
+		x_g = x,
+		y_g = y,
 		h = 8,
 		w = 8,
 		dx = 0,
@@ -84,7 +88,7 @@ function update_player()
 	end
 
 	--switch characters
-	if btnp(⬇️) then
+	if btnp(⬇️) and not btn(🅾️) then
 		--switch characters
 		if (pactual == pl) then
 			pactual = ph
@@ -165,6 +169,9 @@ function update_player()
 		restart_level()
 	end
 
+	pactual.y_g = ceil(pactual.y / 8) * 8
+	pactual.x_g = ceil(pactual.x / 8) * 8
+
 	--animations
 	if not pactual.g then
 		pactual.sprite = pactual.default_sprite + 1
@@ -205,7 +212,13 @@ function init_light()
 end
 
 function update_light()
-	
+
+	-- after
+	-- dresser la grille de la map (dans draw)
+	-- x et y de ima_light doivent être au plus proche du x et y de lulu
+	-- lorsqu'une direction est pressée, déplacer l'ima_light
+	-- 
+	-- before
 	if btn(🅾️) and pl.select then
 		ima_light.x = pl.x + 4
 		ima_light.y = pl.y + 8 - (ima_light.radius / 2)
@@ -214,23 +227,26 @@ function update_light()
 		local dirpressed = false
 		if btn(⬅️) then
 			xsign = -1
-			dirpressed = true
 		end
 		if btn(➡️) then
 			xsign = 1
-			dirpressed = true
 		end
 		if btn(⬆️) then
 			ysign = -1
-			dirpressed = true
 		end
 		if btn(⬇️) then
 			ysign = 1
+		end
+		if btn(⬅️)
+			or btn(➡️)
+			or btn(⬆️)
+			or btn(⬇️) 
+		then
 			dirpressed = true
 		end
 		if dirpressed then
-			--check for collisions
-			-- move at the farthest possible until we hit a wall
+			-- checks for collisions
+			-- moves at the farthest possible until we hit a wall
 			local x = ima_light.x + xsign
 			local y = ima_light.y + ysign
 			while not check_flag(0, x, y) do
@@ -324,11 +340,9 @@ end
 --helper functions
 
 function debug_print()
-	for l in all(lights) do
-		if collision_light(pl, l) then
-			print("collision", 10, 20, 7)
-		end
-	end
+			print("("..pactual.x_g, 10, 20, 8)
+			print("."..pactual.y_g, 20, 20, 8)
+			print(")", 35, 20, 8)
 end
 
 --collisions
@@ -351,7 +365,7 @@ __gfx__
 00077000899ff9f9899ff9f900000000000000000229ff920229ff9200000000000000000000000000000000000000000000006aaaaaaaaaaaaaaaaaa6000000
 0007700089fc9fc989fc9fc90000000000000000022ffff2022ffff20000000000000000000000000000000000000000000006aaaaaaaaaaaaaaaaaaaa600000
 00700700089fff90089fff9000000000000000000121d1020121d102000000000000000000000000000000000000000000006aaaaaaaaaaaaaaaaaaaaaa60000
-000000000088880004888840000000000000000001dddd0005dddd5000000000000000000000000000000000000000000006aaaaaaaaaaaaaaaaaaaaaaaa6000
+000000000088880000848840000000000000000001dddd0001d5dd5000000000000000000000000000000000000000000006aaaaaaaaaaaaaaaaaaaaaaaa6000
 000000000040040000000000000000000000000001500500010000000000000000000000000000000000000000000000006aaaaaaaaaaaaaaaaaaaaaaaaaa600
 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006aaaaaaaaaaaaaaaaaaaaaaaaaa600
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006aaaaaaaaaaaaaaaaaaaaaaaaaaaa60
