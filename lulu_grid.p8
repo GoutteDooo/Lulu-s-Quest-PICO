@@ -215,8 +215,8 @@ function update_light()
 
 	-- after
 	-- dresser la grille de la map (dans draw)
-	-- x et y de ima_light doivent être au plus proche du x et y de lulu
-	-- lorsqu'une direction est pressée, déplacer l'ima_light
+	-- x et y de ima_light doivent れちtre au plus proche du x et y de lulu
+	-- lorsqu'une direction est pressれたe, dれたplacer l'ima_light
 	-- 
 	-- before
 	if btn(🅾️) and pl.select then
@@ -275,6 +275,17 @@ end
 function draw_light()
 	draw_lights()
 	draw_imaginary_light()
+	-- line()
+	if btn(🅾️) and pl.select then
+		-- Dessiner la grid de la map
+		for i=0,1 do
+			for j=0,16 do
+				if (i == 0) line(0,j*8,128, j*8, 8)
+				if (i == 1) line(j*8,0,j*8,128,8)
+			end
+		end
+	end
+
 end
 
 function draw_imaginary_light()
@@ -340,9 +351,11 @@ end
 --helper functions
 
 function debug_print()
-			print("("..pactual.x_g, 10, 20, 8)
-			print("."..pactual.y_g, 20, 20, 8)
+	if pactual.x_g != nil then
+			print("("..pactual.x_g, 5, 20, 8)
+			print(";"..pactual.y_g, 20, 20, 8)
 			print(")", 35, 20, 8)
+	end
 end
 
 --collisions
