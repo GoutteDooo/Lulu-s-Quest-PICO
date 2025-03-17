@@ -230,6 +230,7 @@ function update_light()
 				update_light_hades()
 			end
 		end
+		if (ph.select and not btn(🅾️)) ph.light_selected[1] = nil
 end
 
 function update_light_lulu()
@@ -295,13 +296,13 @@ function update_light_hades()
 			del(lights,ph.light_selected[1])
 			ph.light_selected[2] = 0
 		end
-		return
 	end
 end
 
 function draw_light()
 	draw_lights()
 	draw_imaginary_light()
+	draw_hades_turnoff()
 end
 
 function draw_imaginary_light()
@@ -317,6 +318,16 @@ function draw_lights()
 			sspr(12 * 8, 0, l.w, l.h, l.x, l.y, l.radius, l.radius)
 		end
 	)
+end
+
+function draw_hades_turnoff()
+	if (ph.light_selected[1] ~= nil) then
+		local i = ph.light_selected[2] + 1
+		local x = lights[i].x + lights[i].radius/ 2
+		local y = lights[i].y+ lights[i].radius / 2
+		local r = lights[i].radius / 2
+		circfill(x, y, r, 8)
+	end
 end
 
 function create_light(x, y, r, flag, color)
