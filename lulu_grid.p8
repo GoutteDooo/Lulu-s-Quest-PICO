@@ -82,8 +82,8 @@ function init_player()
 		in_light = false,
 		light_selected = 
 		{
-			nil, -- light
-			0 -- index
+			nil, -- id light
+			0 -- index dynamique
 		},
 		id = "hades"
 	}
@@ -219,33 +219,16 @@ end
 function update_light()
 
 	-- lulu
-		if btn(🅾️) and pl.select then
-			update_light_lulu()
-		else
-			pl.using_light = false
-		end
-
-		--hades
-		if btn(🅾️) and ph.select then
-			-- TODO: selectionner une des lights de la map
-			-- hades a une variable qui stocke temporairement la light selected
-			if #lights > 0 then
-				local i = ph.light_selected[2]
-				local count = #lights
-				ph.light_selected[1] = lights[1].id
-				if (btnp(➡️)) ph.light_selected[2] += 1 % count
-				if (btnp(⬅️)) ph.light_selected[2] -= 1 % count
+		if btn(🅾️) then
+			if pl.select then
+				update_light_lulu()
+			else
+				pl.using_light = false
 			end
-			-- lorsque le joueur presse une fleche, la light est remove
-			-- puis une copie de la suivante est stockée
-			-- Si pas de light, rien ne se passe
-
-
-			-- TODO: lorsque X est pressé, on la remove de l'objet
-			-- Si pas de light, rien ne se passe
-
-			-- Lorsque O dépressé, remettre null dans light_selected
-			-- TODO: Draw / La light sélectionnée apparaît en rouge
+				--hades
+			if ph.select then
+				update_light_hades()
+			end
 		end
 end
 
@@ -299,6 +282,23 @@ function update_light_lulu()
 	end
 end
 
+function update_light_hades()
+	-- hades a une variable qui stocke temporairement la light selected
+	if #lights > 0 then
+		local index = ph.light_selected[2]
+		local count = #lights
+		ph.light_selected[1] = lights[index + 1]
+		if (btnp(➡️)) ph.light_selected[2] = (ph.light_selected[2] + 1) % count
+		if (btnp(⬅️)) ph.light_selected[2] = (ph.light_selected[2] - 1) % count
+
+		if btnp(❎) then
+			del(lights,ph.light_selected[1])
+			ph.light_selected[2] = 0
+		end
+		return
+	end
+end
+
 function draw_light()
 	draw_lights()
 	draw_imaginary_light()
@@ -321,7 +321,7 @@ end
 
 function create_light(x, y, r, flag, color)
 	local new_light = {
-		id = 0,
+		id = #lights,
 		x = x,
 		y = y,
 		radius = r,
@@ -369,9 +369,8 @@ end
 --helper functions
 
 function debug_print()
-	if (ph.light_selected[1] ~= nil) print("light selected: "..ph.light_selected[1], 10, 20, 8)
-	if (ph.light_selected[2] ~= nil) print("index: "..ph.light_selected[2], 10, 30, 8)
-	print("#lights: "..#lights, 10, 40, 8)
+	if (ph.light_selected[1] != nil) print("light s id: "..ph.light_selected[1].id, 10, 20, 8)
+	-- if (ph.light_selected[2] ~= nil) print("index: "..ph.light_selected[2], 10, 30, 8)
 end
 
 function round(a)
