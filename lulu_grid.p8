@@ -27,7 +27,6 @@ function _draw()
 	map(0, 0, 0, 0)
 	draw_player()
 	draw_room()
-	debug_print()
 	-- line()
 	if btn(🅾️) and pl.select then
 		-- Dessiner la grid de la map
@@ -39,6 +38,7 @@ function _draw()
 		end
 		pset(ima_light.x,ima_light.y,11)
 	end
+	debug_print()
 end
 
 -->8
@@ -231,11 +231,11 @@ function update_light()
 
 	-- after
 	-- dresser la grille de la map (dans draw)
-	-- x et y de ima_light doivent être au plus proche du x et y de lulu
-	-- lorsqu'une direction est pressée, déplacer l'ima_light
+	-- x et y de ima_light doivent れちtre au plus proche du x et y de lulu
+	-- lorsqu'une direction est pressれたe, dれたplacer l'ima_light
 
-	-- TODO: Ima light doit être : 
-	-- TODO: "accrochée a Lulu, et ne pas se déplacer à plus de ima_range"
+	-- TODO: Ima light doit れちtre : 
+	-- TODO: "accrochれたe a Lulu, et ne pas se dれたplacer れき plus de ima_range"
 	-- 
 	-- before
 		if btn(🅾️) and pl.select then
@@ -260,29 +260,30 @@ function update_light()
 					local x = ima_light.x + xsign * 8
 					local y = ima_light.y + ysign * 8
 					
-					-- Vérification du déplacement normal
+					-- Vれたrification du dれたplacement normal
 					if not check_flag(0, x, y) and frames % 3 == 0 then
 						ima_light.x = mid(room.x, flr(x / 8) * 8, room.w)
 						ima_light.y = mid(room.y, flr(y / 8) * 8, room.h)
 					end
 
-				-- Vérification de la distance par rapport au joueur (pl)
+				-- Vれたrification de la distance par rapport au joueur (pl)
 				local dx = ima_light.x - pl.x_g
 				local dy = ima_light.y - pl.y_g
 				local dist = sqrt(dx * dx + dy * dy)
 		
 				if dist > pl.ima_range then
 						-- Limiter la position sur le cercle
-						-- local angle = atan2(dy, dx)
-						-- ima_light.x = pl.x_g + cos(angle) * pl.ima_range
-						-- ima_light.y = pl.y_g + sin(angle) * pl.ima_range
+						local angle = atan2(dx, dy)
+						ima_light.x = pl.x_g + round((cos(angle) * pl.ima_range)/8)*8
+						ima_light.y = pl.y_g + round((sin(angle) * pl.ima_range)/8)*8
 				end
 		end
 		
-			if btnp(❎) and pl.select then
+			if btnp(❎) and pl.select and pl.lights_left > 0 then
 				local x = ima_light.x - (ima_light.radius / 2)
 				local y = ima_light.y - (ima_light.radius / 2)
 				create_light(x, y, ima_light.radius)
+				pl.lights_left -= 1
 			end
 		else
 			pl.using_light = false
@@ -362,7 +363,25 @@ function debug_print()
 			print("("..pactual.x_g, 5, 20, 8)
 			print(";"..pactual.y_g, 20, 20, 8)
 			print(")", 35, 20, 8)
-	end
+		end
+		
+		local dx = ima_light.x - pl.x_g
+		local dy = ima_light.y - pl.y_g
+		local dist = sqrt(dx * dx + dy * dy)
+		local angle = atan2(dy, dx)
+		print("dx: "..dx, 5, 30, 11)
+		print("dy: "..dy, 5, 40, 11)
+		print("dist: "..dist, 5, 50, 11)
+		print("a: "..angle, 5, 60, 11)
+		print("cos: "..((cos(angle) * pl.ima_range)/8)*8, 5, 70, 11)
+		print("sin: "..((sin(angle) * pl.ima_range)/8)*8, 5, 80, 11)
+		line(pl.x_g,pl.y_g,pl.x_g + dx,pl.y_g + dy,11)
+		circ(pl.x_g,pl.y_g,24,11)
+		pset(pactual.x_g, pactual.y_g,14)
+end
+
+function round(a)
+	return flr(a + 0.5)
 end
 
 --collisions
