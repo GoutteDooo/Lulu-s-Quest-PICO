@@ -80,6 +80,11 @@ function init_player()
 		flipx = true,
 		select = false,
 		in_light = false,
+		light_selected = 
+		{
+			nil, -- light
+			0 -- index
+		},
 		id = "hades"
 	}
 	pactual = pl
@@ -92,11 +97,10 @@ end
 
 function update_player()
 	if btn(🅾️) then
-		if btn(⬅️) then
-			pactual.flipx = true
-		end
-		if btn(➡️) then
-			pactual.flipx = false
+		if ima_light.x > pl.x then
+			pl.flipx = false
+		else
+			pl.flipx = true
 		end
 		return
 	end
@@ -113,7 +117,6 @@ function update_player()
 			pl.select = true
 			ph.select = false
 		end
-		return
 	end
 
 	if btn(⬅️) then
@@ -189,12 +192,6 @@ function update_player()
 	end
 end
 
-function interact(x, y)
-	if check_flag(1, x, y) then
-		return
-	end
-end
-
 -->8
 --map
 
@@ -213,7 +210,6 @@ function init_light()
 		color = 9
 	}
 	lights = {}
-	-- create_light(2 * 8, 11 * 8, 32)
 	create_light(-2 * 8, 1 * 8, 64)
 	create_light(-2 * 8, 8 * 8, 52)
 	create_light(6 * 8, 13 * 8, 16)
@@ -222,65 +218,85 @@ end
 
 function update_light()
 
-	-- after
-	-- dresser la grille de la map (dans draw)
-	-- x et y de ima_light doivent れちtre au plus proche du x et y de lulu
-	-- lorsqu'une direction est pressれたe, dれたplacer l'ima_light
-
-	-- TODO: Ima light doit れちtre : 
-	-- TODO: "accrochれたe a Lulu, et ne pas se dれたplacer れき plus de ima_range"
-	-- 
-	-- before
+	-- lulu
 		if btn(🅾️) and pl.select then
-			if not pl.using_light then
-				--setting position of light
-				ima_light.y = pl.y_g
-				ima_light.x = pl.x_g
-				pl.using_light = true
-			end
-
-			local xsign = 0
-			local ysign = 0
-			local dirpressed = false
-			
-			if (btn(⬅️)) xsign = -1
-			if (btn(➡️)) xsign = 1
-			if (btn(⬆️)) ysign = -1
-			if (btn(⬇️)) ysign = 1
-			if ((btn(⬅️)) or (btn(➡️)) or (btn(⬆️)) or (btn(⬇️))) dirpressed = true
-
-			if dirpressed then
-					local x = ima_light.x + xsign * 8
-					local y = ima_light.y + ysign * 8
-					
-					-- Vれたrification du dれたplacement normal
-					if not check_flag(0, x, y) and frames % 3 == 0 then
-						ima_light.x = mid(room.x, flr(x / 8) * 8, room.w)
-						ima_light.y = mid(room.y, flr(y / 8) * 8, room.h)
-					end
-
-				-- Vれたrification de la distance par rapport au joueur (pl)
-				local dx = ima_light.x - pl.x_g
-				local dy = ima_light.y - pl.y_g
-				local dist = sqrt(dx * dx + dy * dy)
-		
-				if dist > pl.ima_range then
-						-- Limiter la position sur le cercle
-						local angle = atan2(dx, dy)
-						ima_light.x = pl.x_g + round((cos(angle) * pl.ima_range)/8)*8
-						ima_light.y = pl.y_g + round((sin(angle) * pl.ima_range)/8)*8
-				end
-		end
-		
-			if btnp(❎) and pl.select and pl.lights_left > 0 then
-				local x = ima_light.x - (ima_light.radius / 2)
-				local y = ima_light.y - (ima_light.radius / 2)
-				create_light(x, y, ima_light.radius)
-				pl.lights_left -= 1
-			end
+			update_light_lulu()
 		else
 			pl.using_light = false
 		end
+
+		--hades
+		if btn(🅾️) and ph.select then
+			-- TODO: selectionner une des lights de la map
+			-- hades a une variable qui stocke temporairement la light selected
+			if #lights > 0 then
+				local i = ph.light_selected[2]
+				local count = #lights
+				ph.light_selected[1] = lights[1].id
+				if (btnp(➡️)) ph.light_selected[2] += 1 % count
+				if (btnp(⬅️)) ph.light_selected[2] -= 1 % count
+			end
+			-- lorsque le joueur presse une fleche, la light est remove
+			-- puis une copie de la suivante est stockée
+			-- Si pas de light, rien ne se passe
+
+
+			-- TODO: lorsque X est pressé, on la remove de l'objet
+			-- Si pas de light, rien ne se passe
+
+			-- Lorsque O dépressé, remettre null dans light_selected
+			-- TODO: Draw / La light sélectionnée apparaît en rouge
+		end
+end
+
+function update_light_lulu()
+
+	if not pl.using_light then
+		--setting position of light
+		ima_light.y = pl.y_g
+		ima_light.x = pl.x_g
+		pl.using_light = true
+	end
+
+	local xsign = 0
+	local ysign = 0
+	local dirpressed = false
+	
+	if (btn(⬅️)) xsign = -1
+	if (btn(➡️)) xsign = 1
+	if (btn(⬆️)) ysign = -1
+	if (btn(⬇️)) ysign = 1
+	if ((btn(⬅️)) or (btn(➡️)) or (btn(⬆️)) or (btn(⬇️))) dirpressed = true
+
+	if dirpressed then
+			local x = ima_light.x + xsign * 8
+			local y = ima_light.y + ysign * 8
+			
+			-- Vれたrification du dれたplacement normal
+			if not check_flag(0, x, y) and frames % 3 == 0 then
+				ima_light.x = mid(room.x, flr(x / 8) * 8, room.w)
+				ima_light.y = mid(room.y, flr(y / 8) * 8, room.h)
+			end
+
+		-- Vれたrification de la distance par rapport au joueur (pl)
+		local dx = ima_light.x - pl.x_g
+		local dy = ima_light.y - pl.y_g
+		local dist = sqrt(dx * dx + dy * dy)
+
+		if dist > pl.ima_range then
+				-- Limiter la position sur le cercle
+				local angle = atan2(dx, dy)
+				ima_light.x = pl.x_g + round((cos(angle) * pl.ima_range)/8)*8
+				ima_light.y = pl.y_g + round((sin(angle) * pl.ima_range)/8)*8
+		end
+	end
+
+	if btnp(❎) and pl.select and pl.lights_left > 0 then
+		local x = ima_light.x - (ima_light.radius / 2)
+		local y = ima_light.y - (ima_light.radius / 2)
+		create_light(x, y, ima_light.radius)
+		pl.lights_left -= 1
+	end
 end
 
 function draw_light()
@@ -305,6 +321,7 @@ end
 
 function create_light(x, y, r, flag, color)
 	local new_light = {
+		id = 0,
 		x = x,
 		y = y,
 		radius = r,
@@ -341,7 +358,7 @@ function index_room(x, y)
 end
 
 function draw_room()
-	print(room.id, room.x + 10, room.y + 10, 7)
+	-- print(room.id, room.x + 10, room.y + 10, 7)
 end
 
 function restart_level()
@@ -352,25 +369,9 @@ end
 --helper functions
 
 function debug_print()
-	if pactual.x_g != nil then
-			print("("..pactual.x_g, 5, 20, 8)
-			print(";"..pactual.y_g, 20, 20, 8)
-			print(")", 35, 20, 8)
-		end
-		
-		local dx = ima_light.x - pl.x_g
-		local dy = ima_light.y - pl.y_g
-		local dist = sqrt(dx * dx + dy * dy)
-		local angle = atan2(dy, dx)
-		print("dx: "..dx, 5, 30, 11)
-		print("dy: "..dy, 5, 40, 11)
-		print("dist: "..dist, 5, 50, 11)
-		print("a: "..angle, 5, 60, 11)
-		print("cos: "..((cos(angle) * pl.ima_range)/8)*8, 5, 70, 11)
-		print("sin: "..((sin(angle) * pl.ima_range)/8)*8, 5, 80, 11)
-		line(pl.x_g,pl.y_g,pl.x_g + dx,pl.y_g + dy,11)
-		circ(pl.x_g,pl.y_g,pl.ima_range,11)
-		pset(pactual.x_g, pactual.y_g,14)
+	if (ph.light_selected[1] ~= nil) print("light selected: "..ph.light_selected[1], 10, 20, 8)
+	if (ph.light_selected[2] ~= nil) print("index: "..ph.light_selected[2], 10, 30, 8)
+	print("#lights: "..#lights, 10, 40, 8)
 end
 
 function round(a)
