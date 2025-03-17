@@ -55,7 +55,6 @@ function init_player()
 		dx = 0,
 		dy = 0,
 		g = false,
-		dj = false,
 		default_sprite = 1,
 		sprite = 1,
 		flipx = false,
@@ -76,7 +75,6 @@ function init_player()
 		dx = 0,
 		dy = 0,
 		g = false,
-		dj = false,
 		default_sprite = 5,
 		sprite = 5,
 		flipx = true,
@@ -127,12 +125,9 @@ function update_player()
 		pactual.flipx = false
 	end
 	if btnp(⬆️) then
-		if pactual.g or pactual.dj then
+		if pactual.g then
 			pactual.dy = -2.5
 			sfx(0)
-			if not pactual.g and pactual.dj then
-				pactual.dj = false
-			end
 		end
 	end
 	pactual.y += pactual.dy
@@ -142,12 +137,10 @@ function update_player()
 	-- interact(newx, newy)
 	if check_flag(0, pactual.x + 3, pactual.y + 8) or check_flag(0, pactual.x + 5, pactual.y + 8) then
 		pactual.g = true
-		pactual.dj = true
 		pactual.dy = 0
 		pactual.y = flr(pactual.y / 8) * 8
 	else
 		pactual.g = false
-		-- pactual.y = mid(room.y, pactual.y, room.h)
 	end
 
 	if pactual.dx > 0 then
