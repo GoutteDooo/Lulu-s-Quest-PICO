@@ -65,6 +65,7 @@ function init_player()
 		using_light = false, --to know if player is holding C key
 		ima_range = 6 * 8, --range of ima_light
 		lights_left = 3,
+		passed = false, --pass lvl
 		id = "lulu"
 	}
 	ph = {
@@ -87,6 +88,7 @@ function init_player()
 			nil, -- id light
 			0 -- index dynamique
 		},
+		passed = false, --pass lvl
 		id = "hades"
 	}
 	pactual = pl
@@ -235,7 +237,6 @@ function update_light()
 end
 
 function update_light_lulu()
-
 	if not pl.using_light then
 		--setting position of light
 		ima_light.y = pl.y_g
@@ -370,7 +371,7 @@ function index_room(x, y)
 end
 
 function draw_room()
-	-- print(room.id, room.x + 10, room.y + 10, 7)
+	print("room:"..room.id, room.x + 10, room.y + 10, 8)
 end
 
 function restart_level()
@@ -382,27 +383,28 @@ end
 
 --init objects
 function init_objects()
+	-- coordonnées pour lvl 1, a update à chaque changement de room
 	doors = {
-		a = 23
+		lulu_x = 7 * 8,
+		lulu_y = 13 * 8,
+		hades_x = 9 * 8,
+		hades_y = 13 * 8
 	}
 end
 
 --animations
 function draw_objects()
+	--doors
 	local flip = frames % 10 >= 5  -- Alterne toutes les 5 frames
-
-	-- Détermine les sprites à afficher
 	local top_spr = flip and 51 or 35
 	local bottom_spr = flip and 35 or 51
 
 	-- Dessine la porte dimensionnelle
-	spr(top_spr, 7*8, 13*8, 1, 1, false, flip)
-	spr(bottom_spr, 7*8, 14*8, 1, 1, false, flip)
+	spr(top_spr, doors.lulu_x, doors.lulu_y, 1, 1, false, flip)
+	spr(bottom_spr, doors.lulu_x, doors.lulu_y + 8, 1, 1, false, flip)
 
-	spr(top_spr, 9*8, 13*8, 1, 1, false, flip)
-	spr(bottom_spr, 9*8, 14*8, 1, 1, false, flip)
-
-	print("test : "..doors["a"], 50,20,8)
+	spr(top_spr, doors.hades_x, doors.hades_y, 1, 1, false, flip)
+	spr(bottom_spr, doors.hades_x, doors.hades_y + 8, 1, 1, false, flip)
 end
 
 -->8
@@ -410,7 +412,6 @@ end
 
 function debug_print()
 	if (ph.light_selected[1] != nil) print("light s id: "..ph.light_selected[1].id, 10, 20, 8)
-	-- if (ph.light_selected[2] ~= nil) print("index: "..ph.light_selected[2], 10, 30, 8)
 end
 
 function round(a)
