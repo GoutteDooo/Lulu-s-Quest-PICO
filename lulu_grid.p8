@@ -17,6 +17,7 @@ function _update()
 	update_player()
 	update_light()
 	update_room()
+	update_objects()
 	cx = flr(pl.x / 128) * 128
 	cy = flr(pl.y / 128) * 128
 end
@@ -371,7 +372,7 @@ function index_room(x, y)
 end
 
 function draw_room()
-	print("room:"..room.id, room.x + 10, room.y + 10, 8)
+	-- print("room:"..room.id, room.x + 10, room.y + 10, 8)
 end
 
 function restart_level()
@@ -385,11 +386,20 @@ end
 function init_objects()
 	-- coordonnées pour lvl 1, a update à chaque changement de room
 	doors = {
-		lulu_x = 7 * 8,
-		lulu_y = 13 * 8,
-		hades_x = 9 * 8,
-		hades_y = 13 * 8
+		lulu = {
+			x = 7 * 8,
+			y = 13 * 8
+		},
+		hades = {
+			x = 9 * 8,
+			y = 13 * 8
+		}
 	}
+end
+
+function update_objects()
+	-- When someone enter its doors, passed will be turn on and character will disappear
+	if (collision(pl,doors.lulu)) pl.sprite = 5
 end
 
 --animations
@@ -400,18 +410,22 @@ function draw_objects()
 	local bottom_spr = flip and 35 or 51
 
 	-- Dessine la porte dimensionnelle
-	spr(top_spr, doors.lulu_x, doors.lulu_y, 1, 1, false, flip)
-	spr(bottom_spr, doors.lulu_x, doors.lulu_y + 8, 1, 1, false, flip)
+	spr(top_spr, doors.lulu.x, doors.lulu.y, 1, 1, false, flip)
+	spr(bottom_spr, doors.lulu.x, doors.lulu.y + 8, 1, 1, false, flip)
 
-	spr(top_spr, doors.hades_x, doors.hades_y, 1, 1, false, flip)
-	spr(bottom_spr, doors.hades_x, doors.hades_y + 8, 1, 1, false, flip)
+	spr(top_spr, doors.hades.x, doors.hades.y, 1, 1, false, flip)
+	spr(bottom_spr, doors.hades.x, doors.hades.y + 8, 1, 1, false, flip)
 end
 
 -->8
 --helper functions
 
 function debug_print()
-	if (ph.light_selected[1] != nil) print("light s id: "..ph.light_selected[1].id, 10, 20, 8)
+	if (collision(pl,doors.lulu)) print("collides !",10,50,8)
+	print("door lulu: "..doors.lulu.x,10,20,8)
+	print(doors.lulu.y,65,20,8)
+	print("lulu: "..flr(pl.x),10,30,9)
+	print(flr(pl.y),45,30,9)
 end
 
 function round(a)
@@ -419,11 +433,11 @@ function round(a)
 end
 
 --collisions
-function collision(a, b)
-	return not (a.x > b.x + b.w
-				or a.y > b.y + b.h
-				or a.x + a.w < b.x
-				or a.y + a.h < b.y)
+function collision(p, o)
+	return not (p.x > o.x + 8
+				or p.y > o.y + 8
+				or p.x + 8 < o.x
+				or p.y + 8 < o.y)
 end
 
 function collision_light(p, l)
