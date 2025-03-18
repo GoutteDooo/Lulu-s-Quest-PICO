@@ -5,6 +5,7 @@ function _init()
 	init_player()
 	init_light()
 	init_room()
+  init_objects()
 	cx = 0
 	cy = 0
 	frames = 0
@@ -223,8 +224,6 @@ function update_light()
 		if btn(🅾️) then
 			if pl.select then
 				update_light_lulu()
-			else
-				pl.using_light = false
 			end
 				--hades
 			if ph.select then
@@ -232,6 +231,7 @@ function update_light()
 			end
 		end
 		if (ph.select and not btn(🅾️)) ph.light_selected[1] = nil
+		if (pl.select and not btn(🅾️)) pl.using_light = false
 end
 
 function update_light_lulu()
@@ -380,6 +380,13 @@ end
 -->8
 --objects
 
+--init objects
+function init_objects()
+	doors = {
+		a = 23
+	}
+end
+
 --animations
 function draw_objects()
 	local flip = frames % 10 >= 5  -- Alterne toutes les 5 frames
@@ -394,6 +401,8 @@ function draw_objects()
 
 	spr(top_spr, 9*8, 13*8, 1, 1, false, flip)
 	spr(bottom_spr, 9*8, 14*8, 1, 1, false, flip)
+
+	print("test : "..doors["a"], 50,20,8)
 end
 
 -->8
