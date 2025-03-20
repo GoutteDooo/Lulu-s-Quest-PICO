@@ -18,8 +18,8 @@ function _update()
 	update_light()
 	update_room()
 	update_objects()
-	cx = flr(pl.x / 128) * 128
-	cy = flr(pl.y / 128) * 128
+	cx = flr(lulu.x / 128) * 128
+	cy = flr(lulu.y / 128) * 128
 end
 
 function _draw()
@@ -31,7 +31,7 @@ function _draw()
 	draw_player()
 	draw_room()
 	-- line()
-	if btn(🅾️) and pl.select then
+	if btn(🅾️) and lulu.select then
 		-- Dessiner la grid de la map
 		for i=0,1 do
 			for j=0,16 do
@@ -48,7 +48,7 @@ end
 --player
 
 function init_player()
-	pl = {
+	lulu = {
 		x = 1 * 8,
 		y = 2 * 8,
 		x_g = x,
@@ -69,7 +69,7 @@ function init_player()
 		passed = false, --pass lvl
 		id = "lulu"
 	}
-	ph = {
+	hades = {
 		x = 15 * 8,
 		y = 14 * 8,
 		x_g = x,
@@ -92,20 +92,20 @@ function init_player()
 		passed = false, --pass lvl
 		id = "hades"
 	}
-	pactual = pl
+	pactual = lulu
 end
 
 function draw_player()
-	spr(pl.sprite, pl.x, pl.y, 1, 1, pl.flipx)
-	spr(ph.sprite, ph.x, ph.y, 1, 1, ph.flipx)
+	spr(lulu.sprite, lulu.x, lulu.y, 1, 1, lulu.flipx)
+	spr(hades.sprite, hades.x, hades.y, 1, 1, hades.flipx)
 end
 
 function update_player()
 	if btn(🅾️) then
-		if ima_light.x > pl.x then
-			pl.flipx = false
+		if ima_light.x > lulu.x then
+			lulu.flipx = false
 		else
-			pl.flipx = true
+			lulu.flipx = true
 		end
 		return
 	end
@@ -113,14 +113,14 @@ function update_player()
 	--switch characters
 	if btnp(⬇️) and not btn(🅾️) then
 		--switch characters
-		if (pactual == pl) then
-			pactual = ph
-			pl.select = false
-			ph.select = true
-		elseif (pactual == ph) then
-			pactual = pl
-			pl.select = true
-			ph.select = false
+		if (pactual == lulu) then
+			pactual = hades
+			lulu.select = false
+			hades.select = true
+		elseif (pactual == hades) then
+			pactual = lulu
+			lulu.select = true
+			hades.select = false
 		end
 	end
 
@@ -182,7 +182,7 @@ function update_player()
 			break
 		end
 	end
-	if not pl.in_light or ph.in_light then
+	if not lulu.in_light or hades.in_light then
 		restart_level()
 	end
 
@@ -209,8 +209,8 @@ end
 --lights
 function init_light()
 	ima_light = {
-		x = pl.x + 4,
-		y = pl.x + 4,
+		x = lulu.x + 4,
+		y = lulu.x + 4,
 		radius = 32,
 		color = 9
 	}
@@ -225,24 +225,24 @@ function update_light()
 
 	-- lulu
 		if btn(🅾️) then
-			if pl.select then
+			if lulu.select then
 				update_light_lulu()
 			end
 				--hades
-			if ph.select then
+			if hades.select then
 				update_light_hades()
 			end
 		end
-		if (ph.select and not btn(🅾️)) ph.light_selected[1] = nil
-		if (pl.select and not btn(🅾️)) pl.using_light = false
+		if (hades.select and not btn(🅾️)) hades.light_selected[1] = nil
+		if (lulu.select and not btn(🅾️)) lulu.using_light = false
 end
 
 function update_light_lulu()
-	if not pl.using_light then
+	if not lulu.using_light then
 		--setting position of light
-		ima_light.y = pl.y_g
-		ima_light.x = pl.x_g
-		pl.using_light = true
+		ima_light.y = lulu.y_g
+		ima_light.x = lulu.x_g
+		lulu.using_light = true
 	end
 
 	local xsign = 0
@@ -265,39 +265,39 @@ function update_light_lulu()
 				ima_light.y = mid(room.y, flr(y / 8) * 8, room.h)
 			end
 
-		-- Vれたrification de la distance par rapport au joueur (pl)
-		local dx = ima_light.x - pl.x_g
-		local dy = ima_light.y - pl.y_g
+		-- Vれたrification de la distance par rapport au joueur (lulu)
+		local dx = ima_light.x - lulu.x_g
+		local dy = ima_light.y - lulu.y_g
 		local dist = sqrt(dx * dx + dy * dy)
 
-		if dist > pl.ima_range then
+		if dist > lulu.ima_range then
 				-- Limiter la position sur le cercle
 				local angle = atan2(dx, dy)
-				ima_light.x = pl.x_g + round((cos(angle) * pl.ima_range)/8)*8
-				ima_light.y = pl.y_g + round((sin(angle) * pl.ima_range)/8)*8
+				ima_light.x = lulu.x_g + round((cos(angle) * lulu.ima_range)/8)*8
+				ima_light.y = lulu.y_g + round((sin(angle) * lulu.ima_range)/8)*8
 		end
 	end
 
-	if btnp(❎) and pl.select and pl.lights_left > 0 then
+	if btnp(❎) and lulu.select and lulu.lights_left > 0 then
 		local x = ima_light.x - (ima_light.radius / 2)
 		local y = ima_light.y - (ima_light.radius / 2)
 		create_light(x, y, ima_light.radius)
-		pl.lights_left -= 1
+		lulu.lights_left -= 1
 	end
 end
 
 function update_light_hades()
 	-- hades a une variable qui stocke temporairement la light selected
 	if #lights > 0 then
-		local index = ph.light_selected[2]
+		local index = hades.light_selected[2]
 		local count = #lights
-		ph.light_selected[1] = lights[index + 1]
-		if (btnp(➡️)) ph.light_selected[2] = (ph.light_selected[2] + 1) % count
-		if (btnp(⬅️)) ph.light_selected[2] = (ph.light_selected[2] - 1) % count
+		hades.light_selected[1] = lights[index + 1]
+		if (btnp(➡️)) hades.light_selected[2] = (hades.light_selected[2] + 1) % count
+		if (btnp(⬅️)) hades.light_selected[2] = (hades.light_selected[2] - 1) % count
 
 		if btnp(❎) then
-			del(lights,ph.light_selected[1])
-			ph.light_selected[2] = 0
+			del(lights,hades.light_selected[1])
+			hades.light_selected[2] = 0
 		end
 	end
 end
@@ -309,7 +309,7 @@ function draw_light()
 end
 
 function draw_imaginary_light()
-	if btn(🅾️) and pl.select then
+	if btn(🅾️) and lulu.select then
 		circfill(ima_light.x, ima_light.y, ima_light.radius / 2, ima_light.color)
 		pset(ima_light.x,ima_light.y,8)
 	end
@@ -324,8 +324,8 @@ function draw_lights()
 end
 
 function draw_hades_turnoff()
-	if (ph.light_selected[1] ~= nil) then
-		local i = ph.light_selected[2] + 1
+	if (hades.light_selected[1] != nil) then
+		local i = hades.light_selected[2] + 1
 		local x = lights[i].x + lights[i].radius/ 2
 		local y = lights[i].y+ lights[i].radius / 2
 		local r = lights[i].radius / 2
@@ -360,8 +360,8 @@ function init_room()
 end
 
 function update_room()
-	room.x = flr(pl.x / 128) * 128
-	room.y = flr(pl.y / 128) * 128
+	room.x = flr(lulu.x / 128) * 128
+	room.y = flr(lulu.y / 128) * 128
 	room.w = room.x + 128
 	room.h = room.y + 128
 	room.id = index_room(room.x, room.y)
@@ -384,7 +384,7 @@ end
 
 --init objects
 function init_objects()
-	-- coordonnées pour lvl 1, a update à chaque changement de room
+	-- coordonnれたes pour lvl 1, a update れき chaque changement de room
 	doors = {
 		lulu = {
 			x = 7 * 8,
@@ -399,33 +399,34 @@ end
 
 function update_objects()
 	-- When someone enter its doors, passed will be turn on and character will disappear
-	if (collision(pl,doors.lulu)) pl.sprite = 5
+	if (collision(lulu,doors.lulu)) lulu.sprite = 5
+	if (collision(hades,doors.hades)) hades.sprite = 1
 end
 
 --animations
 function draw_objects()
 	--doors
 	local flip = frames % 10 >= 5  -- Alterne toutes les 5 frames
-	local top_spr = flip and 51 or 35
-	local bottom_spr = flip and 35 or 51
+	local top_spr = 35
+	local bottom_spr = 51
 
 	-- Dessine la porte dimensionnelle
-	spr(top_spr, doors.lulu.x, doors.lulu.y, 1, 1, false, flip)
-	spr(bottom_spr, doors.lulu.x, doors.lulu.y + 8, 1, 1, false, flip)
+	spr(top_spr, doors.lulu.x, doors.lulu.y, 1, 1, flip, false)
+	spr(bottom_spr, doors.lulu.x, doors.lulu.y + 8, 1, 1, flip, false)
 
-	spr(top_spr, doors.hades.x, doors.hades.y, 1, 1, false, flip)
-	spr(bottom_spr, doors.hades.x, doors.hades.y + 8, 1, 1, false, flip)
+	spr(top_spr, doors.hades.x, doors.hades.y, 1, 1, flip, false)
+	spr(bottom_spr, doors.hades.x, doors.hades.y + 8, 1, 1, flip, false)
 end
 
 -->8
 --helper functions
 
 function debug_print()
-	if (collision(pl,doors.lulu)) print("collides !",10,50,8)
+	if (collision(lulu,doors.lulu)) print("collides !",10,50,8)
 	print("door lulu: "..doors.lulu.x,10,20,8)
 	print(doors.lulu.y,65,20,8)
-	print("lulu: "..flr(pl.x),10,30,9)
-	print(flr(pl.y),45,30,9)
+	print("lulu: "..flr(lulu.x),10,30,9)
+	print(flr(lulu.y),45,30,9)
 end
 
 function round(a)
