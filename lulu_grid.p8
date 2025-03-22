@@ -40,6 +40,7 @@ function _draw()
 			end
 		end
 		pset(ima_light.x,ima_light.y,11)
+		circ(lulu.x_g, lulu.y_g, lulu.ima_range, 12) --desinner le circle de ima_light
 	end
 	debug_print()
 end
