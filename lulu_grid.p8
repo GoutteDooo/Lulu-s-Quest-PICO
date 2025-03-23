@@ -16,10 +16,9 @@ function _update()
 	frames=((frames+1)%30)
 	update_player()
 	update_light()
-	update_room()
 	update_objects()
-	cx = flr(lulu.x / 128) * 128
-	cy = flr(lulu.y / 128) * 128
+	cx = flr(room.x / 128) * 128
+	cy = flr(room.y / 128) * 128
 end
 
 function _draw()
@@ -33,12 +32,12 @@ function _draw()
 	-- line()
 	if btn(🅾️) and lulu.select then
 		-- Dessiner la grid de la map
-		for i=0,1 do
-			for j=0,16 do
-				if (i == 0) line(0, max(0,(j*8)),128,max(0,(j*8)), 8)
-				if (i == 1) line(max(0,(j*8)),0,max(0,(j*8)),128,8)
-			end
-		end
+		-- for i=0,1 do
+		-- 	for j=0,16 do
+		-- 		if (i == 0) line(0, max(0,(j*8)),128,max(0,(j*8)), 8)
+		-- 		if (i == 1) line(max(0,(j*8)),0,max(0,(j*8)),128,8)
+		-- 	end
+		-- end
 		pset(ima_light.x,ima_light.y,11)
 		circ(lulu.x_g, lulu.y_g, lulu.ima_range, 12) --desinner le circle de ima_light
 	end
@@ -97,11 +96,25 @@ function init_player()
 end
 
 function draw_player()
-	spr(lulu.sprite, lulu.x, lulu.y, 1, 1, lulu.flipx)
-	spr(hades.sprite, hades.x, hades.y, 1, 1, hades.flipx)
+	--if they have finished the lvl
+	if not (lulu.passed) then
+		spr(lulu.sprite, lulu.x, lulu.y, 1, 1, lulu.flipx)
+	end
+	if not (hades.passed) then
+		spr(hades.sprite, hades.x, hades.y, 1, 1, hades.flipx)
+	end
 end
 
 function update_player()
+	--if they have finished the lvl
+	if pactual.passed then
+		if lulu.passed and hades.passed then
+			lulu.passed = false
+			hades.passed = false
+		end
+		switch_character()
+	end
+
 	if btn(🅾️) then
 		if ima_light.x > lulu.x then
 			lulu.flipx = false
@@ -113,16 +126,7 @@ function update_player()
 
 	--switch characters
 	if btnp(⬇️) and not btn(🅾️) then
-		--switch characters
-		if (pactual == lulu) then
-			pactual = hades
-			lulu.select = false
-			hades.select = true
-		elseif (pactual == hades) then
-			pactual = lulu
-			lulu.select = true
-			hades.select = false
-		end
+		switch_character()
 	end
 
 	if btn(⬅️) then
@@ -187,6 +191,7 @@ function update_player()
 		restart_level()
 	end
 
+
 	pactual.y_g = ceil(pactual.y / 8) * 8
 	pactual.x_g = ceil(pactual.x / 8) * 8
 
@@ -198,6 +203,19 @@ function update_player()
 		pactual.sprite = pactual.default_sprite + 1
 	else
 		pactual.sprite = pactual.default_sprite
+	end
+end
+
+function switch_character()
+	--switch characters
+	if (pactual == lulu) then
+		pactual = hades
+		lulu.select = false
+		hades.select = true
+	elseif (pactual == hades) then
+		pactual = lulu
+		lulu.select = true
+		hades.select = false
 	end
 end
 
@@ -221,6 +239,7 @@ function init_light()
 	lights = {}
 	create_light(-2 * 8, 10 * 8, 52)
 	create_light(9 * 8, 12 * 8, 32)
+	create_light(18 * 8, 12 * 8, 32)
 end
 
 function update_light()
@@ -361,18 +380,43 @@ function init_room()
 	}
 end
 
-function update_room()
-	room.x = flr(lulu.x / 128) * 128
-	room.y = flr(lulu.y / 128) * 128
-	room.w = room.x + 128
-	room.h = room.y + 128
-	room.id = index_room(room.x, room.y)
+function next_room()
+	-- room.x = flr(lulu.x / 128) * 128
+	-- room.y = flr(lulu.y / 128) * 128
+	-- room.w = room.x + 128
+	-- room.h = room.y + 128
+	-- room.id = index_room(room.x, room.y)
+
+	--[[ TEST ]]
+	local x = (room.x + 128)
+	local y = room.y
+	if (x >= 1024) then
+		x = 0
+		y = y + 128
+		if (y >= 512) then -- We are at the end of the map
+			y = 0
+		end
+	end
+	local w = x + 128
+	local h = y + 128
+	local id = room.id + 1
+	if (id == 33) then
+		room.id = 1
+	end
+
+
+	return {
+		id,
+		x,
+		y,
+		w,
+		h
+	}
 end
 
 function index_room(x, y)
-	return flr(room.x / 128) + flr(room.y / 128) * 8
+	return flr(x / 128) + flr(y / 128) * 8
 end
-
 function draw_room()
 	-- print("room:"..room.id, room.x + 10, room.y + 10, 8)
 end
@@ -401,8 +445,8 @@ end
 
 function update_objects()
 	-- When someone enter its doors, passed will be turn on and character will disappear
-	if (collision(lulu,doors.lulu)) lulu.sprite = 5
-	if (collision(hades,doors.hades)) hades.sprite = 1
+	if (collision(lulu,doors.lulu)) lulu.passed = true
+	if (collision(hades,doors.hades)) hades.passed = true
 end
 
 --animations
@@ -511,7 +555,7 @@ __map__
 2000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 2000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 2000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-2000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+2000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 2000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 2000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 2000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
