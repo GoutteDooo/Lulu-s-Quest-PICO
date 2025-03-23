@@ -9,16 +9,18 @@ function _init()
 	cx = 0
 	cy = 0
 	frames = 0
+	room_transition_pending = false
 	music(10)
 end
 
 function _update()
 	frames=((frames+1)%30)
 	update_player()
+	update_room()
 	update_light()
 	update_objects()
-	cx = flr(room.x / 128) * 128
-	cy = flr(room.y / 128) * 128
+	cx = room.x
+	cy = room.y
 end
 
 function _draw()
@@ -28,7 +30,6 @@ function _draw()
 	map(0, 0, 0, 0)
 	draw_objects()
 	draw_player()
-	draw_room()
 	-- line()
 	if btn(🅾️) and lulu.select then
 		-- Dessiner la grid de la map
@@ -380,14 +381,18 @@ function init_room()
 	}
 end
 
-function next_room()
-	-- room.x = flr(lulu.x / 128) * 128
-	-- room.y = flr(lulu.y / 128) * 128
-	-- room.w = room.x + 128
-	-- room.h = room.y + 128
-	-- room.id = index_room(room.x, room.y)
+function update_room()
+	--if they have finished the lvl
+	if room_transition_pending then
+		next_room()
+		room_transition_pending = false
+		lulu.passed = false
+		hades.passed = false
+	end
+	
+end
 
-	--[[ TEST ]]
+function next_room()
 	local x = (room.x + 128)
 	local y = room.y
 	if (x >= 1024) then
@@ -401,24 +406,17 @@ function next_room()
 	local h = y + 128
 	local id = room.id + 1
 	if (id == 33) then
-		room.id = 1
+		id = 1
 	end
-
-
-	return {
-		id,
-		x,
-		y,
-		w,
-		h
-	}
+	room.id = id
+	room.x = x
+	room.y = y
+	room.w = w
+	room.h = h
 end
 
 function index_room(x, y)
 	return flr(x / 128) + flr(y / 128) * 8
-end
-function draw_room()
-	-- print("room:"..room.id, room.x + 10, room.y + 10, 8)
 end
 
 function restart_level()
@@ -445,8 +443,18 @@ end
 
 function update_objects()
 	-- When someone enter its doors, passed will be turn on and character will disappear
-	if (collision(lulu,doors.lulu)) lulu.passed = true
-	if (collision(hades,doors.hades)) hades.passed = true
+	if collision(lulu, doors.lulu) then
+		lulu.passed = true
+	end
+	if collision(hades, doors.hades) then
+		hades.passed = true
+	end
+	
+	-- nouvelle vérification
+	if lulu.passed and hades.passed and not room_transition_pending then
+		room_transition_pending = true
+	end
+	
 end
 
 --animations
@@ -469,10 +477,12 @@ end
 
 function debug_print()
 	if (collision(lulu,doors.lulu)) print("collides !",10,50,8)
-	-- print("door lulu: "..doors.lulu.x,10,20,8)
-	-- print(doors.lulu.y,65,20,8)
-	-- print("lulu: "..flr(lulu.x),10,30,9)
-	-- print(flr(lulu.y),45,30,9)
+	print("room: "..room.x,10,20,8)
+	print(room.y,45,20,8)
+	print(room.id,10,40,12)
+	if lulu.passed and hades.passed then
+		print("passed!",10,30,8)
+	end
 end
 
 function round(a)
