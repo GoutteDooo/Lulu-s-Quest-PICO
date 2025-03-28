@@ -10,6 +10,7 @@ function _init()
 	cy = 0
 	frames = 0
 	room_transition_pending = false
+	i_room = 0
 	music(10)
 end
 
@@ -345,6 +346,7 @@ end
 
 function draw_hades_turnoff()
 	if (hades.light_selected[1] != nil) then
+		--check if selected light already exists
 		local i = hades.light_selected[2] + 1
 		local x = lights[i].x + lights[i].radius/ 2
 		local y = lights[i].y+ lights[i].radius / 2
@@ -377,6 +379,23 @@ function init_room()
 		w = 128,
 		h = 128
 	}
+
+	room_objects = 
+	{
+		{
+			lights = 
+			{
+				{x = -2 * 8, y = 10 * 8, radius = 52},
+				{x = 9 * 8, y = 12 * 8, radius = 32}
+			}
+		},
+		{
+			lights = 
+			{
+				{x = 16 * 8, y = 12 * 8, radius = 32}
+			}
+		}
+	}
 end
 
 function update_room()
@@ -387,7 +406,6 @@ function update_room()
 		lulu.passed = false
 		hades.passed = false
 	end
-	
 end
 
 function next_room()
@@ -411,14 +429,19 @@ function next_room()
 	room.y = y
 	room.w = w
 	room.h = h
+
 	for l in all(lights) do
 		del(lights,l)
 	end
+	i_room = index_room(room.x, room.y)
+	for l in all(room_objects[i_room + 1].lights) do
+		create_light(l.x, l.y, l.radius)
+	end
+
 	lulu.x = 17 * 8
 	lulu.y = 14 * 8
 	hades.x = 31 * 8
 	hades.y = 14 * 8
-	create_light(16 * 8, 12 * 8, 32)
 end
 
 function index_room(x, y)
@@ -488,9 +511,10 @@ function debug_print()
 	print(room.id,10,40,12)
 	for l in all(lights) do
 		if collision_light(pactual, l) then	
-			print("lights c id : "..l.id,lulu.x,lulu.y - l.id*10,8)
+			-- print("lights c id : "..l.id,lulu.x,lulu.y - l.id*10,8)
 		end
 	end
+	print("index room: "..i_room,lulu.x,lulu.y-10,8)
 	-- print(lulu.in_light,lulu.x,lulu.y-10,8)
 	-- print(hades.in_light,hades.x,hades.y-10,8)
 	-- print("x: "..lulu.x,lulu.x,lulu.y-20,8)
