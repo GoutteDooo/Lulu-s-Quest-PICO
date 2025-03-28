@@ -422,11 +422,12 @@ function next_room()
 	if (id == 33) then
 		id = 1
 	end
-	room.id = id
-	room.x = x
-	room.y = y
-	room.w = w
-	room.h = h
+	-- room.id = id
+	-- room.x = x
+	-- room.y = y
+	-- room.w = w
+	-- room.h = h
+	room = new_room(id, x, y, w, h)
 
 	for l in all(lights) do
 		del(lights,l)
@@ -439,6 +440,16 @@ function next_room()
 	lulu.y = rooms_data[i_room].pos["lulu"].y
 	hades.x = rooms_data[i_room].pos["hades"].x
 	hades.y = rooms_data[i_room].pos["hades"].y
+end
+
+function new_room(id, x, y, w, h)
+	return {
+		id = id,
+		x = x,
+		y = y,
+		w = w,
+		h = h
+	}
 end
 
 function index_room(x, y)
