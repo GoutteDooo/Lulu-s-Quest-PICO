@@ -187,7 +187,7 @@ function update_player()
 	end
 
 	if not lulu.in_light or hades.in_light then
-		-- restart_level()
+		restart_level()
 	end
 
 	pactual.y_g = ceil(pactual.y / 8) * 8
@@ -320,6 +320,9 @@ function update_light_hades()
 			del(lights,hades.light_selected[1])
 			hades.light_selected[2] = 0
 		end
+	else
+		--#light = 0
+		hades.light_selected[1] = nil
 	end
 end
 
@@ -345,7 +348,7 @@ function draw_lights()
 end
 
 function draw_hades_turnoff()
-	if (hades.light_selected[1] != nil) then
+	if (hades.light_selected[1] != nil) and #lights > 0 then
 		--check if selected light already exists
 		local i = hades.light_selected[2] + 1
 		local x = lights[i].x + lights[i].radius/ 2
@@ -382,6 +385,7 @@ function init_room()
 
 	rooms_data = 
 	{
+		--1
 		{
 			lights = 
 			{
@@ -422,11 +426,6 @@ function next_room()
 	if (id == 33) then
 		id = 1
 	end
-	-- room.id = id
-	-- room.x = x
-	-- room.y = y
-	-- room.w = w
-	-- room.h = h
 	room = new_room(id, x, y, w, h)
 
 	for l in all(lights) do
