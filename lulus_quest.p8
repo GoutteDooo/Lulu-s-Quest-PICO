@@ -71,6 +71,7 @@ function init_player()
 		select = true,
 		in_light = true,
 		using_light = false, --to know if player is holding C key
+		using_black_light = false,
 		ima_range = 6 * 8, --range of ima_light
 		lights_left = 1,
 		passed = false, --pass lvl
@@ -92,6 +93,8 @@ function init_player()
 		select = false,
 		in_light = false,
 		using_light	= false,
+		using_black_light = false,
+		ima_range = 6 * 8, 
 		light_selected = 
 		{
 			nil, -- id light
@@ -123,6 +126,11 @@ function update_player()
 	--if they have finished the lvl
 	if pactual.passed then
 		switch_character()
+		return
+	end
+
+	if pactual.using_black_light then
+		update_black_light()
 		return
 	end
 
@@ -241,7 +249,7 @@ function update_player()
 		foreach(
 			black_orbs, function(bo)
 				if collision(pactual, bo) then
-					restart_level()
+					pactual.using_black_light = true
 				end
 			end
 		)
@@ -407,6 +415,12 @@ function update_light_hades()
 	end
 end
 
+function update_black_light()
+	sfx(7)
+	ima_light_bo.x = pactual.x_g
+	ima_light_bo.y = pactual.y_g
+end
+
 function draw_light()
 	draw_lights()
 	draw_imaginary_light()
@@ -418,6 +432,10 @@ function draw_imaginary_light()
 		circfill(ima_light.x, ima_light.y, ima_light.radius / 2, ima_light.color)
 		circ(lulu.x_g, lulu.y_g, lulu.ima_range, 12) --desinner le circle de ima_light
 		-- pset(ima_light.x,ima_light.y,8)
+	end
+	if pactual.using_black_light then
+		circfill(ima_light_bo.x, ima_light_bo.y, ima_light_bo.r / 2, ima_light_bo.c)
+		circ(pactual.x_g, pactual.y_g, pactual.ima_range, ima_light_bo.c)
 	end
 end
 
@@ -744,6 +762,12 @@ function init_objects()
 		}
 	}
 	black_orbs = {}
+	ima_light_bo = {
+		x = 0,
+		y = 0,
+		r = 48,
+		c = 1
+	}
 end
 
 function update_objects()
