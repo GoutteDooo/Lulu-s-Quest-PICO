@@ -236,6 +236,17 @@ function update_player()
 		pactual.y = mid(room.y, pactual.y, room.h - 8)
 	end
 
+	--interactions
+	if black_orbs[1] != nil then
+		foreach(
+			black_orbs, function(bo)
+				if collision(pactual, bo) then
+					restart_level()
+				end
+			end
+		)
+	end
+
 	--animations
 	--jump
 	if not pactual.g then
