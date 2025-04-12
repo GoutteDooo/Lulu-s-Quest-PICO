@@ -151,7 +151,7 @@ function update_player()
 	if btnp(⬆️) then
 		if pactual.g then
 			pactual.dy = -2.5
-			sfx(0,3)
+			sfx(0)
 		end
 	end
 	pactual.y += pactual.dy
@@ -197,7 +197,7 @@ function update_player()
 
 	if check_flag(1, pactual.x + 4, pactual.y) then
 		restart_level()
-		sfx(8,3)
+		sfx(8)
 		return
 	end
 
@@ -215,14 +215,14 @@ function update_player()
 			-- lives = lives - 1
 			if i_room == 0 then 
 				restart_game()
-				sfx(9,3)
+				sfx(9)
 				return
 			end
 			restart_level()
-			sfx(8,3)
+			sfx(8)
 		else
 			restart_game()
-			sfx(9,3)
+			sfx(9)
 			end
 	end
 
@@ -244,7 +244,7 @@ function update_player()
 		if pactual.dx > 0.2 or pactual.dx < -0.2 then
 			pactual.sprite = frames % 8 >= 4 and pactual.default_sprite + 1 or pactual.default_sprite
 			if frames % 8 == 0 then
-				sfx(3,3)
+				sfx(3)
 			end
 		else
 			pactual.sprite = pactual.default_sprite
@@ -326,7 +326,7 @@ function update_light_lulu()
 		ima_light.y = lulu.y_g
 		ima_light.x = lulu.x_g
 		lulu.using_light = true
-		sfx(4,3)
+		sfx(4)
 	end
 
 	local xsign = 0
@@ -366,7 +366,7 @@ function update_light_lulu()
 		local x = ima_light.x - (ima_light.radius / 2)
 		local y = ima_light.y - (ima_light.radius / 2)
 		create_light(x, y, ima_light.radius)
-		sfx(5,3)
+		sfx(5)
 		lulu.lights_left -= 1
 	end
 end
@@ -375,7 +375,7 @@ function update_light_hades()
 	-- hades a une variable qui stocke temporairement la light selected
 	if #lights > 0 and hades.turnoffs_left > 0 then
 		if not hades.using_light then
-			sfx(7,3)
+			sfx(7)
 			hades.using_light = true
 		end
 		local index = hades.light_selected[2]
@@ -387,7 +387,7 @@ function update_light_hades()
 			del(lights,hades.light_selected[1])
 			hades.light_selected[2] = 0
 			hades.turnoffs_left -= 1
-			sfx(6,3)
+			sfx(6)
 	end
 	else
 		--#light = 0 ou hades n'a plus de power
@@ -612,7 +612,7 @@ end
 function next_room()
 	local x = room.x + 128
 	--TEST
-	x = 6 * 128
+	--x = 6 * 128
 	local y = room.y
 	if (x >= 1024) then
 		x = 0
@@ -631,7 +631,7 @@ function next_room()
 	room = new_room(id, x, y, w, h)
 	i_room = index_room(room.x, room.y)
 	create_room()
-	sfx(1,3)
+	sfx(1)
 end
 
 function create_room()
@@ -704,14 +704,14 @@ function update_objects()
 	if collision(lulu, doors.lulu) then
 		lulu.passed = true
 		if not door_sound_played then
-			sfx(2,3)
+			sfx(2)
 			door_sound_played = true
 		end
 	end
 	if collision(hades, doors.hades) then
 		hades.passed = true
 		if not door_sound_played then
-			sfx(2,3)
+			sfx(2)
 			door_sound_played = true
 		end
 	end
