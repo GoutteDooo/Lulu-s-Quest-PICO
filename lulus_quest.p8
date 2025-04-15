@@ -702,6 +702,7 @@ function init_room()
 				{x = 113, y = 13, radius = 32},
 				{x = 116, y = 13, radius = 32},
 				{x = 119, y = 13, radius = 32},
+				{x = 122, y = 9, radius = 32},
 			},
 			pos = 
 			{
@@ -716,7 +717,7 @@ function init_room()
 			powers = 
 			{
 				lulu = 1,
-				hades = 1
+				hades = 0
 			},
 			black_orb = 
 			{
@@ -914,7 +915,7 @@ end
 function debug_print()
 	for bl in all(black_lights) do
 		if collision_black_light(pactual, bl) then
-				-- print(black_lights[1], pactual.x, pactual.y - 10, 8)
+				print("coll!", pactual.x, pactual.y - 10, 8)
 		end
 	end
 	-- if (collision(lulu,doors.lulu)) print("collides !",10,50,8)
@@ -974,7 +975,7 @@ function collision_black_light(p, l)
 	print("dist: "..flr(dist), pactual.x, pactual.y - 10, 7)
 	pset(rx, ry, 11)  -- centre du joueur
 	pset(lx, ly, 8)   -- centre du cercle
-	return dist <= l.radius
+	return dist <= l.radius / 2
 	-- return dist <= l.radius / 2 
 end
 
