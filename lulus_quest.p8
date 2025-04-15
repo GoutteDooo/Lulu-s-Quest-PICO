@@ -219,6 +219,19 @@ function update_player()
 		end
 	end
 
+	--maybe pactual has collide with a light, but if it is in black light, it cancels the condition
+		for bl in all(black_lights) do
+			if collision_black_light(pactual, bl) then
+				if pactual == lulu then
+					pactual.in_light = true
+					break
+				elseif pactual == hades then
+					pactual.in_light = false
+					break
+				end
+			end
+		end
+
 	if (not lulu.in_light and not lulu.passed) or (hades.in_light and not hades.passed) or pactual.y >= room.h-1 then
 		if lives > 0 then
 			-- lives = lives - 1
@@ -522,7 +535,6 @@ function create_light(x, y, r, type, flag, color)
 
 	if (type == "black") then
 		new_light.flag = 2
-		new_light.color = 3
 		add(black_lights, new_light)
 	else
 		add(lights, new_light)
@@ -900,6 +912,11 @@ end
 --helper functions
 
 function debug_print()
+	for bl in all(black_lights) do
+		if collision_black_light(pactual, bl) then
+				-- print(black_lights[1], pactual.x, pactual.y - 10, 8)
+		end
+	end
 	-- if (collision(lulu,doors.lulu)) print("collides !",10,50,8)
 	-- print("room: "..index_room(room.x,room.y),lulu.x,lulu.y-10,8)
 	-- print(room.y,45,20,8)
@@ -910,12 +927,12 @@ function debug_print()
 	-- 	end
 	-- end
 	-- print("index room: "..i_room,lulu.x,lulu.y-10,8)
-	print(lulu.in_light,lulu.x,lulu.y-10,8)
-	print(hades.in_light,hades.x,hades.y-10,8)
-	print("frames: "..frames,10,10,8)
-	print("dx: "..lulu.dx,10,20,11)
-	if (not lulu.in_light) then debug_light = true end
-	print("out ? "..(debug_light and 'true' or 'false'),lulu.x,lulu.y-20,8)
+	-- print(lulu.in_light,lulu.x,lulu.y-10,8)
+	-- print(hades.in_light,hades.x,hades.y-10,8)
+	-- print("frames: "..frames,10,10,8)
+	-- print("dx: "..lulu.dx,10,20,11)
+	-- if (not lulu.in_light) then debug_light = true end
+	-- print("out ? "..(debug_light and 'true' or 'false'),lulu.x,lulu.y-20,8)
 	-- print("x: "..lulu.x,lulu.x,lulu.y-20,8)
 	-- print("y: "..lulu.y,lulu.x,lulu.y-10,8)
 	
@@ -942,9 +959,25 @@ function collision_light(p, l)
 	local dx = px - lx
 	local dy = py - ly
 	local dist = sqrt(dx*dx + dy*dy)
-	print("dist: "..flr(dist), hades.x, hades.y - 10, 7)
+	-- print("dist: "..flr(dist), hades.x, hades.y - 10, 7)
 	return dist <= (l.radius + 6) / 2
 end
+
+function collision_black_light(p, l)
+	local lx = l.x + l.radius / l.radius
+	local ly = l.y + l.radius / l.radius
+	local rx = max(p.x, min(lx, p.x + p.w))
+	local ry = max(p.y, min(ly, p.y + p.h))
+	local dx = lx - rx
+	local dy = ly - ry
+	local dist = sqrt(dx*dx + dy*dy)
+	print("dist: "..flr(dist), pactual.x, pactual.y - 10, 7)
+	pset(rx, ry, 11)  -- centre du joueur
+	pset(lx, ly, 8)   -- centre du cercle
+	return dist <= l.radius
+	-- return dist <= l.radius / 2 
+end
+
 __gfx__
 00000000088888800888888008888880088888800222222002222220022222200222222000000000000000000000000000000000000066666666000000000000
 000000008888888888888888888888888888888822222222222222222222222222222222000000000000000000000000000000000666aaaaaaaa666000000000
