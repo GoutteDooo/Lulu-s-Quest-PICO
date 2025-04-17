@@ -512,7 +512,6 @@ function draw_lights()
 			-- sspr(12 * 8, 0, l.w, l.h, l.x, l.y, l.radius, l.radius)
 			circfill(l.x+l.radius, l.y+l.radius, l.radius,10) 
 			circ(l.x+l.radius, l.y+l.radius, l.radius, 6)
-			pset(l.x, l.y, 8)
 		end
 	)
 	--black lights
@@ -967,10 +966,10 @@ end
 
 --collisions
 function collision(p, o)
-	return not (p.x > o.x + 8
+	return not (p.x > o.x + 4
 				or p.y > o.y + 8
-				or p.x + 8 < o.x
-				or p.y + 8 < o.y)
+				or p.x + 4 < o.x
+				or p.y + 4 < o.y)
 end
 
 function collision_light(p, l)
@@ -983,7 +982,7 @@ function collision_light(p, l)
 	local dy = py - ly
 	local dist = sqrt(dx*dx + dy*dy)
 	-- print("dist: "..flr(dist), hades.x, hades.y - 10, 7)
-	return dist <= l.radius
+	return dist <= l.radius + 2
 end
 
 function collision_black_light(p, l)
