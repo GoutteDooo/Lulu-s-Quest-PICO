@@ -22,16 +22,6 @@ function _init()
 	--DEBUG
 	debug_light = false
 	--TEST
-	chest = {
-		opened = false,
-		content = {
-			name = "black_orb",
-			r = 32
-		},
-		x = 5*8,
-		y = 14*8,
-	}
-	add(chests, chest)
 end
 
 function _update()
@@ -809,9 +799,17 @@ function init_room()
 				lulu = 4,
 				hades = 7
 			},
-			black_orb = 
+			chests = 
 			{
-				{x = 28, y = 30, r = 32},
+				{
+					opened = false,
+					content = {
+						name = "black_orb",
+						r = 32
+					},
+					x = 28,
+					y = 30,
+				}
 			}
 		}
 	}
@@ -855,17 +853,8 @@ function next_room()
 end
 
 function create_room()
-	--delete all lights from ancient room
-	for l in all(lights) do
-		del(lights,l)
-	end
-	for bl in all(black_lights) do
-		del(black_lights,bl)
-	end
-	--create lights from new room
-	for l in all(rooms_data[i_room].lights) do
-		create_light(l.x * 8, l.y * 8, l.radius)
-	end
+	delete_objects()
+	create_objects()
 	--characters
 	lulu.passed = false
 	hades.passed = false
@@ -882,16 +871,6 @@ function create_room()
 	--powers
 	lulu.lights_left = rooms_data[i_room].powers["lulu"]
 	hades.turnoffs_left = rooms_data[i_room].powers["hades"]
-	--black orb
-	for bo in all(rooms_data[i_room].black_orb) do
-		create_black_orb(bo.x * 8, bo.y * 8, bo.r)
-	end
-	--chests
-	foreach(rooms_data[i_room].chests, function(c)
-		c.x = c.x * 8
-		c.y = c.y * 8
-		add(chests, c)
-	end)
 end
 
 function new_room(id, x, y, w, h)
@@ -1001,8 +980,46 @@ function create_black_orb(x, y,r)
 	add(black_orbs, {x = x, y = y, r=r})
 end
 
+function delete_objects()
+	--delete all lights from ancient room
+	for l in all(lights) do
+		del(lights,l)
+	end
+	for bl in all(black_lights) do
+		del(black_lights,bl)
+	end
+	for c in all(chests) do
+		del(chests,c)
+	end
+end
+
+function create_objects()
+	--create lights from new room
+	for l in all(rooms_data[i_room].lights) do
+		create_light(l.x * 8, l.y * 8, l.radius)
+	end
+	--black orb
+	for bo in all(rooms_data[i_room].black_orb) do
+		create_black_orb(bo.x * 8, bo.y * 8, bo.r)
+	end
+	--chests
+	for c in all(rooms_data[i_room].chests) do
+		create_chest(c)
+	end
+end
+
 -->8
 --chests
+
+function create_chest(c)
+	local new_chest = {
+		opened = c.opened,
+		content = c.content,
+		x = c.x * 8,
+		y = c.y * 8
+	}
+	add(chests, new_chest)
+end
 
 function open_chest(c)
 	c.opened = true
@@ -1035,19 +1052,19 @@ end
 --helper functions
 
 function debug_print()
-	-- if chests[1] != nil then
-	-- 	print("chests: "..chests[1].content.name, 5,10,8)
-	-- 	print("x: "..chests[1].x, 5,20,8)
-	-- 	print("y: "..chests[1].y, 5,30,8)
-	-- 	print("p.x: "..pactual.x, 5,40,8)
-	-- 	print("p.y: "..pactual.y, 5,50,8)
-	-- end
+	if chests[1] != nil then
+		print("chests: "..chests[1].content.name, pactual.x,pactual.y-10,8)
+		print("x: "..chests[1].x, pactual.x,pactual.y-20,8)
+		print("y: "..chests[1].y, pactual.x,pactual.y-30,8)
+		print("p.x: "..pactual.x, pactual.x,pactual.y-40,8)
+		print("p.y: "..pactual.y, pactual.x,pactual.y-50,8)
+	end
 	--TEST
-	-- foreach(chests, function(c)
-	-- 	if collision(pactual, c) then
-	-- 		print("collides!", pactual.x, pactual.y - 10, 8)
-	-- 	end
-	-- end)
+	foreach(chests, function(c)
+		if collision(pactual, c) then
+			print("collides!", pactual.x, pactual.y - 10, 8)
+		end
+	end)
 	-- for bl in all(black_lights) do
 	-- 	if collision_black_light(pactual, bl) then
 	-- 			print("coll!", pactual.x, pactual.y - 10, 8)
