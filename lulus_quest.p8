@@ -24,7 +24,10 @@ function _init()
 	--TEST
 	chest = {
 		opened = false,
-		content = "black_orb",
+		content = {
+			name = "black_orb",
+			r = 32
+		},
 		x = 5*8,
 		y = 14*8,
 	}
@@ -956,7 +959,7 @@ function update_objects()
 	
 	--chests
 	foreach(chests, function(c)
-		if collision(pactual,c) then
+		if collision(pactual,c) and c.opened == false then
 			open_chest(c)
 		end
 	end)
@@ -1003,6 +1006,10 @@ end
 
 function open_chest(c)
 	c.opened = true
+	--créer le contenu du coffre au-dessus
+	if c.content.name == "black_orb" then
+		create_black_orb(c.x, c.y-10, c.content.r)
+	end
 end
 
 -->8
@@ -1028,19 +1035,19 @@ end
 --helper functions
 
 function debug_print()
-	if chests[1] != nil then
-		print("chests: "..chests[1].content, 5,10,8)
-		print("x: "..chests[1].x, 5,20,8)
-		print("y: "..chests[1].y, 5,30,8)
-		print("p.x: "..pactual.x, 5,40,8)
-		print("p.y: "..pactual.y, 5,50,8)
-	end
+	-- if chests[1] != nil then
+	-- 	print("chests: "..chests[1].content.name, 5,10,8)
+	-- 	print("x: "..chests[1].x, 5,20,8)
+	-- 	print("y: "..chests[1].y, 5,30,8)
+	-- 	print("p.x: "..pactual.x, 5,40,8)
+	-- 	print("p.y: "..pactual.y, 5,50,8)
+	-- end
 	--TEST
-	foreach(chests, function(c)
-		if collision(pactual, c) then
-			print("collides!", pactual.x, pactual.y - 10, 8)
-		end
-	end)
+	-- foreach(chests, function(c)
+	-- 	if collision(pactual, c) then
+	-- 		print("collides!", pactual.x, pactual.y - 10, 8)
+	-- 	end
+	-- end)
 	-- for bl in all(black_lights) do
 	-- 	if collision_black_light(pactual, bl) then
 	-- 			print("coll!", pactual.x, pactual.y - 10, 8)
