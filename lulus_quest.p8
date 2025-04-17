@@ -339,12 +339,12 @@ function init_light()
 	ima_light = {
 		x = lulu.x + 4,
 		y = lulu.x + 4,
-		radius = 32,
+		radius = 16,
 		color = 12
 	}
 	lights = {}
-	create_light(-2 * 8, 10 * 8, 52)
-	create_light(9 * 8, 12 * 8, 32)
+	create_light(-2 * 8, 10 * 8, 26)
+	create_light(9 * 8, 12 * 8, 16)
 end
 
 function update_light()
@@ -412,8 +412,8 @@ function update_light_lulu()
 	end
 
 	if btnp(❎) and lulu.select and lulu.lights_left > 0 then
-		local x = ima_light.x - (ima_light.radius / 2)
-		local y = ima_light.y - (ima_light.radius / 2)
+		local x = ima_light.x - ima_light.radius
+		local y = ima_light.y - ima_light.radius
 		create_light(x, y, ima_light.radius)
 		sfx(5)
 		lulu.lights_left -= 1
@@ -496,12 +496,12 @@ end
 
 function draw_imaginary_light()
 	if btn(🅾️) and lulu.select and lulu.lights_left > 0 then
-		circfill(ima_light.x, ima_light.y, ima_light.radius / 2, ima_light.color)
+		circfill(ima_light.x, ima_light.y, ima_light.radius, ima_light.color)
 		circ(lulu.x_g, lulu.y_g, lulu.ima_range, 12) --desinner le circle de ima_light
 		-- pset(ima_light.x,ima_light.y,8)
 	end
 	if pactual.using_black_light then
-		circfill(ima_light_bo.x, ima_light_bo.y, ima_light_bo.r / 2, ima_light_bo.c)
+		circfill(ima_light_bo.x, ima_light_bo.y, ima_light_bo.r, ima_light_bo.c)
 		circ(pactual.x_g, pactual.y_g, pactual.ima_range, ima_light_bo.c)
 	end
 end
@@ -509,18 +509,17 @@ end
 function draw_lights()
 	foreach(
 		lights, function(l)
-			sspr(12 * 8, 0, l.w, l.h, l.x, l.y, l.radius, l.radius)
-			circfill(l.x + l.radius/2, l.y + l.radius/2, l.radius / 2,10) 
-			circ(l.x + l.radius/2, l.y + l.radius/2, l.radius / 2, 6)
-			pset(l.x, l.y, 8)
+			-- sspr(12 * 8, 0, l.w, l.h, l.x, l.y, l.radius, l.radius)
+			circfill(l.x+l.radius, l.y+l.radius, l.radius,10) 
+			circ(l.x+l.radius, l.y+l.radius, l.radius, 6)
 		end
 	)
 	--black lights
 	foreach(
 		black_lights, function(bl)
 			pal(14,3+128,1)
-			circfill(bl.x, bl.y, bl.radius / 2, 14)
-			circ(bl.x, bl.y, bl.radius / 2, 13)
+			circfill(bl.x, bl.y, bl.radius, 14)
+			circ(bl.x, bl.y, bl.radius, 13)
 		end
 	)
 end
@@ -529,9 +528,9 @@ function draw_hades_turnoff()
 	if (hades.light_selected[1] != nil) and #lights > 0 then
 		--check if selected light already exists
 		local i = hades.light_selected[2] + 1
-		local x = lights[i].x + lights[i].radius/ 2
-		local y = lights[i].y+ lights[i].radius / 2
-		local r = lights[i].radius / 2
+		local x = lights[i].x + lights[i].radius
+		local y = lights[i].y+ lights[i].radius
+		local r = lights[i].radius
 		circfill(x, y, r, 8)
 	end
 end
@@ -574,8 +573,8 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 17, y = 12, radius = 40},
-				{x = 25, y = 12, radius = 40}
+				{x = 17, y = 12, radius = 20},
+				{x = 25, y = 12, radius = 20}
 			},
 			pos = 
 			{
@@ -597,8 +596,8 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 34, y = 9, radius = 48},
-				{x = 43, y = 9, radius = 64}
+				{x = 34, y = 9, radius = 24},
+				{x = 43, y = 9, radius = 32}
 			},
 			pos = 
 			{
@@ -620,8 +619,8 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 50, y = 8, radius = 38},
-				{x = 56, y = 8, radius = 46}
+				{x = 50, y = 8, radius = 19},
+				{x = 56, y = 8, radius = 23}
 			},
 			pos = 
 			{
@@ -643,9 +642,9 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 65, y = 8, radius = 32},
-				{x = 70, y = 0, radius = 48},
-				{x = 72, y = 8, radius = 32}
+				{x = 65, y = 8, radius = 16},
+				{x = 70, y = 0, radius = 24},
+				{x = 72, y = 8, radius = 16}
 			},
 			pos = 
 			{
@@ -667,8 +666,8 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 91, y = 7, radius = 48},
-				{x = 83, y = 6, radius = 32}
+				{x = 91, y = 7, radius = 24},
+				{x = 83, y = 6, radius = 16}
 			},
 			pos = 
 			{
@@ -690,10 +689,10 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 102, y = 1, radius = 32},
-				{x = 108, y = 5, radius = 48},
-				{x = 99, y = 6, radius = 32},
-				{x = 104, y = 12, radius = 48},
+				{x = 102, y = 1, radius = 16},
+				{x = 108, y = 5, radius = 24},
+				{x = 99, y = 6, radius = 16},
+				{x = 104, y = 12, radius = 24},
 			},
 			pos = 
 			{
@@ -715,10 +714,10 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 113, y = 13, radius = 32},
-				{x = 116, y = 13, radius = 32},
-				{x = 119, y = 13, radius = 32},
-				{x = 122, y = 9, radius = 32},
+				{x = 113, y = 13, radius = 16},
+				{x = 116, y = 13, radius = 16},
+				{x = 119, y = 13, radius = 16},
+				{x = 122, y = 9, radius = 16},
 			},
 			pos = 
 			{
@@ -756,7 +755,7 @@ end
 function next_room()
 	local x = room.x + 128
 	--TEST
-	x = 7 * 128
+	-- x = 7 * 128
 	local y = room.y
 	if (x >= 1024) then
 		x = 0
@@ -854,7 +853,7 @@ function init_objects()
 	ima_light_bo = {
 		x = 0,
 		y = 0,
-		r = 48,
+		r = 24,
 		c = 1
 	}
 	black_lights = {}
@@ -967,23 +966,23 @@ end
 
 --collisions
 function collision(p, o)
-	return not (p.x > o.x + 8
+	return not (p.x > o.x + 4
 				or p.y > o.y + 8
-				or p.x + 8 < o.x
-				or p.y + 8 < o.y)
+				or p.x + 4 < o.x
+				or p.y + 4 < o.y)
 end
 
 function collision_light(p, l)
 	local px = p.x + p.w / 2
 	local py = p.y + p.h / 2
-	local lx = l.x + l.radius / 2
-	local ly = l.y + l.radius / 2
+	local lx = l.x + l.radius
+	local ly = l.y + l.radius
 
 	local dx = px - lx
 	local dy = py - ly
 	local dist = sqrt(dx*dx + dy*dy)
 	-- print("dist: "..flr(dist), hades.x, hades.y - 10, 7)
-	return dist <= (l.radius + 6) / 2
+	return dist <= l.radius + 2
 end
 
 function collision_black_light(p, l)
@@ -997,7 +996,7 @@ function collision_black_light(p, l)
 	-- print("dist: "..flr(dist), pactual.x, pactual.y - 10, 7)
 	-- pset(rx, ry, 11)  -- centre du joueur
 	-- pset(lx, ly, 8)   -- centre du cercle
-	return dist <= l.radius / 2
+	return dist <= l.radius
 end
 
 __gfx__
