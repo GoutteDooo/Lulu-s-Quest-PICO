@@ -1107,6 +1107,11 @@ function draw_objects()
 	foreach(keys, function(k)
 		spr(57, k.x, k.y, 1, 1, false, false)
 	end)
+
+	--shield cristals
+	foreach(shield_cristals, function(sc)
+		spr(15, sc.x, sc.y, 1, 1, false, false)
+	end)
 end
 
 function create_black_orb(x, y,r)
