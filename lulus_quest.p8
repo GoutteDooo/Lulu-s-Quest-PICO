@@ -559,8 +559,14 @@ function draw_lights()
 
 	--shield
 	if lulu.shield.active then
-		circfill(lulu.x + 2, lulu.y + 2, lulu.shield.r, 8)
-		circ(lulu.x + 2, lulu.y + 2, lulu.shield.r, 7)
+		-- on interpole le rayon pour qu'il diminue avec le temps
+		local ratio = 1.2 - lulu.shield.timer / lulu.shield.time_set
+		local r = ceil(lulu.shield.r * ratio)
+		
+		local cx = lulu.x + lulu.w / 2
+		local cy = lulu.y + lulu.h / 2
+		circfill(cx, cy, r, 12)
+		circ(cx, cy, r, 7) 
 	end
 end
 
@@ -1111,7 +1117,6 @@ function draw_objects()
 	foreach(keys, function(k)
 		spr(57, k.x, k.y, 1, 1, false, false)
 	end)
-
 	--shield cristals
 	foreach(shield_cristals, function(sc)
 		spr(15, sc.x, sc.y, 1, 1, false, false)
