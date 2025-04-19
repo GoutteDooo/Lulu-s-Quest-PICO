@@ -62,6 +62,7 @@ end
 
 function init_player()
 	lulu = {
+		id = "lulu",
 		x = 1 * 8,
 		y = 13 * 8,
 		x_g = x,
@@ -82,9 +83,15 @@ function init_player()
 		ima_range = 6 * 8, --range of ima_light
 		lights_left = 1,
 		passed = false, --pass lvl
-		id = "lulu"
+		shield = {
+			timer = 0,
+			time_set = 300,
+			active = true,
+			r = 24,
+		}
 	}
 	hades = {
+		id = "hades",
 		x = 15 * 8,
 		y = 13 * 8,
 		x_g = x,
@@ -110,7 +117,6 @@ function init_player()
 		},
 		turnoffs_left = 1,
 		passed = false, --pass lvl
-		id = "hades"
 	}
 	keys_owned = 0
 	pactual = lulu
@@ -251,6 +257,21 @@ function update_player()
 			end
 		end
 
+	--shield of lulu
+	if lulu.shield.active then
+		lulu.shield.timer = lulu.shield.timer + 1 -- 30 fps (ex: 150 = 5 secondes)
+		lulu.in_light = true
+		if collision_black_light(hades, {x = lulu.x or 0, y = lulu.y or 0, r = lulu.shield.r - 4 or 0}) then
+			hades.in_light = true
+		end
+		if lulu.shield.timer > lulu.shield.time_set then
+			lulu.shield.active = false
+			lulu.shield.timer = 0
+			lulu.shield.time_set = 0
+		end
+	end
+
+		--CONDITIONS FOR LIGHTS
 	if (not lulu.in_light and not lulu.passed) or (hades.in_light and not hades.passed) or pactual.y >= room.h-1 then
 		if lives > 0 then
 			-- lives = lives - 1
@@ -333,6 +354,12 @@ function reinit_character()
 	pactual.g = false
 end
 
+function disable_shield()
+	lulu.shield.active = false
+	lulu.shield.timer = 0
+	lulu.shield.time_set = 0
+end
+
 -->8
 --map
 
@@ -348,7 +375,7 @@ function init_light()
 	ima_light = {
 		x = lulu.x + 4,
 		y = lulu.x + 4,
-		radius = 16,
+		r = 16,
 		color = 12
 	}
 	lights = {}
@@ -419,9 +446,9 @@ function update_light_lulu()
 	end
 
 	if btnp(❎) and lulu.select and lulu.lights_left > 0 then
-		local x = ima_light.x - ima_light.radius
-		local y = ima_light.y - ima_light.radius
-		create_light(x, y, ima_light.radius,"white",1,10)
+		local x = ima_light.x - ima_light.r
+		local y = ima_light.y - ima_light.r
+		create_light(x, y, ima_light.r,"white",1,10)
 		sfx(5)
 		lulu.lights_left -= 1
 	end
@@ -503,7 +530,7 @@ end
 
 function draw_imaginary_light()
 	if btn(🅾️) and lulu.select and lulu.lights_left > 0 then
-		circfill(ima_light.x, ima_light.y, ima_light.radius, ima_light.color)
+		circfill(ima_light.x, ima_light.y, ima_light.r, ima_light.color)
 		circ(lulu.x_g, lulu.y_g, lulu.ima_range, 12) --desinner le circle de ima_light
 		-- pset(ima_light.x,ima_light.y,8)
 	end
@@ -516,28 +543,34 @@ end
 function draw_lights()
 	foreach(
 		lights, function(l)
-			-- sspr(12 * 8, 0, l.w, l.h, l.x, l.y, l.radius, l.radius)
-			circfill(l.x+l.radius, l.y+l.radius, l.radius,l.color) 
-			circ(l.x+l.radius, l.y+l.radius, l.radius, 6)
+			-- sspr(12 * 8, 0, l.w, l.h, l.x, l.y, l.r, l.r)
+			circfill(l.x+l.r, l.y+l.r, l.r,l.color) 
+			circ(l.x+l.r, l.y+l.r, l.r, 6)
 		end
 	)
 	--black lights
 	foreach(
 		black_lights, function(bl)
 			pal(14,3+128,1)
-			circfill(bl.x, bl.y, bl.radius, 14)
-			circ(bl.x, bl.y, bl.radius, 13)
+			circfill(bl.x, bl.y, bl.r, 14)
+			circ(bl.x, bl.y, bl.r, 13)
 		end
 	)
+
+	--shield
+	if lulu.shield.active then
+		circfill(lulu.x + 2, lulu.y + 2, lulu.shield.r, 8)
+		circ(lulu.x + 2, lulu.y + 2, lulu.shield.r, 7)
+	end
 end
 
 function draw_hades_turnoff()
 	if (hades.light_selected[1] != nil) and #lights > 0 then
 		--check if selected light already exists
 		local i = hades.light_selected[2] + 1
-		local x = lights[i].x + lights[i].radius
-		local y = lights[i].y+ lights[i].radius
-		local r = lights[i].radius
+		local x = lights[i].x + lights[i].r
+		local y = lights[i].y+ lights[i].r
+		local r = lights[i].r
 		circfill(x, y, r, 8)
 	end
 end
@@ -547,7 +580,7 @@ function create_light(x, y, r, type, flag, color)
 		id = #lights,
 		x = x,
 		y = y,
-		radius = r,
+		r = r,
 		h = 32,
 		w = 32,
 		flag = flag or 1,
@@ -580,8 +613,8 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 17, y = 10, radius = 20},
-				{x = 25, y = 11, radius = 22}
+				{x = 17, y = 10, r = 20},
+				{x = 25, y = 11, r = 22}
 			},
 			pos = 
 			{
@@ -603,8 +636,8 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 34, y = 9, radius = 24},
-				{x = 43, y = 9, radius = 32}
+				{x = 34, y = 9, r = 24},
+				{x = 43, y = 9, r = 32}
 			},
 			pos = 
 			{
@@ -626,8 +659,8 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 50, y = 8, radius = 19},
-				{x = 56, y = 8, radius = 23}
+				{x = 50, y = 8, r = 19},
+				{x = 56, y = 8, r = 23}
 			},
 			pos = 
 			{
@@ -649,9 +682,9 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 65, y = 8, radius = 16},
-				{x = 70, y = 0, radius = 24},
-				{x = 72, y = 8, radius = 16}
+				{x = 65, y = 8, r = 16},
+				{x = 70, y = 0, r = 24},
+				{x = 72, y = 8, r = 16}
 			},
 			pos = 
 			{
@@ -673,8 +706,8 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 91, y = 7, radius = 24},
-				{x = 83, y = 6, radius = 16}
+				{x = 91, y = 7, r = 24},
+				{x = 83, y = 6, r = 16}
 			},
 			pos = 
 			{
@@ -696,10 +729,10 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 102, y = 1, radius = 16},
-				{x = 108, y = 5, radius = 24},
-				{x = 99, y = 6, radius = 12},
-				{x = 104, y = 12, radius = 24},
+				{x = 102, y = 1, r = 16},
+				{x = 108, y = 5, r = 24},
+				{x = 99, y = 6, r = 12},
+				{x = 104, y = 12, r = 24},
 			},
 			pos = 
 			{
@@ -721,10 +754,10 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 113, y = 13, radius = 16},
-				{x = 116, y = 13, radius = 16},
-				{x = 119, y = 13, radius = 16},
-				{x = 122, y = 9, radius = 16},
+				{x = 113, y = 13, r = 16},
+				{x = 116, y = 13, r = 16},
+				{x = 119, y = 13, r = 16},
+				{x = 122, y = 9, r = 16},
 			},
 			pos = 
 			{
@@ -750,9 +783,9 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 8, y = 17, radius = 16},
-				{x = 3, y = 21, radius = 16},
-				{x = 9, y = 22, radius = 16},
+				{x = 8, y = 17, r = 16},
+				{x = 3, y = 21, r = 16},
+				{x = 9, y = 22, r = 16},
 			},
 			pos = 
 			{
@@ -778,12 +811,12 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 22, y = 15, radius = 16},
-				{x = 15, y = 16, radius = 20},
-				{x = 19, y = 18, radius = 16},
-				{x = 25, y = 19, radius = 28},
-				{x = 19, y = 21, radius = 16},
-				{x = 21, y = 25, radius = 24},
+				{x = 22, y = 15, r = 16},
+				{x = 15, y = 16, r = 20},
+				{x = 19, y = 18, r = 16},
+				{x = 25, y = 19, r = 28},
+				{x = 19, y = 21, r = 16},
+				{x = 21, y = 25, r = 24},
 			},
 			pos = 
 			{
@@ -825,9 +858,9 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 35, y = 17, radius = 16},
-				{x = 35, y = 21, radius = 16},
-				{x = 44, y = 24, radius = 12},
+				{x = 35, y = 17, r = 16},
+				{x = 35, y = 21, r = 16},
+				{x = 44, y = 24, r = 12},
 			},
 			pos = 
 			{
@@ -846,6 +879,31 @@ function init_room()
 			},
 			black_orb = {
 				{x = 33, y = 19, r = 32},
+			}
+		},
+		--11
+		{
+			lights = 
+			{
+				{x = 51, y = 17, r = 16},
+			},
+			pos = 
+			{
+				lulu = {x = 52, y = 19},
+				hades = {x = 59, y = 19}
+			},
+			doors = 
+			{
+				lulu = {x = 55, y = 29},
+				hades = {x = 56, y = 29}
+			},
+			powers = 
+			{
+				lulu = 0,
+				hades = 0
+			},
+			shield_cristals = {
+				{x = 54, y = 19, timer = 60},
 			}
 		}
 	}
@@ -872,7 +930,7 @@ function next_room()
 		end
 	end
 	--TEST
-	x = 256
+	x = 384
 	y = 128
 	--END TEST
 	local w = x + 128
@@ -894,6 +952,7 @@ function create_room()
 	--characters
 	lulu.passed = false
 	hades.passed = false
+	disable_shield()
 	--doors
 	doors.lulu.x = rooms_data[i_room].doors["lulu"].x * 8
 	doors.lulu.y = rooms_data[i_room].doors["lulu"].y * 8
@@ -907,6 +966,10 @@ function create_room()
 	--powers
 	lulu.lights_left = rooms_data[i_room].powers["lulu"]
 	hades.turnoffs_left = rooms_data[i_room].powers["hades"]
+	--shield cristals
+	foreach(rooms_data[i_room].shield_cristals, function(sc)
+		add(shield_cristals, {x = sc.x * 8, y = sc.y * 8, timer = sc.timer})
+	end)
 end
 
 function new_room(id, x, y, w, h)
@@ -956,12 +1019,16 @@ function init_objects()
 	black_lights = {}
 	chests = {}
 	keys = {}
+	shield_cristals = {}
 end
 
 function update_objects()
 	-- When someone enter its door, passed will be turn on and character will disappear
 	if collision(pactual, pactual == lulu and doors.lulu or doors.hades) then
 		pactual.passed = true
+		if lulu.shield.active then
+			disable_shield()
+		end
 		if not door_sound_played then
 			sfx(2)
 			door_sound_played = true
@@ -992,12 +1059,23 @@ function update_objects()
 			c.check_lock = true
 		end
 	end)
+
 	--keys
 	foreach(keys, function(k)
 		if collision(pactual,k) then
 			sfx(2)
 			keys_owned += 1
 			del(keys,k)
+		end
+	end)
+
+	--shield cristals
+	foreach(shield_cristals, function(sc)
+		if collision(lulu,sc) then
+			sfx(5)
+			lulu.shield.active = true
+			lulu.shield.time_set = sc.timer
+			lulu.shield.timer = 0
 		end
 	end)
 end
@@ -1036,6 +1114,11 @@ function draw_objects()
 	foreach(keys, function(k)
 		spr(57, k.x, k.y, 1, 1, false, false)
 	end)
+
+	--shield cristals
+	foreach(shield_cristals, function(sc)
+		spr(15, sc.x, sc.y, 1, 1, false, false)
+	end)
 end
 
 function create_black_orb(x, y,r)
@@ -1062,7 +1145,7 @@ end
 function create_objects()
 	--create lights from new room
 	for l in all(rooms_data[i_room].lights) do
-		create_light(l.x * 8, l.y * 8, l.radius)
+		create_light(l.x * 8, l.y * 8, l.r)
 	end
 	--black orb
 	for bo in all(rooms_data[i_room].black_orb) do
@@ -1128,6 +1211,8 @@ end
 --helper functions
 
 function debug_print()
+	print("timer:"..lulu.shield.timer, pactual.x,pactual.y-10,11)
+	-- print("lvl: "..i_room, pactual.x,pactual.y-10,8)
 	-- if chests[1] != nil then
 	-- 	print("chests: "..chests[1].content.name, pactual.x,pactual.y-10,8)
 		-- print("x: "..chests[1].x, pactual.x,pactual.y-20,8)
@@ -1141,7 +1226,6 @@ function debug_print()
 	-- 		print("collides!", pactual.x, pactual.y - 10, 8)
 	-- 	end
 	-- end)
-	print("lvl: "..i_room, pactual.x,pactual.y-10,8)
 	-- for bl in all(black_lights) do
 	-- 	if collision_black_light(pactual, bl) then
 	-- 			print("coll!", pactual.x, pactual.y - 10, 8)
@@ -1183,19 +1267,19 @@ end
 function collision_light(p, l)
 	local px = p.x + p.w / 2
 	local py = p.y + p.h / 2
-	local lx = l.x + l.radius
-	local ly = l.y + l.radius
+	local lx = l.x + l.r
+	local ly = l.y + l.r
 
 	local dx = px - lx
 	local dy = py - ly
 	local dist = sqrt(dx*dx + dy*dy)
 	-- print("dist: "..flr(dist), hades.x, hades.y - 10, 7)
-	return dist <= l.radius + 2
+	return dist <= l.r + 2
 end
 
 function collision_black_light(p, l)
-	local lx = l.x + l.radius / l.radius
-	local ly = l.y + l.radius / l.radius
+	local lx = l.x + l.r / l.r
+	local ly = l.y + l.r / l.r
 	local rx = max(p.x, min(lx, p.x + p.w))
 	local ry = max(p.y, min(ly, p.y + p.h))
 	local dx = lx - rx
@@ -1204,7 +1288,7 @@ function collision_black_light(p, l)
 	-- print("dist: "..flr(dist), pactual.x, pactual.y - 10, 7)
 	-- pset(rx, ry, 11)  -- centre du joueur
 	-- pset(lx, ly, 8)   -- centre du cercle
-	return dist <= l.radius
+	return dist <= l.r
 end
 
 __gfx__
@@ -1224,19 +1308,19 @@ __gfx__
 00000000000000003b3333b300000000000000000000000000030000000300000000000000000000000000000000000000000000000000000000000000000000
 000000000000000033bbbb3300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000333333000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-66666666000a000000888000dddddddd088008800000000000045400000000000000000000000000000000009909909900000000000000000000000000000000
-6555555600aaa000088a8800dddccddd88888888000000000004640000000000000000000000a000000000009000000900000000000000000000000000000000
-655555560aa9aa0088a88880ddccccdd888888880808000000045400000000000000a000000a7a00888888880000000000000000000000000000000000000000
-65555556aa999aa08a888a80dccccccd888887888888800000046400000000000000a00000a777a0888888889000000900000000000000000000000000000000
-655555560aa9aa008888a880dccccccd8888778888888000000454000000000000aa7aa0000a7a00848888889000000900000000000000000000000000000000
-6555555600aaa000088a8800dccc7ccd0888888008880000000464000000a0000000a0000000a000888888880000000000000000000000000000000000000000
-65555556000a000000888000dcc77ccd008888000080000000045400000a7a000000a00000000000888888489000000900000000000000000000000000000000
+666666660009000000888000dddddddd088008800000000000045400000000000000000000000000000000009909909900000000000000000000000000000000
+65555556009a9000088a8800dddccddd88888888000000000004640000000000000000000000a000000000009000000900000000000000000000000000000000
+6555555609aaa90088a88880ddccccdd888888880808000000045400000000000000a000000a7a00888888880000000000000000000000000000000000000000
+655555569aaaaa908a888a80dccccccd888887888888800000046400000000000000a00000a777a0888888889000000900000000000000000000000000000000
+6555555609aaa9008888a880dccccccd8888778888888000000454000000000000aa7aa0000a7a00848888889000000900000000000000000000000000000000
+65555556009a9000088a8800dccc7ccd0888888008880000000464000000a0000000a0000000a000888888880000000000000000000000000000000000000000
+655555560009000000888000dcc77ccd008888000080000000045400000a7a000000a00000000000888888489000000900000000000000000000000000000000
 666666660000000000000000dcc77ccd0008800000000000000464000000a0000000000000000000888888889909909900000000000000000000000000000000
 00060000ccc0ccccccc0cccc5555555500000000000000000000000000000000000aa0000000000088888888aa0aa0aabb0bb0bb000000000000000000000000
 00006000cc0a0ccccc080ccc555885550000000000000000000000000999999004444440000a000088888888a000000ab000000b000000000000000000000000
-00060000c0a9a0ccc08a80cc55888855000000000000000000000000997444994666555400a9a000888488880000000000000000000000000000000000000000
-000060000a999a0c08a8a80c588888850000000000000000000000009744444946655554000a000088888888a000000ab000000b000000000000000000000000
-00060000c0a9a0ccc08a80cc588888850000000000000000000000009999999997444449000a000088888888a000000ab000000b000000000000000000000000
+00060000c0a7a0ccc08a80cc55888855000000000000000000000000997444994666555400a9a000888488880000000000000000000000000000000000000000
+000060000a777a0c08aaa80c588888850000000000000000000000009744444946655554000a000088888888a000000ab000000b000000000000000000000000
+00060000c0a7a0ccc08a80cc588888850000000000000000000000009999999997444449000a000088888888a000000ab000000b000000000000000000000000
 00006000cc0a0ccccc080ccc58887885000000000000000000000000974aa44997444449000aa000888888880000000000000000000000000000000000000000
 00060000ccc0ccccccc0cccc588778850000000000000000033333309744444997444449000a000088888848a000000ab000000b000000000000000000000000
 00006000cccccccccccccccc58877885000000000000000003bbbb3099999999999999990000000088888888aa0aa0aabb0bb0bb000000000000000000000000
@@ -1337,7 +1421,7 @@ __gfx__
 02020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202
 02020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020200000000000000000000000000000000
 __gff__
-0000000000000000000000000002020200000000000000000000000002020202810000000000000000000200020202020000000000000004000002000002020200000000000000010101010100010101000000000001010101010101000000010000000000010100010101010000000000000000000101010101010000000000
+0000000000000000000000000002020000000000000000000000000002020202810000000000000000000200020202020000000000000004000002000002020200000000000000010101010100010101000000000001010101010101000000010000000000010100010101010000000000000000000101010101010000000000
 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __map__
 59595959595959595959595959595f596959595f595959595959595959696969595959595959595959595959595959595959595959595959595959595959595920202020202020202020202020202020202020202020202020202020202020202020203a3a2020202020203a3a20202020202020202020202020202020202020
