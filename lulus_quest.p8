@@ -990,6 +990,7 @@ function init_objects()
 	black_lights = {}
 	chests = {}
 	keys = {}
+	shield_cristals = {}
 end
 
 function update_objects()
