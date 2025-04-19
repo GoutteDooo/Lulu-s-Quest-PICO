@@ -1038,6 +1038,14 @@ function update_objects()
 			del(keys,k)
 		end
 	end)
+	--shield cristals
+	foreach(shield_cristals, function(sc)
+		if collision(lulu,sc) then
+			sfx(2)
+			lulu.shield.active = true
+			lulu.shield.time_set = sc.timer
+		end
+	end)
 end
 
 --animations
