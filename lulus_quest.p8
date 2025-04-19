@@ -880,6 +880,31 @@ function init_room()
 			black_orb = {
 				{x = 33, y = 19, r = 32},
 			}
+		},
+		--11
+		{
+			lights = 
+			{
+				{x = 51, y = 17, r = 16},
+			},
+			pos = 
+			{
+				lulu = {x = 52, y = 19},
+				hades = {x = 59, y = 19}
+			},
+			doors = 
+			{
+				lulu = {x = 55, y = 29},
+				hades = {x = 56, y = 29}
+			},
+			powers = 
+			{
+				lulu = 0,
+				hades = 0
+			},
+			shield_cristals = {
+				{x = 54, y = 19, timer = 300},
+			}
 		}
 	}
 end
