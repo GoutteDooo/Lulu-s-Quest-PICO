@@ -62,6 +62,7 @@ end
 
 function init_player()
 	lulu = {
+		id = "lulu",
 		x = 1 * 8,
 		y = 13 * 8,
 		x_g = x,
@@ -82,9 +83,15 @@ function init_player()
 		ima_range = 6 * 8, --range of ima_light
 		lights_left = 1,
 		passed = false, --pass lvl
-		id = "lulu"
+		shield = {
+			timer = 0,
+			time_set = 0,
+			active = false,
+			r = 24,
+		}
 	}
 	hades = {
+		id = "hades",
 		x = 15 * 8,
 		y = 13 * 8,
 		x_g = x,
@@ -110,7 +117,6 @@ function init_player()
 		},
 		turnoffs_left = 1,
 		passed = false, --pass lvl
-		id = "hades"
 	}
 	keys_owned = 0
 	pactual = lulu
@@ -251,6 +257,18 @@ function update_player()
 			end
 		end
 
+	--shield of lulu
+	if lulu.shield.active then
+		lulu.shield.timer = lulu.shield.timer + 0.5 -- 0.5 = 1 frame / 60 fps (ex : 300 = 5 secondes)
+		lulu.in_light = true
+		if lulu.shield.timer > lulu.shield.time_set then
+			lulu.shield.active = false
+			lulu.shield.timer = 0
+			lulu.shield.time_set = 0
+		end
+	end
+
+		--CONDITIONS FOR LIGHTS
 	if (not lulu.in_light and not lulu.passed) or (hades.in_light and not hades.passed) or pactual.y >= room.h-1 then
 		if lives > 0 then
 			-- lives = lives - 1
@@ -529,6 +547,12 @@ function draw_lights()
 			circ(bl.x, bl.y, bl.radius, 13)
 		end
 	)
+
+	--shield
+	if lulu.shield.active then
+		circfill(lulu.x_g, lulu.y_g, lulu.shield.r, 8)
+		circ(lulu.x_g, lulu.y_g, lulu.shield.r, 7)
+	end
 end
 
 function draw_hades_turnoff()
