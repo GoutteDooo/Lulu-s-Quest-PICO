@@ -119,6 +119,12 @@ function init_player()
 		},
 		turnoffs_left = 1,
 		passed = false, --pass lvl
+		shield = {
+			timer = 0,
+			time_set = 5*30,
+			active = true,
+			r = 16,
+		}
 	}
 	keys_owned = 0
 	pactual = lulu
@@ -251,29 +257,38 @@ function update_player()
 	end
 
 	--maybe pactual has collide with a light, but if it is in black light, it cancels the condition
-		for bl in all(black_lights) do
-			if collision_black_light(pactual, bl) then
-				if pactual == lulu then
-					pactual.in_light = true
-					break
-				elseif pactual == hades then
-					pactual.in_light = false
-					break
-				end
+	for bl in all(black_lights) do
+		if collision_black_light(pactual, bl) then
+			if pactual == lulu then
+				pactual.in_light = true
+				break
+			elseif pactual == hades then
+				pactual.in_light = false
+				break
 			end
 		end
+	end
 
 	--shield of lulu
-		if lulu.shield.active then
-			lulu.shield.timer = lulu.shield.timer + 1 -- 30 fps (ex: 150 = 5 secondes)
-			lulu.in_light = true
-			if collision_black_light(hades, {x = lulu.x or 0, y = lulu.y or 0, r = lulu.shield.r - 4 or 0}) then
-				hades.in_light = true
-			end
-			if lulu.shield.timer > lulu.shield.time_set then
-				disable_shield()
-			end
+	if lulu.shield.active then
+		lulu.shield.timer = lulu.shield.timer + 1 -- 30 fps (ex: 150 = 5 secondes)
+		lulu.in_light = true
+		if collision_black_light(hades, {x = lulu.x or 0, y = lulu.y or 0, r = lulu.shield.r - 4 or 0}) then
+			hades.in_light = true
 		end
+		if lulu.shield.timer > lulu.shield.time_set then
+			disable_shield(lulu)
+		end
+	end
+
+	--shield of hades
+	if hades.shield.active then
+		hades.shield.timer = hades.shield.timer + 1 -- 30 fps (ex: 150 = 5 secondes)
+		hades.in_light = false
+		if hades.shield.timer > hades.shield.time_set then
+			disable_shield(hades)
+		end
+	end
 
 		--CONDITIONS FOR LIGHTS
 	if (not lulu.in_light and not lulu.passed) or (hades.in_light and not hades.passed) or pactual.y >= room.h-1 then
@@ -358,10 +373,10 @@ function reinit_character()
 	pactual.g = false
 end
 
-function disable_shield()
-	lulu.shield.active = false
-	lulu.shield.timer = 0
-	lulu.shield.time_set = 0
+function disable_shield(character)
+	character.shield.active = false
+	character.shield.timer = 0
+	character.shield.time_set = 0
 end
 
 -->8
@@ -570,6 +585,18 @@ function draw_lights()
 		local cx = lulu.x + lulu.w / 2
 		local cy = lulu.y + lulu.h / 2
 		circfill(cx, cy, r, 12)
+		circ(cx, cy, r, 7) 
+	end
+
+	if hades.shield.active then
+		-- on interpole le rayon pour qu'il diminue avec le temps
+		local ratio = 1.2 - hades.shield.timer / hades.shield.time_set
+		local r = ceil(hades.shield.r * ratio)
+		
+		local cx = hades.x + hades.w / 2
+		local cy = hades.y + hades.h / 2
+		pal(14,3+128,1)
+		circfill(cx, cy, r, 14)
 		circ(cx, cy, r, 7) 
 	end
 end
