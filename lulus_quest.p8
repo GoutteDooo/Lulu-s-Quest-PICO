@@ -291,14 +291,14 @@ function update_player()
 	end
 
 	--gates
-	-- foreach(gates, function(g)
-	-- 	if collision(pactual,g) then
-	-- 		if not g.opened then
-	-- 			pactual.x = pactual.x_g - 8
-	-- 			pactual.y = pactual.y_g
-	-- 		end
-	-- 	end
-	-- end)
+	foreach(gates, function(g)
+		if collision(pactual,g) then
+			if not g.opened then
+				pactual.x = pactual.x_g - 8
+				pactual.y = pactual.y_g
+			end
+		end
+	end)
 
 		--CONDITIONS FOR LIGHTS
 	if (not lulu.in_light and not lulu.passed) or (hades.in_light and not hades.passed) or pactual.y >= room.h-1 then
