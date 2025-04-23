@@ -1045,7 +1045,8 @@ function create_room()
 	hades.passed = false
 	lulu.in_light = true
 	hades.in_light = false
-	disable_shield()
+	disable_shield(lulu)
+	disable_shield(hades)
 	--doors
 	doors.lulu.x = rooms_data[i_room].doors["lulu"].x * 8
 	doors.lulu.y = rooms_data[i_room].doors["lulu"].y * 8
@@ -1116,7 +1117,10 @@ function update_objects()
 	if collision(pactual, pactual == lulu and doors.lulu or doors.hades) then
 		pactual.passed = true
 		if lulu.passed and lulu.shield.active then
-			disable_shield()
+			disable_shield(lulu)
+		end
+		if hades.passed and hades.shield.active then
+			disable_shield(hades)
 		end
 		if not door_sound_played then
 			sfx(2)
@@ -1171,6 +1175,19 @@ function update_objects()
 				lulu.shield.time_set = sc.timer * 30
 				lulu.shield.timer = 0
 				lulu.shield.r = sc.r
+			end
+		end
+		if collision(hades,sc) then
+			sfx(5)			
+			if not hades.shield.active or hades.shield.timer > hades.shield.time_set * 0.8 then
+				if sc.lives then sc.lives = sc.lives - 1 end
+				if sc.lives and sc.lives <= 0 then
+					del(shield_cristals,sc)
+				end
+				hades.shield.active = true
+				hades.shield.time_set = sc.timer * 30
+				hades.shield.timer = 0
+				hades.shield.r = sc.r
 			end
 		end
 	end)
