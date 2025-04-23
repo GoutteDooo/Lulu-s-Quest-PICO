@@ -290,6 +290,16 @@ function update_player()
 		end
 	end
 
+	--gates
+	-- foreach(gates, function(g)
+	-- 	if collision(pactual,g) then
+	-- 		if not g.opened then
+	-- 			pactual.x = pactual.x_g - 8
+	-- 			pactual.y = pactual.y_g
+	-- 		end
+	-- 	end
+	-- end)
+
 		--CONDITIONS FOR LIGHTS
 	if (not lulu.in_light and not lulu.passed) or (hades.in_light and not hades.passed) or pactual.y >= room.h-1 then
 		if lives > 0 then
@@ -995,7 +1005,7 @@ function init_room()
 				{x = 75, y = 28}
 			},
 			gates = {
-				{x = 76, y = 30}
+				{x = 76, y = 30, opened = false}
 			}
 		}
 	}
@@ -1196,10 +1206,11 @@ function update_objects()
 	--gates
 	foreach(gates, function(g)
 		if collision(pactual,g) then
-			if keys_owned > 0 and g.opened == false then
+			if keys_owned > 0 and not g.opened then
 				sfx(2)
 				keys_owned -= 1
 				g.opened = true
+			end
 		end
 	end)
 end
@@ -1245,7 +1256,7 @@ function draw_objects()
 	end)
 	--gates
 	foreach(gates, function(g)
-		spr(g.opened and 53 or 52, g.x, g.y, 1, 1, false, false)
+		spr(not g.opened and 53 or 52, g.x, g.y, 1, 1, false, false)
 	end)
 end
 
@@ -1358,8 +1369,15 @@ end
 
 function debug_print()
 	-- print("timer:"..lulu.shield.timer, pactual.x,pactual.y-10,11)
-		print("active:"..(lulu.shield.active and 'true' or 'false'), lulu.x,lulu.y-10,11) 
-		print("delay:"..delay_switch, lulu.x,lulu.y-20,11)
+		-- print("active:"..(lulu.shield.active and 'true' or 'false'), lulu.x,lulu.y-10,11) 
+		-- print("delay:"..delay_switch, lulu.x,lulu.y-20,11)
+	foreach(gates, function(g)
+		if collision(pactual,g) then
+			print("gate: "..g.x, pactual.x-28,pactual.y-10,8)
+			print("opened: "..(g.opened and "true" or "false"), pactual.x-28,pactual.y-20,8)
+			print("keys: "..keys_owned, pactual.x-28,pactual.y-30,8)
+		end
+	end)
 	-- print("lvl: "..i_room, pactual.x,pactual.y-10,8)
 	-- if chests[1] != nil then
 	-- 	print("chests: "..chests[1].content.name, pactual.x,pactual.y-10,8)
