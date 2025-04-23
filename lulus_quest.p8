@@ -957,7 +957,7 @@ function init_room()
 					locked = true,
 					check_lock = false,
 					content = {
-						name = "black_orb",
+						name = "turnoff",
 						r = 8,
 						x = 74,
 						y = 20
@@ -1258,6 +1258,10 @@ function open_chest(c)
 	if c.content.name == "black_orb" then
 		create_black_orb(c.content.x * 8, c.content.y * 8, c.content.r)
 	end
+	if c.content.name == "turnoff" then
+		hades.turnoffs_left = hades.turnoffs_left + 1
+	end
+
 end
 
 function create_key(x, y)
