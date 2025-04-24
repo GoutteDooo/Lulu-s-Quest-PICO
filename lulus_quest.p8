@@ -1043,6 +1043,9 @@ function init_room()
 			},
 			shield_cristals = {
 				{x = 85, y = 17, timer = 10, r = 16, lives = 1},
+			},
+			butterflies = {
+				{x = 83, y = 28, x1 = 83, y1 = 27, x2 = 91, y2 = 28, target = 2, speed = 1, r = 16, light = "white"},
 			}
 		}
 	}
@@ -1159,6 +1162,7 @@ function init_objects()
 	keys = {}
 	shield_cristals = {}
 	gates = {}
+	butterflies = {}
 end
 
 function update_objects()
@@ -1250,6 +1254,10 @@ function update_objects()
 			end
 		end
 	end)
+	--butterflies
+	for b in all(butterflies) do
+		update_butterfly(b)
+	end
 end
 
 --animations
@@ -1295,6 +1303,10 @@ function draw_objects()
 	foreach(gates, function(g)
 		spr(not g.opened and 53 or 52, g.x, g.y, 1, 1, false, false)
 	end)
+	--butterflies
+	foreach(butterflies, function(b)
+		spr(26, b.x, b.y)
+	end)
 end
 
 function create_black_orb(x, y,r)
@@ -1321,6 +1333,9 @@ function delete_objects()
 	end
 	for g in all(gates) do
 		del(gates,g)
+	end
+	for b in all(butterflies) do
+		del(butterflies,b)
 	end
 end
 
@@ -1349,7 +1364,39 @@ function create_objects()
 	foreach(rooms_data[i_room].gates, function(g)
 		add(gates, {x = g.x * 8, y = g.y * 8})
 	end)
+	--butterflies
+	foreach(rooms_data[i_room].butterflies, function(b)
+		add(butterflies, {x = b.x * 8, y = b.y * 8, x1 = b.x1 * 8, y1 = b.y1 * 8, x2 = b.x2 * 8, y2 = b.y2 * 8, target = b.target, speed = b.speed, r = b.r, light = b.light})
+	end)
 end
+
+-->8
+--butterflies
+
+function update_butterfly(b)
+	-- récupérer la cible actuelle
+	local tx = b.target == 1 and b.x1 or b.x2
+	local ty = b.target == 1 and b.y1 or b.y2
+
+	-- direction
+	local dx = tx - b.x
+	local dy = ty - b.y
+
+	-- distance à la cible
+	local dist = sqrt(dx*dx + dy*dy)
+
+	-- si proche, on change de direction
+	if dist < b.speed then
+		b.x = tx
+		b.y = ty
+		b.target = (b.target == 1) and 2 or 1
+	else
+		-- interpolation vers la cible
+		b.x += (dx / dist) * b.speed
+		b.y += (dy / dist) * b.speed
+	end
+end
+
 
 -->8
 --chests
@@ -1524,8 +1571,8 @@ __gfx__
 00000000000000000333333000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 000000000000000033bbbb3300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000003b3333b300000000000000000000000000030000000300000000000000000000000000000000000000000000000000000000000000000000
-00000000000000003b3bb3b300000000000000000000000000393000003a30000000000000000000000000000000000000000000000000000000000000000000
-00000000000000003b3bb3b300000000000000000000000000393000003a30000000000000000000000000000000000000000000000000000000000000000000
+00000000000000003b3bb3b300000000000000000000000000393000003a3000000000000000000007070a000000000000000000000000000000000000000000
+00000000000000003b3bb3b300000000000000000000000000393000003a3000000000000000000000444a400000000000000000000000000000000000000000
 00000000000000003b3333b300000000000000000000000000030000000300000000000000000000000000000000000000000000000000000000000000000000
 000000000000000033bbbb3300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000333333000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000

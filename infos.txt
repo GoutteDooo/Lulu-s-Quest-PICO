@@ -3,3 +3,6 @@ longueur saut : 7x
 
 hades:
 hauteur saut : 3x
+
+butterflies:
+lights : "white" / "black"
