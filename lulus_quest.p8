@@ -223,6 +223,15 @@ function update_player()
 				pactual.in_light = true
 				break
 			end
+			if b.light == "black" then
+				if pactual == lulu then
+					pactual.in_light = true
+					break
+				elseif pactual == hades then
+					pactual.in_light = false
+					break
+				end	
+			end
 		end
 	end
 
@@ -1409,20 +1418,16 @@ end
 
 function draw_butterfly(b)
 	-- couleur personnalisれたe par type
-	if b.light == "white" then
-		pal(14,3+128,1)
-	else
+	if b.light == "black" then
 		pal(14,3+128,1)
 	end		
-
-	circfill(b.x + 4, b.y + 4, b.r, b.light == "white" and 9 or 13)
-	circ(b.x + 4, b.y + 4, b.r, b.light == "white" and 6 or 13)
+	local light_c = b.light == "white" and 9 or 14
+	local circ_c = b.light == "white" and 6 or 13
+	circfill(b.x + 4, b.y + 4, b.r, light_c)
+	circ(b.x + 4, b.y + 4, b.r, circ_c)
 
 	-- sprite papillon
 	spr(26, b.x, b.y)
-
-	-- reset palette
-	pal()
 end
 
 
