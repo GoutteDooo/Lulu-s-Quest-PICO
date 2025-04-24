@@ -20,7 +20,7 @@ function _init()
 	delay_switch = dflt_delay_switch
 	lives = 3
 	bo_spr = 22
-	music(17)
+	music(10)
 	--DEBUG
 	debug_light = false
 	--TEST
