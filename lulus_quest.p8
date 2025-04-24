@@ -45,6 +45,9 @@ function _draw()
 	map(0, 0, 0, 0, 128, 128, 7)
 	foreach(butterflies, function(b)
 		draw_butterfly(b)
+	end)	
+	foreach(gates, function(g)
+		draw_gates(g)
 	end)
 	draw_player()
 	-- line()
@@ -610,7 +613,9 @@ function draw_lights()
 			circ(bl.x, bl.y, bl.r, 13)
 		end
 	)
+end
 
+function draw_shields()
 	--shield
 	if lulu.shield.active then
 		-- on interpole le rayon pour qu'il diminue avec le temps
@@ -1054,7 +1059,7 @@ function init_room()
 			powers = 
 			{
 				lulu = 1,
-				hades = 1
+				hades = 0
 			},
 			keys = {
 				{x = 95, y = 30},
@@ -1062,17 +1067,17 @@ function init_room()
 			},
 			gates = {
 				{x = 81, y = 30, opened = false},
-				{x = 85, y = 19, opened = false},
+				{x = 86, y = 19, opened = false},
 			},
 			shield_cristals = {
 				{x = 85, y = 17, timer = 10, r = 16, lives = 1},
-				{x = 84, y = 28, timer = 10, r = 8, lives = 1},
-				{x = 90, y = 17, timer = 10, r = 8, lives = 1},
+				{x = 84, y = 28, timer = 10, r = 16, lives = 1},
+				{x = 90, y = 17, timer = 10, r = 16, lives = 1},
 			},
 			butterflies = {
 				{x = 81, y = 30, x1 = 81, y1 = 30, x2 = 81, y2 = 16, target = 2, speed = 1, r = 12, light = "white", spr_flip = true},
-				{x = 87, y = 19, x1 = 82, y1 = 19, x2 = 92, y2 = 19, target = 2, speed = 0.5, r = 16, light = "black", spr_flip = true},
-				{x = 82, y = 23, x1 = 82, y1 = 23, x2 = 92, y2 = 23, target = 2, speed = 0.5, r = 16, light = "black", spr_flip = true},
+				{x = 87, y = 19, x1 = 83, y1 = 19, x2 = 91, y2 = 19, target = 2, speed = 0.5, r = 16, light = "black", spr_flip = true},
+				{x = 82, y = 23, x1 = 82, y1 = 23, x2 = 92, y2 = 23, target = 2, speed = 0.5, r = 24, light = "black", spr_flip = true},
 				{x = 83, y = 27, x1 = 83, y1 = 27, x2 = 91, y2 = 28, target = 2, speed = 1, r = 12, light = "white", spr_flip = true},
 			}
 		}
@@ -1310,6 +1315,12 @@ function draw_objects()
 	spr(d_hades, doors.hades.x, doors.hades.y, 1, 1, flip, false)
 	spr(d_hades, doors.hades.x, doors.hades.y + 8, 1, 1, not flip, true)
 
+	--butterflies
+	foreach(butterflies, function(b)
+		draw_butterfly_light(b)
+	end)
+	--shields
+	draw_shields()
 	--chests
 	foreach(chests, function(c)
 		if c.opened then
@@ -1327,14 +1338,7 @@ function draw_objects()
 		if sc.lives then print(sc.lives, sc.x + 8, sc.y - 2, 11) end
 		spr(15, sc.x, sc.y, 1, 1, false, false)
 	end)
-	--gates
-	foreach(gates, function(g)
-		spr(not g.opened and 53 or 52, g.x, g.y, 1, 1, false, false)
-	end)
-	--butterflies
-	foreach(butterflies, function(b)
-		draw_butterfly_light(b)
-	end)
+	--gates & butterflies in _draw fct
 end
 
 function create_black_orb(x, y,r)
@@ -1398,6 +1402,11 @@ function create_objects()
 	end)
 end
 
+--gates
+function draw_gates(g)
+		spr(not g.opened and 53 or 52, g.x, g.y, 1, 1, false, false)
+	end
+
 -->8
 --butterflies
 
@@ -1439,7 +1448,7 @@ end
 function draw_butterfly_light(b)
 	if b.light == "black" then
 		pal(14,3+128,1)
-	end		
+	end
 	local light_c = b.light == "white" and 9 or 14
 	local circ_c = b.light == "white" and 6 or 13
 	circfill(b.x, b.y, b.r, light_c)
