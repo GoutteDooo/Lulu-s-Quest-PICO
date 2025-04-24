@@ -1063,7 +1063,7 @@ function init_room()
 				{x = 85, y = 17, timer = 10, r = 16, lives = 1},
 			},
 			butterflies = {
-				{x = 83, y = 28, x1 = 83, y1 = 27, x2 = 91, y2 = 28, target = 2, speed = 1, r = 16, light = "white"},
+				{x = 83, y = 28, x1 = 83, y1 = 27, x2 = 91, y2 = 28, target = 2, speed = 1, r = 16, light = "white", spr_flip = true},
 			}
 		}
 	}
@@ -1414,6 +1414,9 @@ function update_butterfly(b)
 		b.x += (dx / dist) * b.speed
 		b.y += (dy / dist) * b.speed
 	end
+
+	-- flip sprite
+	b.spr_flip = dx > 0 and true or false
 end
 
 function draw_butterfly(b)
@@ -1427,7 +1430,7 @@ function draw_butterfly(b)
 	circ(b.x + 4, b.y + 4, b.r, circ_c)
 
 	-- sprite papillon
-	spr(26, b.x, b.y)
+	spr(26, b.x, b.y, 1,1, b.spr_flip)
 end
 
 
