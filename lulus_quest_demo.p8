@@ -16,7 +16,7 @@ function _init()
 	room_transition_pending = false
 	i_room = 0
 	is_in_switch = false
-	dflt_delay_switch = 3 --3 frames
+	dflt_delay_switch = 5 --5 frames
 	delay_switch = dflt_delay_switch
 	lives = 3
 	bo_spr = 22
