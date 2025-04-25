@@ -1512,16 +1512,17 @@ end
 --helper functions
 
 function debug_print()
+	print("lvl: "..i_room, room.x+50,room.y+10,11)
 	-- print("timer:"..lulu.shield.timer, pactual.x,pactual.y-10,11)
 		-- print("active:"..(lulu.shield.active and 'true' or 'false'), lulu.x,lulu.y-10,11) 
 		-- print("delay:"..delay_switch, lulu.x,lulu.y-20,11)
-	foreach(gates, function(g)
-		if collision(pactual,g) then
-			print("gate: "..g.x, pactual.x-28,pactual.y-10,8)
-			print("opened: "..(g.opened and "true" or "false"), pactual.x-28,pactual.y-20,8)
-			print("keys: "..keys_owned, pactual.x-28,pactual.y-30,8)
-		end
-	end)
+	-- foreach(gates, function(g)
+	-- 	if collision(pactual,g) then
+	-- 		print("gate: "..g.x, pactual.x-28,pactual.y-10,8)
+	-- 		print("opened: "..(g.opened and "true" or "false"), pactual.x-28,pactual.y-20,8)
+	-- 		print("keys: "..keys_owned, pactual.x-28,pactual.y-30,8)
+	-- 	end
+	-- end)
 	-- print("lvl: "..i_room, pactual.x,pactual.y-10,8)
 	-- if chests[1] != nil then
 	-- 	print("chests: "..chests[1].content.name, pactual.x,pactual.y-10,8)
