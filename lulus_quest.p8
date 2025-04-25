@@ -80,6 +80,7 @@ function init_player()
 		dx = 0,
 		dy = 0,
 		g = false,
+		gravity = 0.20,
 		default_sprite = 1,
 		sprite = 1,
 		sprite_hide = 3,
@@ -109,6 +110,7 @@ function init_player()
 		dx = 0,
 		dy = 0,
 		g = false,
+		gravity = 0.13,
 		default_sprite = 5,
 		sprite = 5,
 		sprite_hide = 7,
@@ -135,8 +137,9 @@ function init_player()
 	--globals to both
 	keys_owned = 0
 	pactual = lulu
-	friction = 0.5
-	accel = 2
+	friction = 0.7
+	accel = 1
+	falling = 2.5
 end
 
 function draw_player()
@@ -154,6 +157,11 @@ function draw_player()
 		spr(hades.sprite, hades.x, hades.y, 1, 1, hades.flipx)
 		palt()
 	end
+
+	pset(pactual.x + 9, pactual.y + 7, 8)
+	pset(pactual.x + 9, pactual.y, 8)
+	pset(pactual.x -1, pactual.y + 7, 8)
+	pset(pactual.x - 1, pactual.y, 8)
 end
 
 function update_player()
@@ -346,7 +354,7 @@ function move_characters()
 	end
 	if btnp(⬆️) then
 		if pactual.g then
-			pactual.dy = -2.5
+			pactual.dy = -falling
 			-- sfx(0,-1,0,12)
 			sfx(SFX[1][1],SFX[1][2],SFX[1][3],SFX[1][4])
 		end
@@ -354,12 +362,12 @@ function move_characters()
 	pactual.y += pactual.dy
 	pactual.dx *= friction
 	if pactual == lulu then
-		pactual.dy += 0.20
+		pactual.dy += lulu.gravity
 	else
-		pactual.dy += 0.13
+		pactual.dy += hades.gravity
 	end
 
-	if check_flag(0, pactual.x + 3, pactual.y + 8) or check_flag(0, pactual.x + 5, pactual.y + 8) then
+	if check_flag(0, pactual.x + 3, pactual.y + 8) or check_flag(0, pactual.x + 5, pactual.y + 8) then --bottom
 		pactual.g = true
 		pactual.dy = 0
 		pactual.y = flr(pactual.y / 8) * 8
@@ -367,16 +375,16 @@ function move_characters()
 		pactual.g = false
 	end
 
-	if pactual.dx > 0 then
-		if not check_flag(0, pactual.x + 9, pactual.y + 7) and not check_flag(0, pactual.x + 9, pactual.y) then
+	if pactual.dx > 0 then --right
+		if not check_flag(0, pactual.x + 9, pactual.y + 6) and not check_flag(0, pactual.x + 9, pactual.y + 2) then
 			pactual.x += pactual.dx
 		end
-	elseif pactual.dx < 0 then
-		if not check_flag(0, pactual.x - 1, pactual.y + 7) and not check_flag(0, pactual.x - 1, pactual.y) then
+	elseif pactual.dx < 0 then --left
+		if not check_flag(0, pactual.x - 1, pactual.y + 6) and not check_flag(0, pactual.x - 1, pactual.y + 2) then
 			pactual.x += pactual.dx
 		end
 	end
-	--another security check in case of accel
+	-- another security check in case of accel
 	if check_flag(0, pactual.x + 7, pactual.y + 7) then
 		pactual.x -= 1
 	end
@@ -385,7 +393,7 @@ function move_characters()
 		pactual.x += 1
 	end
 
-	if check_flag(0, pactual.x + 1, pactual.y) or check_flag(0, pactual.x + 6, pactual.y) then
+	if check_flag(0, pactual.x + 1, pactual.y + 1) or check_flag(0, pactual.x + 6, pactual.y + 1) then --top
 		pactual.dy = 0
 		pactual.y += 1
 	end
