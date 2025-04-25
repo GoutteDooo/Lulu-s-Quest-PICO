@@ -80,7 +80,8 @@ function init_player()
 		dx = 0,
 		dy = 0,
 		g = false,
-		gravity = 0.19,
+		gravity = 0.18,
+		is_jumping = false,
 		default_sprite = 1,
 		sprite = 1,
 		sprite_hide = 3,
@@ -110,7 +111,8 @@ function init_player()
 		dx = 0,
 		dy = 0,
 		g = false,
-		gravity = 0.12,
+		gravity = 0.11,
+		is_jumping = false,
 		default_sprite = 5,
 		sprite = 5,
 		sprite_hide = 7,
@@ -139,6 +141,7 @@ function init_player()
 	pactual = lulu
 	friction = 0.7
 	accel = 1
+	accel_air = 0.75
 	jumping = 2.5
 	max_dx = 2.2
 end
@@ -351,16 +354,25 @@ function move_characters()
 	if btn(➡️) then move += 1 pactual.flipx = false end
 	if btnp(⬆️) and pactual.g then
 		pactual.dy = -jumping
+		pactual.is_jumping = true
 		sfx(unpack(SFX[1]))
 	end
+	if not btn(⬆️) and pactual.is_jumping and pactual.dy < 0 then
+		pactual.dy = pactual.dy * 0.5
+		pactual.is_jumping = false
+	end
+
+	local accel = pactual.g and accel or accel_air
 
 	-- PHYSIQUE
+	-- dx
 	pactual.dx += move * accel
 	pactual.dx *= friction
 	--limit left/right speed
 	pactual.dx = mid(-max_dx, pactual.dx, max_dx)
 	--cut deceleration when stop moving
 	if pactual.dx < 0.1 and pactual.dx > -0.1 then pactual.dx = 0 end
+	--dy
 	pactual.dy += (pactual == lulu and lulu.gravity or hades.gravity)
 	pactual.y += pactual.dy
 
@@ -370,6 +382,7 @@ function move_characters()
 		or check_flag(0, pactual.x + 5, pactual.y + pactual.h)
 	if grounded then
 		pactual.g = true
+		pactual.is_jumping = false
 		pactual.dy = 0
 		pactual.y = flr(pactual.y / pactual.h) * pactual.h
 	else
@@ -380,12 +393,12 @@ function move_characters()
 	if pactual.dx > 0 then
 		if not check_flag(0, pactual.x + 8, pactual.y + 6)
 		and not check_flag(0, pactual.x + 8, pactual.y + 2) then
-			pactual.x = pactual.x + pactual.dx
+			pactual.x += pactual.dx
 		end
 	elseif pactual.dx < 0 then
-		if not check_flag(0, pactual.x, pactual.y + 6)
+		if not check_flag(0, pactual.x - 1, pactual.y + 6)
 		and not check_flag(0, pactual.x - 1, pactual.y + 2) then
-			pactual.x = pactual.x + pactual.dx
+			pactual.x += pactual.dx
 		end
 	end
 
@@ -1119,8 +1132,8 @@ function next_room()
 		end
 	end
 	--TEST
-	-- x = 640
-	-- y = 128
+	x = 512
+	y = 128
 	--END TEST
 	local w = x + 128
 	local h = y + 128
