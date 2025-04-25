@@ -80,7 +80,6 @@ function init_player()
 		dx = 0,
 		dy = 0,
 		g = false,
-		gravity = 0.20,
 		default_sprite = 1,
 		sprite = 1,
 		sprite_hide = 3,
@@ -94,8 +93,8 @@ function init_player()
 		passed = false, --pass lvl
 		shield = {
 			timer = 0,
-			time_set = 5*30,
-			active = true,
+			time_set = 0,
+			active = false,
 			r = 16,
 		}
 	}
@@ -110,7 +109,6 @@ function init_player()
 		dx = 0,
 		dy = 0,
 		g = false,
-		gravity = 0.13,
 		default_sprite = 5,
 		sprite = 5,
 		sprite_hide = 7,
@@ -129,8 +127,8 @@ function init_player()
 		passed = false, --pass lvl
 		shield = {
 			timer = 0,
-			time_set = 5*30,
-			active = true,
+			time_set = 0,
+			active = false,
 			r = 16,
 		}
 	}
@@ -158,10 +156,10 @@ function draw_player()
 		palt()
 	end
 
-	pset(pactual.x + 9, pactual.y + 7, 8)
-	pset(pactual.x + 9, pactual.y, 8)
-	pset(pactual.x -1, pactual.y + 7, 8)
-	pset(pactual.x - 1, pactual.y, 8)
+	-- pset(pactual.x + 9, pactual.y + 6, 8)
+	-- pset(pactual.x + 9, pactual.y + 2, 8)
+	-- pset(pactual.x - 1, pactual.y + 6, 8)
+	-- pset(pactual.x - 1, pactual.y + 2, 8)
 end
 
 function update_player()
@@ -362,9 +360,9 @@ function move_characters()
 	pactual.y += pactual.dy
 	pactual.dx *= friction
 	if pactual == lulu then
-		pactual.dy += lulu.gravity
+		pactual.dy += 0.2
 	else
-		pactual.dy += hades.gravity
+		pactual.dy += 0.13
 	end
 
 	if check_flag(0, pactual.x + 3, pactual.y + 8) or check_flag(0, pactual.x + 5, pactual.y + 8) then --bottom
@@ -1116,8 +1114,8 @@ function next_room()
 		end
 	end
 	--TEST
-	x = 640
-	y = 128
+	-- x = 640
+	-- y = 128
 	--END TEST
 	local w = x + 128
 	local h = y + 128
@@ -1526,14 +1524,14 @@ function debug_print()
 	-- print("timer:"..lulu.shield.timer, pactual.x,pactual.y-10,11)
 		-- print("active:"..(lulu.shield.active and 'true' or 'false'), lulu.x,lulu.y-10,11) 
 		-- print("delay:"..delay_switch, lulu.x,lulu.y-20,11)
-	foreach(gates, function(g)
-		if collision(pactual,g) then
-			print("gate: "..g.x, pactual.x-28,pactual.y-10,8)
-			print("opened: "..(g.opened and "true" or "false"), pactual.x-28,pactual.y-20,8)
-			print("keys: "..keys_owned, pactual.x-28,pactual.y-30,8)
-		end
-	end)
-	-- print("lvl: "..i_room, pactual.x,pactual.y-10,8)
+	-- foreach(gates, function(g)
+	-- 	if collision(pactual,g) then
+	-- 		print("gate: "..g.x, pactual.x-28,pactual.y-10,8)
+	-- 		print("opened: "..(g.opened and "true" or "false"), pactual.x-28,pactual.y-20,8)
+	-- 		print("keys: "..keys_owned, pactual.x-28,pactual.y-30,8)
+	-- 	end
+	-- end)
+	print("lvl: "..i_room, room.x+40,room.y+10,8)
 	-- if chests[1] != nil then
 	-- 	print("chests: "..chests[1].content.name, pactual.x,pactual.y-10,8)
 		-- print("x: "..chests[1].x, pactual.x,pactual.y-20,8)
