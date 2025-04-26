@@ -141,7 +141,7 @@ function init_player()
 	pactual = lulu
 	friction = 0.7
 	accel = 1
-	accel_air = 0.75
+	accel_air = 0.9
 	jumping = 2.5
 	max_dx = 2.2
 end
@@ -1135,8 +1135,8 @@ function next_room()
 		end
 	end
 	--TEST
-	x = 512
-	y = 128
+	-- x = 640
+	-- y = 128
 	--END TEST
 	local w = x + 128
 	local h = y + 128
@@ -1192,6 +1192,7 @@ end
 
 function restart_level()
 	create_room()
+	is_in_switch = true
 end
 
 function restart_game()
