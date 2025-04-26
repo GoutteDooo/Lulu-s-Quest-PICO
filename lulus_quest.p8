@@ -628,11 +628,13 @@ end
 function draw_imaginary_light()
 	if btn(🅾️) and lulu.select and lulu.lights_left > 0 then
 		circfill(ima_light.x, ima_light.y, ima_light.r, ima_light.color)
+		circ(ima_light.x, ima_light.y, ima_light.r, ima_light.color+1)
 		circ(lulu.x_g, lulu.y_g, lulu.ima_range, 12) --desinner le circle de ima_light
 		-- pset(ima_light.x,ima_light.y,8)
 	end
 	if pactual.using_black_light then
 		circfill(ima_light_bo.x, ima_light_bo.y, ima_light_bo.r, ima_light_bo.c)
+		circ(ima_light_bo.x, ima_light_bo.y, ima_light_bo.r, ima_light_bo.c+1)
 		circ(pactual.x_g, pactual.y_g, pactual.ima_range, ima_light_bo.c)
 	end
 end
@@ -689,6 +691,7 @@ function draw_hades_turnoff()
 		local y = lights[i].y+ lights[i].r
 		local r = lights[i].r
 		circfill(x, y, r, 8)
+		circ(x, y, r, 8+1)
 	end
 end
 
@@ -1099,7 +1102,7 @@ function init_room()
 			powers = 
 			{
 				lulu = 1,
-				hades = 1
+				hades = 0
 			},
 			keys = {
 				{x = 95, y = 30},
@@ -1145,7 +1148,7 @@ function next_room()
 		end
 	end
 	--TEST
-	x = 640
+	x = 0
 	y = 128
 	--END TEST
 	local w = x + 128
