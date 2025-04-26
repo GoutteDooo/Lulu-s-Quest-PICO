@@ -1250,6 +1250,7 @@ end
 
 function restart_level()
 	create_room()
+	reinit_character()
 	is_in_switch = true
 end
 
