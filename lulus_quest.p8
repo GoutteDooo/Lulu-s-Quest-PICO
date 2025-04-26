@@ -1148,7 +1148,7 @@ function next_room()
 		end
 	end
 	--TEST
-	x = 0
+	x = 384
 	y = 128
 	--END TEST
 	local w = x + 128
@@ -1295,8 +1295,8 @@ function update_objects()
 	--shield cristals
 	foreach(shield_cristals, function(sc)
 		if collision(lulu,sc) then
-			sfx(5)			
 			if not lulu.shield.active or lulu.shield.timer > lulu.shield.time_set * 0.8 then
+				sfx(5)
 				if sc.lives then sc.lives = sc.lives - 1 end
 				if sc.lives and sc.lives <= 0 then
 					del(shield_cristals,sc)
