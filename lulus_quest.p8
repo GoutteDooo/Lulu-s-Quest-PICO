@@ -53,7 +53,7 @@ function _draw()
 	-- Doors
 	draw_doors()
 	draw_player()
-
+	draw_messages()
 	--DEBUG
 	if btn(🅾️) and lulu.select then
 		-- Dessiner la grid de la map
@@ -175,6 +175,8 @@ function draw_player()
 end
 
 function update_player()
+	--no command allowed when message
+	if messages[1] then return end
 	--delay when switching
 	if is_in_switch then
 		delay_switch = delay_switch - 1
@@ -1119,7 +1121,7 @@ function init_room()
 				{x = 86, y = 17, x1 = 86, y1 = 17, x2 = 85, y2 = 27, target = 2, speed = 0.5, r = 24, light = "white", spr_flip = false},
 			},
 			messages = {
-				"Hades jumps higher than Lulu"
+				{title = "hint", text = "hADES JUMPS HIGHER THAN lULU"},
 			}
 		},
 		--lvl 14
@@ -1365,6 +1367,8 @@ function update_objects()
 	for b in all(butterflies) do
 		update_butterfly(b)
 	end
+	--messages
+	update_messages()
 end
 
 --animations
@@ -1402,8 +1406,6 @@ function draw_objects()
 		spr(15, sc.x, sc.y, 1, 1, false, false)
 	end)
 	--gates & butterflies in _draw fct
-	--messages
-	draw_messages()
 end
 
 function draw_doors(d)
@@ -1595,13 +1597,21 @@ end
 
 function draw_messages()
 	if messages[1] then
-		print(messages[1],room.x+40,room.y+10,7)
-		print(messages[1],pactual.x, pactual.y, 7)
+		local bg_col = 7
+		local f_col = 13
+		local title_col = 9
+		local bg_title_col = 5
+		local border_col = 4
+		rectfill(room.x+4, room.y+4, room.x+124, room.y+24, bg_col)
+		rect(room.x+4, room.y+4, room.x+124, room.y+24, border_col)
+		rectfill(room.x+7, room.y+2, room.x + 7 + #messages[1]["title"]*4, room.y+8, bg_title_col) 
+		print(messages[1]["title"],room.x+8,room.y+3,title_col)
+		print(messages[1]["text"],room.x+8,room.y+12,f_col)
 	end
 end
 
 function update_messages()
-	if messages[1] and btn(0) then
+	if messages[1] and (btnp(❎)) then
 		deli(messages, 1)
 	end
 end
