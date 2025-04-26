@@ -148,7 +148,6 @@ function init_player()
 	accel_air = 0.9
 	jumping = 2.5
 	max_dx = 2.2
-
 	chars = { lulu, hades }
 end
 
@@ -175,8 +174,6 @@ function draw_player()
 end
 
 function update_player()
-	--no command allowed when message
-	if messages[1] then return end
 	--delay when switching
 	if is_in_switch then
 		delay_switch = delay_switch - 1
@@ -523,7 +520,6 @@ function update_light_lulu()
 	if (btn(⬅️)) xsign = -1
 	if (btn(➡️)) xsign = 1
 	if (btn(⬆️)) ysign = -1
-	if (btn(⬇️)) ysign = 1
 	if ((btn(⬅️)) or (btn(➡️)) or (btn(⬆️)) or (btn(⬇️))) dirpressed = true
 
 	if dirpressed then
@@ -1282,7 +1278,16 @@ function init_objects()
 	shield_cristals = {}
 	gates = {}
 	butterflies = {}
-	messages = {}
+	messages = {
+		{title = "hint", text = "press ❎ to close this msg"},
+		{title = "hint", text = "hold 🅾️ and moves to\n prepare a light"},
+		{title = "hint", text = "press ❎ when holding 🅾️\n to cast a light"},
+		{title = "hint", text = "lulu (left) can only live\n into lights"},
+		{title = "hint", text = "hades can only live out\n of lights"},
+		{title = "hint", text = "press ⬇️ to switch characters"},
+		{title = "hint", text = "hades can turn off lights\n the same way as lulu"},
+		{title = "hint", text = "good luck!"},
+	}
 end
 
 function update_objects()
@@ -1602,8 +1607,8 @@ function draw_messages()
 		local title_col = 9
 		local bg_title_col = 5
 		local border_col = 4
-		rectfill(room.x+4, room.y+4, room.x+124, room.y+24, bg_col)
-		rect(room.x+4, room.y+4, room.x+124, room.y+24, border_col)
+		rectfill(room.x+4, room.y+4, room.x+124, room.y+26, bg_col)
+		rect(room.x+4, room.y+4, room.x+124, room.y+26, border_col)
 		rectfill(room.x+7, room.y+2, room.x + 7 + #messages[1]["title"]*4, room.y+8, bg_title_col) 
 		print(messages[1]["title"],room.x+8,room.y+3,title_col)
 		print(messages[1]["text"],room.x+8,room.y+12,f_col)
