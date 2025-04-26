@@ -1110,15 +1110,15 @@ function init_room()
 				{x = 86, y = 19, opened = false},
 			},
 			shield_cristals = {
-				{x = 85, y = 17, timer = 10, r = 16, lives = 1},
-				{x = 84, y = 28, timer = 10, r = 16, lives = 1},
-				{x = 90, y = 17, timer = 10, r = 16, lives = 1},
+				{x = 85, y = 17, timer = 10, r = 10, lives = 1},
+				{x = 84, y = 28, timer = 10, r = 10, lives = 1},
+				{x = 90, y = 17, timer = 10, r = 10, lives = 1},
 			},
 			butterflies = {
 				{x = 81, y = 30, x1 = 81, y1 = 30, x2 = 81, y2 = 16, target = 2, speed = 1, r = 12, light = "white", spr_flip = true},
-				{x = 87, y = 19, x1 = 83, y1 = 19, x2 = 91, y2 = 19, target = 2, speed = 0.5, r = 16, light = "black", spr_flip = true},
+				{x = 83, y = 28, x1 = 83, y1 = 28, x2 = 91, y2 = 28, target = 2, speed = 1, r = 12, light = "white", spr_flip = true},
+				{x = 87, y = 19, x1 = 83, y1 = 19, x2 = 93, y2 = 19, target = 2, speed = 0.5, r = 18, light = "black", spr_flip = true},
 				{x = 82, y = 23, x1 = 82, y1 = 23, x2 = 92, y2 = 23, target = 2, speed = 0.5, r = 24, light = "black", spr_flip = true},
-				{x = 83, y = 27, x1 = 83, y1 = 27, x2 = 91, y2 = 28, target = 2, speed = 1, r = 12, light = "white", spr_flip = true},
 			}
 		}
 	}
@@ -1145,8 +1145,8 @@ function next_room()
 		end
 	end
 	--TEST
-	-- x = 640
-	-- y = 128
+	x = 640
+	y = 128
 	--END TEST
 	local w = x + 128
 	local h = y + 128
