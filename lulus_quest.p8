@@ -520,6 +520,7 @@ function update_light_lulu()
 	if (btn(⬅️)) xsign = -1
 	if (btn(➡️)) xsign = 1
 	if (btn(⬆️)) ysign = -1
+	if (btn(⬇️)) ysign = 1
 	if ((btn(⬅️)) or (btn(➡️)) or (btn(⬆️)) or (btn(⬇️))) dirpressed = true
 
 	if dirpressed then
@@ -1279,7 +1280,7 @@ function init_objects()
 	gates = {}
 	butterflies = {}
 	messages = {
-		{title = "hint", text = "press ❎ to close this msg"},
+		{title = "hint", text = "press ❎ to close this\n message"},
 		{title = "hint", text = "hold 🅾️ and moves to\n prepare a light"},
 		{title = "hint", text = "press ❎ when holding 🅾️\n to cast a light"},
 		{title = "hint", text = "lulu (left) can only live\n into lights"},
@@ -1603,7 +1604,7 @@ end
 function draw_messages()
 	if messages[1] then
 		local bg_col = 7
-		local f_col = 13
+		local f_col = 0
 		local title_col = 9
 		local bg_title_col = 5
 		local border_col = 4
@@ -1612,6 +1613,7 @@ function draw_messages()
 		rectfill(room.x+7, room.y+2, room.x + 7 + #messages[1]["title"]*4, room.y+8, bg_title_col) 
 		print(messages[1]["title"],room.x+8,room.y+3,title_col)
 		print(messages[1]["text"],room.x+8,room.y+12,f_col)
+		if messages[2] then print("❎ ->",room.x+104,room.y+20,13) end
 	end
 end
 
