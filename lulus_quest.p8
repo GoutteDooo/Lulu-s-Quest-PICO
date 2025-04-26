@@ -238,10 +238,8 @@ function update_player()
 			if collision_black_light(c, bl) then
 				if c == lulu then
 					c.in_light = true
-					break
 				elseif c == hades then
 					c.in_light = false
-					break
 				end
 			end
 		end
@@ -252,15 +250,12 @@ function update_player()
 			if collision_black_light(c, b) then
 				if b.light == "white" then
 					c.in_light = true
-					break
 				end
 				if b.light == "black" then
 					if c == lulu then
 						c.in_light = true
-						break
 					elseif c == hades then
 						c.in_light = false
-						break
 					end	
 				end
 			end
@@ -831,12 +826,12 @@ function init_room()
 			lights = 
 			{
 				{x = 82, y = 9, r = 24},
-				{x = 85, y = 9, r = 32}
+				{x = 91, y = 9, r = 32}
 			},
 			pos = 
 			{
 				lulu = {x = 82, y = 11},
-				hades = {x = 84, y = 14}
+				hades = {x = 80, y = 14}
 			},
 			doors = 
 			{
@@ -1187,8 +1182,10 @@ function next_room()
 		end
 	end
 	--TEST
+	-- x = 640
+	-- y = 128
 	x = 640
-	y = 128
+	y = 0
 	--END TEST
 	local w = x + 128
 	local h = y + 128
@@ -1284,7 +1281,7 @@ function init_objects()
 		{title = "hint", text = "hold 🅾️ and moves to\n prepare a light"},
 		{title = "hint", text = "press ❎ when holding 🅾️\n to cast a light"},
 		{title = "hint", text = "lulu (left) can only live\n into lights"},
-		{title = "hint", text = "hades can only live out\n of lights"},
+		{title = "hint", text = "hades (right) can only\n live out of lights"},
 		{title = "hint", text = "press ⬇️ to switch characters"},
 		{title = "hint", text = "hades can turn off lights\n the same way as lulu"},
 		{title = "hint", text = "you got all powers left\n at top of the screen"}, 
@@ -1620,7 +1617,8 @@ function draw_messages()
 		rectfill(x1+3, y1-2, x1 + 3  + #messages[1]["title"]*4, y1+4, bg_title_col) 
 		print(messages[1]["title"],x1+4,y1-1,title_col)
 		print(messages[1]["text"],x1+4,y1+8,f_col)
-		if messages[2] then print("❎ ->",x2-20,y2-6,13) end
+		if messages[2] then print("❎->",x2-16,y2-6,13) end
+		if not messages[2] then print("❎end",x2-20,y2-6,13) end
 	end
 end
 
