@@ -1117,6 +1117,9 @@ function init_room()
 			},
 			butterflies = {
 				{x = 86, y = 17, x1 = 86, y1 = 17, x2 = 85, y2 = 27, target = 2, speed = 0.5, r = 24, light = "white", spr_flip = false},
+			},
+			messages = {
+				"Hades jumps higher than Lulu"
 			}
 		},
 		--lvl 14
@@ -1160,9 +1163,6 @@ function init_room()
 				{x = 103, y = 19, x1 = 99, y1 = 19, x2 = 109, y2 = 19, target = 2, speed = 0.5, r = 18, light = "black", spr_flip = true},
 				{x = 98, y = 23, x1 = 98, y1 = 23, x2 = 108, y2 = 23, target = 2, speed = 0.5, r = 24, light = "black", spr_flip = true},
 			},
-			messages = {
-				"Hades jumps higher than Lulu"
-			}
 		}
 	}
 end
@@ -1402,6 +1402,8 @@ function draw_objects()
 		spr(15, sc.x, sc.y, 1, 1, false, false)
 	end)
 	--gates & butterflies in _draw fct
+	--messages
+	draw_messages()
 end
 
 function draw_doors(d)
@@ -1441,6 +1443,9 @@ function delete_objects()
 	for b in all(butterflies) do
 		del(butterflies,b)
 	end
+	for m in all(messages) do
+		del(messages,m)
+	end
 end
 
 function create_objects()
@@ -1471,6 +1476,10 @@ function create_objects()
 	--butterflies
 	foreach(rooms_data[i_room].butterflies, function(b)
 		add(butterflies, {x = b.x * 8, y = b.y * 8, x1 = b.x1 * 8, y1 = b.y1 * 8, x2 = b.x2 * 8, y2 = b.y2 * 8, target = b.target, speed = b.speed, r = b.r, light = b.light})
+	end)
+	--messages
+	foreach(rooms_data[i_room].messages, function(m)
+		add(messages, m)
 	end)
 end
 
@@ -1578,6 +1587,22 @@ function draw_keys(k)
 		elseif frames % 30 < 24 then
 			spr(25, k.x, k.y, 1, 1, true, false)
 		end
+	end
+end
+
+-->8
+--messages
+
+function draw_messages()
+	if messages[1] then
+		print(messages[1],room.x+40,room.y+10,7)
+		print(messages[1],pactual.x, pactual.y, 7)
+	end
+end
+
+function update_messages()
+	if messages[1] and btn(0) then
+		deli(messages, 1)
 	end
 end
 
