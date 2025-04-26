@@ -1007,11 +1007,12 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 51, y = 17, r = 16},
+				{x = 49, y = 17, r = 16},
+				{x = 55, y = 27, r = 8},
 			},
 			pos = 
 			{
-				lulu = {x = 52, y = 19},
+				lulu = {x = 49, y = 19},
 				hades = {x = 59, y = 19}
 			},
 			doors = 
@@ -1021,11 +1022,11 @@ function init_room()
 			},
 			powers = 
 			{
-				lulu = 2,
-				hades = 1
+				lulu = 1,
+				hades = 0
 			},
 			shield_cristals = {
-				{x = 49, y = 19, timer = 3, r = 16},
+				{x = 54, y = 19, timer = 4, r = 12},
 			}
 		},
 		--12
@@ -1294,30 +1295,19 @@ function update_objects()
 
 	--shield cristals
 	foreach(shield_cristals, function(sc)
-		if collision(lulu,sc) then
-			if not lulu.shield.active or lulu.shield.timer > lulu.shield.time_set * 0.8 then
-				sfx(5)
-				if sc.lives then sc.lives = sc.lives - 1 end
-				if sc.lives and sc.lives <= 0 then
-					del(shield_cristals,sc)
+		for c in all(chars) do
+			if collision(c,sc) then
+				if not c.shield.active or c.shield.timer > c.shield.time_set * 0.8 then
+					sfx(5)
+					if sc.lives then sc.lives = sc.lives - 1 end
+					if sc.lives and sc.lives <= 0 then
+						del(shield_cristals,sc)
+					end
+					c.shield.active = true
+					c.shield.time_set = sc.timer * 30
+					c.shield.timer = 0
+					c.shield.r = sc.r
 				end
-				lulu.shield.active = true
-				lulu.shield.time_set = sc.timer * 30
-				lulu.shield.timer = 0
-				lulu.shield.r = sc.r
-			end
-		end
-		if collision(hades,sc) then
-			sfx(5)			
-			if not hades.shield.active or hades.shield.timer > hades.shield.time_set * 0.8 then
-				if sc.lives then sc.lives = sc.lives - 1 end
-				if sc.lives and sc.lives <= 0 then
-					del(shield_cristals,sc)
-				end
-				hades.shield.active = true
-				hades.shield.time_set = sc.timer * 30
-				hades.shield.timer = 0
-				hades.shield.r = sc.r
 			end
 		end
 	end)
