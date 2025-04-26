@@ -372,8 +372,12 @@ function move_characters()
 	--cut deceleration when stop moving
 	if pactual.dx < 0.1 and pactual.dx > -0.1 then pactual.dx = 0 end
 	--dy
-	pactual.dy += (pactual == lulu and lulu.gravity or hades.gravity)
-	pactual.y += pactual.dy
+	foreach(chars, function(c)
+		if c.dy then
+			c.dy += c.gravity
+			c.y += c.dy
+		end
+	end)
 
 	--COLLISIONS
 	--if next moves collides with gates, no more moves possible
@@ -389,17 +393,19 @@ function move_characters()
 	end)
 
 	-- COLLISION SOL
-	local grounded =
-		check_flag(0, pactual.x + 3, pactual.y + pactual.h)
-		or check_flag(0, pactual.x + 5, pactual.y + pactual.h)
-	if grounded then
-		pactual.g = true
-		pactual.is_jumping = false
-		pactual.dy = 0
-		pactual.y = flr(pactual.y / pactual.h) * pactual.h
-	else
-		pactual.g = false
-	end
+	local grounded
+	foreach(chars, function(c)
+		grounded = check_flag(0, c.x + 3, c.y + c.h)
+		or check_flag(0, c.x + 5, c.y + c.h)
+		if grounded then
+			c.g = true
+			c.is_jumping = false
+			c.dy = 0
+			c.y = flr(c.y / c.h) * c.h
+		else
+			c.g = false
+		end
+	end)
 
 	-- MOUVEMENT HORIZONTAL + COLLISIONS
 	if pactual.dx > 0 then
@@ -445,9 +451,12 @@ function switch_character()
 end
 
 function reinit_character()
-	pactual.dx = 0
-	pactual.dy = 0
-	pactual.g = false
+	foreach(chars, function(c)
+		c.dx = 0
+		c.dy = 0
+		c.g = false
+	end)
+	is_in_switch = true
 end
 
 function disable_shield(character)
