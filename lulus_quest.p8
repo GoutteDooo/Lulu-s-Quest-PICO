@@ -277,16 +277,6 @@ function update_player()
 		end
 	end
 
-	--gates
-	foreach(gates, function(g)
-		if collision(pactual,g) then
-			if not g.opened then
-				pactual.x -= (g.x - pactual.x)
-				pactual.y -= (g.y - pactual.y)
-			end
-		end
-	end)
-
 		--CONDITIONS FOR LIGHTS
 	if (not lulu.in_light and not lulu.passed) or (hades.in_light and not hades.passed) or pactual.y >= room.h-1 then
 		if lives > 0 then
@@ -375,6 +365,19 @@ function move_characters()
 	--dy
 	pactual.dy += (pactual == lulu and lulu.gravity or hades.gravity)
 	pactual.y += pactual.dy
+
+	--COLLISIONS
+	--if next moves collides with gates, no more moves possible
+	local new_x = pactual.x + pactual.dx
+	local new_y = pactual.y + pactual.dy
+	foreach(gates, function(g)
+		if collision({x = new_x, y = new_y, w = pactual.w, h = pactual.h}, g) then
+			if not g.opened then
+				pactual.dx = 0
+				pactual.dy = 0
+			end
+		end
+	end)
 
 	-- COLLISION SOL
 	local grounded =
