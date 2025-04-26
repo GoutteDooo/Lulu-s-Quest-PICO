@@ -144,6 +144,8 @@ function init_player()
 	accel_air = 0.9
 	jumping = 2.5
 	max_dx = 2.2
+
+	chars = { lulu, hades }
 end
 
 function draw_player()
@@ -216,42 +218,50 @@ function update_player()
 		return
 	end
 
-	--collisions lulu and light
-	pactual.in_light = false
+	--collisions light
+	for c in all(chars) do
+		c.in_light = false
+	end
 	for l in all(lights) do
-		if collision_light(pactual, l) then
-			pactual.in_light = true
-			break
+		for c in all(chars) do
+			if collision_light(c, l) then
+				c.in_light = true
+				break
+			end
 		end
 	end
 
 	--maybe pactual has collide with a light, but if it is in black light, it cancels the condition
 	for bl in all(black_lights) do
-		if collision_black_light(pactual, bl) then
-			if pactual == lulu then
-				pactual.in_light = true
-				break
-			elseif pactual == hades then
-				pactual.in_light = false
-				break
+		for c in all(chars) do
+			if collision_black_light(c, bl) then
+				if c == lulu then
+					c.in_light = true
+					break
+				elseif c == hades then
+					c.in_light = false
+					break
+				end
 			end
 		end
 	end
 
 	for b in all(butterflies) do
-		if collision_black_light(pactual, b) then
-			if b.light == "white" then
-				pactual.in_light = true
-				break
-			end
-			if b.light == "black" then
-				if pactual == lulu then
-					pactual.in_light = true
+		for c in all(chars) do
+			if collision_black_light(c, b) then
+				if b.light == "white" then
+					c.in_light = true
 					break
-				elseif pactual == hades then
-					pactual.in_light = false
-					break
-				end	
+				end
+				if b.light == "black" then
+					if c == lulu then
+						c.in_light = true
+						break
+					elseif c == hades then
+						c.in_light = false
+						break
+					end	
+				end
 			end
 		end
 	end
