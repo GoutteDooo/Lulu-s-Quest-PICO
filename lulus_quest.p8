@@ -1280,13 +1280,16 @@ function init_objects()
 	gates = {}
 	butterflies = {}
 	messages = {
-		{title = "hint", text = "press ❎ to close this\n message"},
+		{title = "hint", text = "welcome to lulu's quest!"},
 		{title = "hint", text = "hold 🅾️ and moves to\n prepare a light"},
 		{title = "hint", text = "press ❎ when holding 🅾️\n to cast a light"},
 		{title = "hint", text = "lulu (left) can only live\n into lights"},
 		{title = "hint", text = "hades can only live out\n of lights"},
 		{title = "hint", text = "press ⬇️ to switch characters"},
 		{title = "hint", text = "hades can turn off lights\n the same way as lulu"},
+		{title = "hint", text = "you got all powers left\n at top of the screen"}, 
+		{title = "hint", text = "the goal is to bring\n your characters..."}, 
+		{title = "hint", text = "...to their respective doors"}, 
 		{title = "hint", text = "good luck!"},
 	}
 end
@@ -1604,16 +1607,20 @@ end
 function draw_messages()
 	if messages[1] then
 		local bg_col = 7
-		local f_col = 0
+		local f_col = 1
 		local title_col = 9
 		local bg_title_col = 5
 		local border_col = 4
-		rectfill(room.x+4, room.y+4, room.x+124, room.y+26, bg_col)
-		rect(room.x+4, room.y+4, room.x+124, room.y+26, border_col)
-		rectfill(room.x+7, room.y+2, room.x + 7 + #messages[1]["title"]*4, room.y+8, bg_title_col) 
-		print(messages[1]["title"],room.x+8,room.y+3,title_col)
-		print(messages[1]["text"],room.x+8,room.y+12,f_col)
-		if messages[2] then print("❎ ->",room.x+104,room.y+20,13) end
+		local x1 = room.x+4
+		local y1 = room.y+14
+		local x2 = room.x+124
+		local y2 = room.y+36
+		rectfill(x1, y1, x2, y2, bg_col)
+		rect(x1, y1, x2, y2, border_col)
+		rectfill(x1+3, y1-2, x1 + 3  + #messages[1]["title"]*4, y1+4, bg_title_col) 
+		print(messages[1]["title"],x1+4,y1-1,title_col)
+		print(messages[1]["text"],x1+4,y1+8,f_col)
+		if messages[2] then print("❎ ->",x2-20,y2-6,13) end
 	end
 end
 
@@ -1661,7 +1668,8 @@ function debug_print()
 	-- end)
 	print("dx: "..pactual.dx, pactual.x,pactual.y-10,8)
 	print("dy: "..pactual.dy, pactual.x,pactual.y-20,8)
-	print("lvl: "..i_room, room.x+40,room.y+10,8)
+	rectfill(room.x+39, room.y+1, room.x+39+20+8, room.y+1+8, 7)
+	print("lvl: "..i_room, room.x+40,room.y+2,8)
 	-- if chests[1] != nil then
 	-- 	print("chests: "..chests[1].content.name, pactual.x,pactual.y-10,8)
 		-- print("x: "..chests[1].x, pactual.x,pactual.y-20,8)
