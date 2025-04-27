@@ -506,6 +506,7 @@ function update_light()
 		sfx(7,-2)
 		sfx(4,-2)
 	end
+	update_dynamic_lights()
 end
 
 function update_light_lulu()
@@ -631,6 +632,7 @@ function draw_light()
 	draw_lights()
 	draw_imaginary_light()
 	draw_hades_turnoff()
+	draw_dynamic_lights()
 end
 
 function draw_imaginary_light()
@@ -1186,13 +1188,13 @@ function init_room()
 			pulsator = {{
 				x = 117,
 				y = 21,
+				spr_r = 24,
 				timer = 0,
 				pulse_dur = 60,
 				pulse_timer = 0,
 				beat_delay = 210,
-				light_data = {max_r = 56, type = "black", beat_speed = 1, cristals_c = 0}
-			}
-			},
+				light_data = {r_max = 56, type = "black", spd = 1, cristals_c = 0}
+			}},
 		}
 	}
 end
@@ -1332,6 +1334,7 @@ function init_objects()
 		{title = "hint", text = "good luck!"},
 	}
 	pulsator = {}
+	dynamic_lights = {}
 end
 
 function update_objects()
@@ -1542,7 +1545,7 @@ function create_objects()
 	end)
 	--pulsator
 	foreach(rooms_data[i_room].pulsator, function(p)
-		add(pulsator, {x = p.x * 8, y = p.y * 8, timer = p.timer, pulse_duration = p.pulse_dur, pulse_timer = p.pulse_timer, beat_delay = p.beat_delay})
+		add(pulsator, {x = p.x * 8, y = p.y * 8, spr_r = p.spr_r, timer = p.timer, pulse_duration = p.pulse_dur, pulse_timer = p.pulse_timer, beat_delay = p.beat_delay, light_data = p.light_data})
 	end)
 end
 
@@ -1742,16 +1745,42 @@ function update_pulsator()
 			-- un battement se produit
 			pulsator[1].pulse_timer = pulsator[1].pulse_duration -- dれたclenche une pulsation visuelle
 			pulsator[1].timer = 0
-		end
-		
+			-- update light from pulsator
+			local new_dyna_light = create_dynamic_light(pulsator[1].x + pulsator[1].spr_r, pulsator[1].y + pulsator[1].spr_r, pulsator[1].light_data.type, pulsator[1].light_data.spd, pulsator[1].light_data.r_max)
+			add(dynamic_lights, new_dyna_light)
+			end
 		-- diminuer le pulse progressivement
 		if pulsator[1].pulse_timer > 0 then
 			pulsator[1].pulse_timer -= 1
+		end
 	end
 end
 
+-->8
+-- dynamic lights
+function create_dynamic_light(x, y, type, spd, r_max)
+	return {
+		x = x,
+		y = y,
+		r = 0,
+		r_max = r_max,
+		type = type,
+		spd = spd
+	}
 end
 
+function update_dynamic_lights()
+	foreach(dynamic_lights, function(dl)
+		dl.r += dl.spd
+	end)
+end
+
+function draw_dynamic_lights()
+	foreach(dynamic_lights, function(dl)
+		circfill(dl.x, dl.y, dl.r, 7)
+		circ(dl.x, dl.y, dl.r, 8)
+	end)
+end
 
 -->8
 --UI
