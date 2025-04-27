@@ -231,9 +231,7 @@ function update_player()
 	for dl in all(dynamic_lights) do
 		for c in all(chars) do
 			if collision_black_light(c, dl) then
-				if dl.type == "black" then
-					c.in_light = c == lulu and true or false
-				elseif dl.type == "white" then
+				if dl.type == "white" then
 					c.in_light = true
 				elseif dl.type == "anti" then
 					c.in_light = false
@@ -1206,8 +1204,15 @@ function init_room()
 				pulse_dur = 60,
 				pulse_timer = 0,
 				beat_delay = 210,
-				light_data = {r_max = 128, type = "black", spd = 1, cristals_c = 0}
+				light_data = {r_max = 128, type = "white", spd = 1, cristals_c = 0}
 			}},
+			windows = {
+				{x = 123, y = 19, opened = false},
+				{x = 124, y = 23, opened = false},
+				{x = 115, y = 26, opened = false},
+				{x = 115, y = 23, opened = false},
+				{x = 116, y = 19, opened = false},
+			}
 		}
 	}
 end
@@ -1233,10 +1238,10 @@ function next_room()
 		end
 	end
 	--TEST
-	-- x = 896
-	-- y = 128
-	x = 640
+	x = 896
 	y = 128
+	-- x = 640
+	-- y = 128
 	--END TEST
 	local w = x + 128
 	local h = y + 128
@@ -1350,6 +1355,7 @@ function init_objects()
 	}
 	pulsator = {}
 	dynamic_lights = {}
+	windows = {}
 end
 
 function update_objects()
@@ -1777,15 +1783,12 @@ function update_pulsator()
 			local new_dyna_light = create_dynamic_light(pulsator[1].x + pulsator[1].spr_r, pulsator[1].y + pulsator[1].spr_r, pulsator[1].light_data.type, pulsator[1].light_data.spd, pulsator[1].light_data.r_max)
 			add(dynamic_lights, new_dyna_light)
 
-			if pulsator[1].light_data.type == "black" then 
-				pulsator[1].light_data.type = "anti"
-			elseif pulsator[1].light_data.type == "anti" then
+			if pulsator[1].light_data.type == "anti" then
 				pulsator[1].light_data.type = "white"
 			else
-				pulsator[1].light_data.type = "black"
+				pulsator[1].light_data.type = "anti"
 			end
-
-			end
+		end
 		-- diminuer le pulse progressivement
 		if pulsator[1].pulse_timer > 0 then
 			pulsator[1].pulse_timer -= 1
@@ -1819,16 +1822,9 @@ end
 
 function draw_dynamic_lights()
 	foreach(dynamic_lights, function(dl)
-		local c = 0
-		if dl.type == "black" then
-			pal(14,3+128,1)
-			c = 14
-		elseif dl.type == "white" then
-			c = 9
-		end
+		local c = dl.type == "anti" and 0 or 9
 		circfill(dl.x, dl.y, dl.r, c)
 		circ(dl.x, dl.y, dl.r, c+1)
-		pal(14,14)
 	end)
 end
 
