@@ -1131,7 +1131,7 @@ function init_room()
 				{x = 90, y = 29, opened = false},
 			},
 			shield_cristals = {
-				{x = 88, y = 18, timer = 90, r = 32, lives = 1, c = "red"},
+				{x = 88, y = 18, timer = 300, r = 32, lives = 1, c = "red"},
 			},
 			butterflies = {
 				{x = 86, y = 17, x1 = 86, y1 = 17, x2 = 85, y2 = 27, target = 2, speed = 0.5, r = 24, light = "white", spr_flip = false},
@@ -1472,9 +1472,14 @@ function draw_objects()
 	foreach(shield_cristals, function(sc)
 		if sc.lives then print(sc.lives, sc.x + 8, sc.y - 2, 11) end
 		spr(sc.c == "red" and 21 or 20, sc.x, sc.y, 1, 1, false, false)
-		local r = 2 + sin(frames/15)*1 -- rayon qui "pulsate"
-    circfill(sc.x+4, sc.y+2, r, 7)
-		pset(sc.x + 4, sc.y + 2, frames % 10 < 5 and 7 or 11)
+    -- points scintillants
+    if frames % 15 < 7 then
+			pset(sc.x+3, sc.y+1, 7)
+			pset(sc.x+5, sc.y+3, 7)
+		else
+			pset(sc.x+5, sc.y+1, 7)
+			pset(sc.x+3, sc.y+3, 7)
+		end
 	end)
 	--gates & butterflies in _draw fct
 	--pulsator
@@ -2210,21 +2215,21 @@ __music__
 00 14151617
 00 1d181a1c
 00 1e1b1a19
-00 1f1b1a19
-00 201b1a19
-00 211b1a19
-00 25271a1c
-00 26281a19
-00 25271a19
-00 26281a19
+00 1f191a1b
+00 20191a1b
+00 21191a1b
+00 251c1a27
+00 26191a28
+00 25191a27
+00 26191a28
 00 6b2a294c
 00 2b2a294c
-00 2b2a292c
-00 2d04052e
-00 201b1a19
-00 061b1a19
-00 20071a19
-02 21071a19
+00 2b2a2c29
+00 2d042e6e
+00 201a191b
+00 06191a1b
+00 20191a07
+02 21191a07
 01 0c0d0e4b
 00 0f100a4b
 00 0809114b
