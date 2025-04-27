@@ -629,10 +629,10 @@ function update_black_light()
 end
 
 function draw_light()
+	draw_dynamic_lights()
 	draw_lights()
 	draw_imaginary_light()
 	draw_hades_turnoff()
-	draw_dynamic_lights()
 end
 
 function draw_imaginary_light()
@@ -1193,7 +1193,7 @@ function init_room()
 				pulse_dur = 60,
 				pulse_timer = 0,
 				beat_delay = 210,
-				light_data = {r_max = 56, type = "black", spd = 1, cristals_c = 0}
+				light_data = {r_max = 128, type = "black", spd = 1, cristals_c = 0}
 			}},
 		}
 	}
@@ -1672,7 +1672,7 @@ function draw_messages()
 		local y2 = room.y+36
 		rectfill(x1, y1, x2, y2, bg_col)
 		rect(x1, y1, x2, y2, border_col)
-		rectfill(x1+3, y1-2, x1 + 3  + #messages[1]["title"]*4, y1+4, bg_title_col) 
+		rectfill(x1+3, y1-2, x1 + 3  + #messages[1]["title"]*4, y1+4, bg_title_col)
 		print(messages[1]["title"],x1+4,y1-1,title_col)
 		print(messages[1]["text"],x1+4,y1+8,f_col)
 		if messages[2] then print("❎->",x2-16,y2-6,13) end
@@ -1745,9 +1745,19 @@ function update_pulsator()
 			-- un battement se produit
 			pulsator[1].pulse_timer = pulsator[1].pulse_duration -- dれたclenche une pulsation visuelle
 			pulsator[1].timer = 0
+			
 			-- update light from pulsator
 			local new_dyna_light = create_dynamic_light(pulsator[1].x + pulsator[1].spr_r, pulsator[1].y + pulsator[1].spr_r, pulsator[1].light_data.type, pulsator[1].light_data.spd, pulsator[1].light_data.r_max)
 			add(dynamic_lights, new_dyna_light)
+
+			if pulsator[1].light_data.type == "black" then 
+				pulsator[1].light_data.type = "anti"
+			elseif pulsator[1].light_data.type == "anti" then
+				pulsator[1].light_data.type = "white"
+			else
+				pulsator[1].light_data.type = "black"
+			end
+
 			end
 		-- diminuer le pulse progressivement
 		if pulsator[1].pulse_timer > 0 then
@@ -1762,7 +1772,7 @@ function create_dynamic_light(x, y, type, spd, r_max)
 	return {
 		x = x,
 		y = y,
-		r = 0,
+		r = 16,
 		r_max = r_max,
 		type = type,
 		spd = spd
@@ -1771,14 +1781,27 @@ end
 
 function update_dynamic_lights()
 	foreach(dynamic_lights, function(dl)
-		dl.r += dl.spd
+		if dl.r < dl.r_max then
+			dl.r += dl.spd
+		end
+		if dynamic_lights[2] and dynamic_lights[2].r == dynamic_lights[2].r_max then
+			deli(dynamic_lights, 1)
+		end
 	end)
 end
 
 function draw_dynamic_lights()
 	foreach(dynamic_lights, function(dl)
-		circfill(dl.x, dl.y, dl.r, 7)
-		circ(dl.x, dl.y, dl.r, 8)
+		local c = 0
+		if dl.type == "black" then
+			pal(14,3+128,1)
+			c = 14
+		elseif dl.type == "white" then
+			c = 9
+		end
+		circfill(dl.x, dl.y, dl.r, c)
+		circ(dl.x, dl.y, dl.r, c+1)
+		pal(14,14)
 	end)
 end
 
@@ -1811,6 +1834,10 @@ function debug_print()
 	if pulsator[1] then
 		print("timer:"..pulsator[1].timer, room.x + 20,room.y+100,11)
 	end
+	-- if dynamic_lights[1] and dynamic_lights[2] then
+	-- 	print("two dynas")
+	-- 	if dynamic_lights[3] then print("three now :(...") end
+	-- end
 	-- print("timer:"..lulu.shield.timer, pactual.x,pactual.y-10,11)
 		-- print("active:"..(lulu.shield.active and 'true' or 'false'), lulu.x,lulu.y-10,11) 
 		-- print("delay:"..delay_switch, lulu.x,lulu.y-20,11)
@@ -2098,7 +2125,7 @@ __sfx__
 22030000027510275102751027510475105751097510c7510f76114771187711b7711e771207712177121771207711f7711d7711a7711877115761127510f7510d7510b751087510775106751057510475103751
 000300001904314043100430b0430304315043110430b043050430a04305043030430004300003090030900309003090030900309003090030900309003090030900309003090030900309003090030900309003
 320400000202005030080400c05010050160501805003020080300d040140501a0501d050080100a0200b0200c0300e0301003013030170401b0401f040250502c05031050350503c0603c0503c0413c0313c021
-0678010f016300164001630016400263000650126552e655036200163001620026300a650226552a6550163001640016300164002630026400262002640016300064001630016400063001630026300164000000
+0679010f016300164001630016400263000650126552e655036200163001620026300a650226552a6550163001640016300164002630026400262002640016300064001630016400063001630026300164000000
 001a00201a1401d030210401c1301f040230301a1401d0301a1401d030210401c1301f040230301d140210301814021130230401f1301c1401a1301f1401c03021140181302104023130211401f1301c1401d130
 001800201c0501d0501e0501f050210502305024050260501c7001f7001f7001c7001c7001a7001f7001a7001a700187001f700187001f7001c7001c7001f7001c700187001c7000070000700007000070000000
 000100200905309053090530905309053090530905309053090530905309053090530905309053090530905309053090530905309053090530905309053090530905309053090530905309053090530905309053
