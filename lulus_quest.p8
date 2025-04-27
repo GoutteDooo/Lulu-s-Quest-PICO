@@ -235,6 +235,8 @@ function update_player()
 					c.in_light = true
 				elseif dl.type == "anti" then
 					c.in_light = false
+				elseif dl.type == "black" then
+					c.in_light = c == lulu and true or false
 				end
 			end
 		end
@@ -1444,6 +1446,12 @@ function update_objects()
 	--messages
 	update_messages()
 	update_pulsator()
+	foreach(windows, function(w)
+		if not w.opened and collision(pactual,w) then
+			w.opened = true
+			create_light(w.x, w.y, 12, "black")
+		end
+	end)
 end
 
 --animations
@@ -1834,6 +1842,10 @@ end
 function draw_dynamic_lights()
 	foreach(dynamic_lights, function(dl)
 		local c = dl.type == "anti" and 0 or 9
+		if dl.type == "black" then
+			pal(14,3+128,1)
+			c = 14
+		end
 		circfill(dl.x, dl.y, dl.r, c)
 		circ(dl.x, dl.y, dl.r, c+1)
 	end)
