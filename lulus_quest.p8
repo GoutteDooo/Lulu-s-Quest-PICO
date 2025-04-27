@@ -2,8 +2,8 @@ pico-8 cartridge // http://www.pico-8.com
 version 42
 __lua__
  SFX = {
-	{0,-1,0,12},
-	{0,-1,16,20},
+	{62,-1,0,12},
+	{62,-1,16,20},
 }
 function _init()
 	init_player()
@@ -20,7 +20,8 @@ function _init()
 	delay_switch = dflt_delay_switch
 	lives = 3
 	bo_spr = 22
-	music(10)
+	sfx_timer = 0
+	music(0)
 	--DEBUG
 	debug_light = false
 	--TEST
@@ -34,6 +35,9 @@ function _update()
 	update_objects()
 	cx = room.x
 	cy = room.y
+	if sfx_timer > 0 then
+		sfx_timer -= 1
+	end
 end
 
 function _draw()
@@ -217,7 +221,6 @@ function update_player()
 
 	if check_flag(1, pactual.x + 4, pactual.y) then
 		restart_level()
-		sfx(8)
 		return
 	end
 
@@ -303,19 +306,12 @@ function update_player()
 
 		--CONDITIONS FOR LIGHTS
 	if (not lulu.in_light and not lulu.passed) or (hades.in_light and not hades.passed) or pactual.y >= room.h-1 then
-		if lives > 0 then
 			-- lives = lives - 1
-			if i_room == 0 then 
-				restart_game()
-				sfx(9)
-				return
-			end
-			restart_level()
-			sfx(8)
-		else
+		if i_room == 0 then 
 			restart_game()
-			sfx(9)
-			end
+			return
+		end
+		restart_level()
 	end
 
 	pactual.y_g = ceil(pactual.y / 8) * 8
@@ -336,7 +332,8 @@ function update_player()
 					ima_light_bo.x = pactual.x_g
 					ima_light_bo.y = pactual.y_g
 					ima_light_bo.r = bo.r
-					sfx(10)
+					sfx_timer = 20
+					sfx(52,3)
 					del(black_orbs,bo)
 				end
 			end
@@ -351,10 +348,11 @@ function update_player()
 		--move
 		if pactual.dx > 0.2 or pactual.dx < -0.2 then
 			pactual.sprite = frames % 8 >= 4 and pactual.default_sprite + 1 or pactual.default_sprite
-			if frames % 8 == 0 then
-				-- sfx(3)
-				sfx(SFX[2][1],SFX[2][2],SFX[2][3],SFX[2][4])
-			end
+			--STEP MOVES
+			-- I think I'll remove it for better listening of music
+			-- if frames % 8 == 0 then
+			-- 	psfx(59)
+			-- end
 		else
 			pactual.sprite = pactual.default_sprite
 		end
@@ -369,7 +367,7 @@ function move_characters()
 	if btnp(⬆️) and pactual.g then
 		pactual.dy = -jumping
 		pactual.is_jumping = true
-		sfx(unpack(SFX[1]))
+		psfx(62,3)
 	end
 	if not btn(⬆️) and pactual.is_jumping and pactual.dy < 0 then
 		pactual.dy = pactual.dy * 0.5
@@ -518,8 +516,8 @@ function update_light()
 		lulu.using_light = false
 		hades.using_light = false
 		hades.light_selected[1] = nil
-		sfx(7,-2)
-		sfx(4,-2)
+		sfx(55,-2)
+		sfx(58,-2)
 	end
 	update_dynamic_lights()
 end
@@ -530,7 +528,7 @@ function update_light_lulu()
 		ima_light.y = lulu.y_g
 		ima_light.x = lulu.x_g
 		lulu.using_light = true
-		sfx(4)
+		psfx(58,3)
 	end
 
 	local xsign = 0
@@ -570,7 +568,7 @@ function update_light_lulu()
 		local x = ima_light.x - ima_light.r
 		local y = ima_light.y - ima_light.r
 		create_light(x, y, ima_light.r,"white",1,10)
-		sfx(5)
+		psfx(57)
 		lulu.lights_left -= 1
 	end
 end
@@ -579,7 +577,7 @@ function update_light_hades()
 	-- hades a une variable qui stocke temporairement la light selected
 	if #lights > 0 and hades.turnoffs_left > 0 then
 		if not hades.using_light then
-			sfx(7)
+			psfx(55,3)
 			hades.using_light = true
 		end
 		local index = hades.light_selected[2]
@@ -591,7 +589,7 @@ function update_light_hades()
 			del(lights,hades.light_selected[1])
 			hades.light_selected[2] = 0
 			hades.turnoffs_left -= 1
-			sfx(6)
+			psfx(56,3)
 	end
 	else
 		--#light = 0 ou hades n'a plus de power
@@ -637,8 +635,8 @@ function update_black_light()
 		local x = ima_light_bo.x
 		local y = ima_light_bo.y
 		create_light(x, y, ima_light_bo.r, "black")
-		sfx(10, -2)
-		sfx(11)
+		sfx(52, -2)
+		psfx(51)
 		pactual.using_black_light = false
 	end
 end
@@ -1235,8 +1233,8 @@ function next_room()
 		end
 	end
 	--TEST
-	x = 896
-	y = 128
+	-- x = 896
+	-- y = 128
 	-- x = 640
 	-- y = 128
 	--END TEST
@@ -1250,7 +1248,8 @@ function next_room()
 	room = new_room(id, x, y, w, h)
 	i_room = index_room(room.x, room.y)
 	create_room()
-	sfx(1)
+	sfx_timer = 30
+	sfx(61,3)
 end
 
 function create_room()
@@ -1278,9 +1277,7 @@ function create_room()
 	hades.turnoffs_left = rooms_data[i_room].powers["hades"]
 	--if pulsator room
 	if i_room == 15 then
-		music(-1)
-		sfx(14, -1)
-		sfx(14)
+		music(44)
 	end
 end
 
@@ -1302,6 +1299,8 @@ function restart_level()
 	create_room()
 	reinit_character()
 	is_in_switch = true
+	sfx_timer = 45
+	sfx(53,3)
 end
 
 function restart_game()
@@ -1364,7 +1363,7 @@ function update_objects()
 			disable_shield(hades)
 		end
 		if not door_sound_played then
-			sfx(2)
+			psfx(60)
 			door_sound_played = true
 		end
 	end
@@ -1383,7 +1382,7 @@ function update_objects()
 			elseif c.locked and keys_owned == 0 then
 				if c.check_lock then
 					c.check_lock = false
-					sfx(12)
+					psfx(50)
 				end
 			elseif c.locked == false then
 				open_chest(c)
@@ -1397,7 +1396,7 @@ function update_objects()
 	--keys
 	foreach(keys, function(k)
 		if collision(pactual,k) then
-			sfx(2)
+			psfx(60)
 			keys_owned += 1
 			del(keys,k)
 		end
@@ -1408,7 +1407,7 @@ function update_objects()
 		for c in all(chars) do
 			if collision(c,sc) then
 				if not c.shield.active or c.shield.timer > c.shield.time_set * 0.8 then
-					sfx(5)
+					psfx(57)
 					if sc.lives then sc.lives = sc.lives - 1 end
 					if sc.lives and sc.lives <= 0 then
 						del(shield_cristals,sc)
@@ -1425,7 +1424,7 @@ function update_objects()
 	foreach(gates, function(g)
 		if collision_gate(pactual,g) then
 			if keys_owned > 0 and not g.opened then
-				sfx(2)
+				psfx(60)
 				keys_owned -= 1
 				g.opened = true
 			end
@@ -1636,7 +1635,8 @@ function create_chest(c)
 end
 
 function open_chest(c)
-	sfx(13)
+	sfx_timer = 20
+	sfx(49,3)
 	c.opened = true
 	--crれたer le contenu du coffre au-dessus
 	if c.content.name == "black_orb" then
@@ -1964,6 +1964,12 @@ function collision_gate(p, g)
 				or py2 < gy1)
 end
 
+function psfx(num)
+	if sfx_timer <= 0 then
+		sfx(num,3)
+	end
+end
+
 __gfx__
 00000000088888800888888001111110088888800222222002222220c111111c0222222000000000000000000000000000000000000011111111000000000000
 00000000888888888888888811111111888888882222222222222222111111112222222200000000000000000000000000000000011111111111111000000000
@@ -2192,7 +2198,7 @@ d524000020910209301d910249331d910299331d910299331d9102b9301f9102c9331f9102b9331f
 000200000e0100901005010000100100001000000000000000000000000000000000000000000017000110000d00028000250001f0001b000160000d000070000300002000000000000000000000000000000000
 000100000254002540025400454006540095400b5400e5401054012540145401555016550175501755017550165501555013550115500e5500c5400b540095400854007540065400554004540035400254002540
 000200000c5401054014550195501e55022560265602a56016540185401b5501f5502256026560295602c5402e5401e540215502455026550295502b5502d5502f560315603456037560395603c5703e5703f570
-000200000904108031090210c0210e0311203115041190411c04123051270510a0000d0010f00113001170010e0100901005010000102e000240011d00117001120010f0010c0010a00108001060010500105001
+000200000904108031090210c0210e0311203115041190411c04123051270510a0000d0010f00113001170010e0000900005000000002e000240011d00117001120010f0010c0010a00108001060010500105001
 __music__
 01 0c0d0e4b
 00 0f100a4b
@@ -2238,6 +2244,7 @@ __music__
 00 061b2224
 00 20072224
 02 21072224
+03 304a4b4c
 00 494a4b4c
 00 494a4b4c
 00 494a4b4c
@@ -2256,7 +2263,5 @@ __music__
 00 494a4b4c
 00 494a4b4c
 00 494a4b4c
-00 494a4b4c
-00 494a4b4c
-
+00 704a4b4c
 
