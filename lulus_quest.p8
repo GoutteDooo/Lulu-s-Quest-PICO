@@ -224,6 +224,21 @@ function update_player()
 	--collisions light
 	for c in all(chars) do c.in_light = false end
 
+	--dynamic lights
+	for dl in all(dynamic_lights) do
+		for c in all(chars) do
+			if collision_black_light(c, dl) then
+				if dl.type == "black" then
+					c.in_light = c == lulu and true or false
+				elseif dl.type == "white" then
+					c.in_light = true
+				elseif dl.type == "anti" then
+					c.in_light = false
+				end
+			end
+		end
+	end
+
 	for l in all(lights) do
 		for c in all(chars) do
 			if collision_light(c, l) then
@@ -1234,11 +1249,6 @@ function next_room()
 
 	room = new_room(id, x, y, w, h)
 	i_room = index_room(room.x, room.y)
-	--if heart achived
-	if i_room == 15 then
-		music(-1)
-		sfx(14)
-	end
 	create_room()
 	sfx(1)
 end
@@ -1266,6 +1276,12 @@ function create_room()
 	--powers
 	lulu.lights_left = rooms_data[i_room].powers["lulu"]
 	hades.turnoffs_left = rooms_data[i_room].powers["hades"]
+	--if pulsator room
+	if i_room == 15 then
+		music(-1)
+		sfx(14, -1)
+		sfx(14)
+	end
 end
 
 function new_room(id, x, y, w, h)
@@ -1507,6 +1523,9 @@ function delete_objects()
 	end
 	if pulsator[1] then
 		del(pulsator,pulsator[1])
+	end
+	for dl in all(dynamic_lights) do
+		del(dynamic_lights,dl)
 	end
 end
 
