@@ -1202,7 +1202,7 @@ function init_room()
 				pulse_dur = 60,
 				pulse_timer = 0,
 				beat_delay = 210,
-				light_data = {r_max = 128, type = "white", spd = 1, cristals_c = 0}
+				light_data = {r_max = 128, type = "white", spd = 1, windows_opened = 0}
 			}},
 			windows = {
 				{x = 123, y = 19, opened = false},
@@ -1444,6 +1444,7 @@ function update_objects()
 	foreach(windows, function(w)
 		if not w.opened and collision(pactual,w) then
 			w.opened = true
+			pulsator[1].windows_opened += 1
 			create_light(w.x, w.y, 12, "black")
 		end
 	end)
@@ -1784,8 +1785,6 @@ end
 
 function update_pulsator()
 	if pulsator[1] then
-		-- update pulsator
-
 		--Après chaque pulsation, on rejoue le SFX electrical effects
 		if pulsator[1].timer == 30 then sfx(47, 0, 0, 14) end
 
