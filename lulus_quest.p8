@@ -1,10 +1,6 @@
 pico-8 cartridge // http://www.pico-8.com
 version 42
 __lua__
- SFX = {
-	{62,-1,0,12},
-	{62,-1,16,20},
-}
 function _init()
 	init_player()
 	init_light()
@@ -1746,11 +1742,11 @@ function draw_pulsator()
 	local pulse_ratio = pulsator[1].pulse_timer / pulsator[1].pulse_duration
 	local scale = 1 + 0.5 * pulse_ratio -- grossit れき chaque battement
 
-	-- flips
+	-- rotation du pulsator
 	local flipx = frames % 15 < 7
 	local flipy = frames % 30 < 15
 
-	-- palette dynamique
+	-- couleurs des fissures dynamiques
 	if frames % 30 < 10 then
 		pal(12,8)
 	elseif frames % 30 < 20 then
@@ -1759,7 +1755,7 @@ function draw_pulsator()
 		pal(12,12)
 	end
 
-	-- position
+	-- redéfinir la position centrale pour les effets électriques
 	local cx = pulsator[1].x + 24
 	local cy = pulsator[1].y + 24
 
@@ -1773,8 +1769,8 @@ function draw_pulsator()
 	-- effets れたlectriques (garde ton effet !)
 	for i = 1, 5 do
 		local a = rnd(1) * 2 * 3.141592653589793
-		local r1 = 20 + rnd(5)
-		local r2 = r1 + rnd(5)
+		local r1 = (20 + rnd(5)) * scale
+		local r2 = (r1 + rnd(5)) * scale
 		local x1 = cx + cos(a) * r1
 		local y1 = cy + sin(a) * r1
 		local x2 = cx + cos(a) * r2
