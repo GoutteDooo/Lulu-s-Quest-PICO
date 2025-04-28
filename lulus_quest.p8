@@ -1444,7 +1444,7 @@ function update_objects()
 	foreach(windows, function(w)
 		if not w.opened and collision(pactual,w) then
 			w.opened = true
-			pulsator[1].windows_opened += 1
+			pulsator[1].light_data.windows_opened += 1
 			create_light(w.x, w.y, 12, "black")
 		end
 	end)
@@ -1543,7 +1543,7 @@ function delete_objects()
 		del(messages,m)
 	end
 	if pulsator[1] then
-		del(pulsator,pulsator[1])
+		deli(pulsator,1)
 	end
 	for dl in all(dynamic_lights) do
 		del(dynamic_lights,dl)
@@ -1740,7 +1740,7 @@ end
 function draw_pulsator()
 	-- osciller uniquement si pulse_timer actif
 	local pulse_ratio = pulsator[1].pulse_timer / pulsator[1].pulse_duration
-	local scale = 1 + 0.5 * pulse_ratio -- grossit れき chaque battement
+	local scale = 1 - (pulsator[1].light_data.windows_opened * 0.1) + 0.5 * pulse_ratio -- grossit れき chaque battement
 	-- flips
 	local flipx = frames % 15 < 7
 	local flipy = frames % 30 < 15
@@ -1789,10 +1789,11 @@ function update_pulsator()
 		if pulsator[1].timer == 30 then sfx(47, 0, 0, 14) end
 
 		--A less before the next pulsation, prevent the player
-		if pulsator[1].timer == pulsator[1].beat_delay - 30 then sfx(47, 0, pulsator[1].light_data.type == "white" and 16 or 19, 1) end
+		local beat_delay = pulsator[1].beat_delay - pulsator[1].light_data.windows_opened * 30
+		if pulsator[1].timer == beat_delay - 30 then sfx(47, 0, pulsator[1].light_data.type == "white" and 16 or 19, 1) end
 
 		pulsator[1].timer += 1
-		if pulsator[1].timer >= pulsator[1].beat_delay then
+		if pulsator[1].timer >= beat_delay then
 			-- un battement se produit
 			pulsator[1].pulse_timer = pulsator[1].pulse_duration -- dれたclenche une pulsation visuelle
 			pulsator[1].timer = 0
@@ -1800,7 +1801,8 @@ function update_pulsator()
 			sfx(47, 0, pulsator[1].light_data.type == "white" and 17 or 20, 1)
 			
 			-- update light from pulsator
-			local new_dyna_light = create_dynamic_light(pulsator[1].x + pulsator[1].spr_r, pulsator[1].y + pulsator[1].spr_r, pulsator[1].light_data.type, pulsator[1].light_data.spd, pulsator[1].light_data.r_max)
+			local speed = pulsator[1].light_data.spd + pulsator[1].light_data.windows_opened * (1 / 6)
+			local new_dyna_light = create_dynamic_light(pulsator[1].x + pulsator[1].spr_r, pulsator[1].y + pulsator[1].spr_r, pulsator[1].light_data.type, speed, pulsator[1].light_data.r_max)
 			add(dynamic_lights, new_dyna_light)
 
 			if pulsator[1].light_data.type == "anti" then
