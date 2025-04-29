@@ -1267,10 +1267,6 @@ function next_room()
 	create_room()
 	sfx_timer = 30
 	sfx(61,3)
-	if i_room == 15 then
-		music(-1)
-		sfx(47, 0, 0, 14)
-	end
 	if i_room > 15 then
 		music(27)
 		sfx(47, -2)
@@ -1306,6 +1302,12 @@ function create_room()
 	--powers
 	lulu.lights_left = rooms_data[i_room].powers["lulu"]
 	hades.turnoffs_left = rooms_data[i_room].powers["hades"]
+	--replay pulsator music if lvl 15 reached
+	if i_room == 15 then
+		music(-1)
+		music(44)
+		-- sfx(47, 0, 0, 14)
+	end
 end
 
 function new_room(id, x, y, w, h)
@@ -1814,11 +1816,11 @@ end
 function update_pulsator()
 	if pulsator[1] then
 		--Aprれそs chaque pulsation, on rejoue le SFX electrical effects
-		if pulsator[1].timer == 30 and i_room == 15 then sfx(47, 0, 0, 14) end
+		-- if pulsator[1].timer == 30 and i_room == 15 then sfx(47, 0, 0, 14) end
 
 		--A less before the next pulsation, prevent the player
 		local beat_delay = pulsator[1].beat_delay - pulsator[1].light_data.windows_opened * 30
-		if pulsator[1].timer == beat_delay - 30 and i_room == 15 then sfx(47, 0, pulsator[1].light_data.type == "white" and 16 or 19, 1) end
+		-- if pulsator[1].timer == beat_delay - 30 and i_room == 15 then sfx(47, 0, pulsator[1].light_data.type == "white" and 16 or 19, 1) end
 
 		pulsator[1].timer += 1
 		if pulsator[1].timer >= beat_delay then
