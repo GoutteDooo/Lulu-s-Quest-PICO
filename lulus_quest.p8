@@ -1196,14 +1196,15 @@ function init_room()
 			},
 			powers = {lulu = 0, hades = 1},
 			pulsator = {
-				x = 117,
-				y = 30,
+				x = nil,
+				y = nil,
 				spr_r = 24,
 				timer = 150,
 				pulse_dur = 60,
 				pulse_timer = 0,
 				beat_delay = 210,
-				light_data = {r_max = 128, type = "white", spd = 1, windows_opened = 0}}
+				light_data = {r_max = 128, type = nil, spd = 1, windows_opened = 0}},
+			p_data = {x=117, y=30, r_max=128, type="white"}
 		},
 		--lvl 16
 		{
@@ -1247,10 +1248,12 @@ function next_room()
 		end
 	end
 	--TEST
-	-- x = 896
-	-- y = 128
-	x = 0
-	y = 256
+	if not pulsator_state then
+		x = 896
+		y = 128
+	end
+	-- x = 0
+	-- y = 256
 	--END TEST
 	local w = x + 128
 	local h = y + 128
