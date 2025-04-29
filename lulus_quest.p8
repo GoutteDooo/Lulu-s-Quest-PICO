@@ -1195,7 +1195,7 @@ function init_room()
 				hades = {x = 113, y = 22}
 			},
 			powers = {lulu = 0, hades = 1},
-			pulsator = {{
+			pulsator = {
 				x = 117,
 				y = 30,
 				spr_r = 24,
@@ -1203,8 +1203,7 @@ function init_room()
 				pulse_dur = 60,
 				pulse_timer = 0,
 				beat_delay = 210,
-				light_data = {r_max = 128, type = "white", spd = 1, windows_opened = 0}
-			}}
+				light_data = {r_max = 128, type = "white", spd = 1, windows_opened = 0}}
 		},
 		--lvl 16
 		{
@@ -1222,16 +1221,7 @@ function init_room()
 				hades = {x = 14, y = 39}
 			},
 			powers = {lulu = 1, hades = 0},
-			pulsator = {{
-				x = 15,
-				y = 47,
-				spr_r = 24,
-				timer = 150,
-				pulse_dur = 60,
-				pulse_timer = 0,
-				beat_delay = 210,
-				light_data = {r_max = 256, type = "white", spd = 1, windows_opened = 0}
-			}}
+			p_data = {x=15, y=47, r_max=256, type="white"},
 		}
 	}
 end
@@ -1281,6 +1271,12 @@ function next_room()
 end
 
 function create_room()
+	-- set pulsator state on
+	-- and put pulsator object into global pulsator object
+	if i_room >= 15 and not pulsator_state then
+		pulsator_state = true
+		add(pulsator, rooms_data[15].pulsator)
+	end
 	delete_objects()
 	create_objects()
 	--characters
@@ -1303,13 +1299,6 @@ function create_room()
 	--powers
 	lulu.lights_left = rooms_data[i_room].powers["lulu"]
 	hades.turnoffs_left = rooms_data[i_room].powers["hades"]
-	-- set pulsator state on
-	-- and put pulsator object into global pulsator object
-	if i_room == 15 and not pulsator_state then
-		pulsator_state = true	
-		--pulsator
-		add(pulsator, rooms_data[i_room].pulsator[1])
-	end
 end
 
 function new_room(id, x, y, w, h)
@@ -1570,8 +1559,12 @@ function delete_objects()
 	for m in all(messages) do
 		del(messages,m)
 	end
-	for p in all(pulsator) do 
-		del(pulsator,p)
+	--reset data of pulsator
+	if pulsator[1] and rooms_data[i_room].p_data then
+		pulsator[1].x = 0
+		pulsator[1].y = 0
+		pulsator[1].light_data.r_max = 0
+		pulsator[1].light_data.type = "white"
 	end
 	for dl in all(dynamic_lights) do
 		del(dynamic_lights,dl)
@@ -1614,6 +1607,13 @@ function create_objects()
 	foreach(rooms_data[i_room].messages, function(m)
 		add(messages, m)
 	end)
+	-- set dynamics data to pulsator
+	if pulsator[1] and rooms_data[i_room].p_data then
+		pulsator[1].x = rooms_data[i_room].p_data.x * 8
+		pulsator[1].y = rooms_data[i_room].p_data.y * 8
+		pulsator[1].light_data.r_max = rooms_data[i_room].p_data.r_max
+		pulsator[1].light_data.type = rooms_data[i_room].p_data.type
+	end
 	--windows
 	foreach(rooms_data[i_room].windows, function(w)
 		add(windows, {x = w.x * 8, y = w.y * 8, opened = false})
@@ -1763,7 +1763,7 @@ end
 
 function draw_pulsator()
 	-- osciller uniquement si pulse_timer actif
-	local pulse_ratio = pulsator[1].pulse_timer / pulsator[1].pulse_duration
+	local pulse_ratio = pulsator[1].pulse_timer / pulsator[1].pulse_dur
 	local scale = 3 - (pulsator[1].light_data.windows_opened * 0.1) + 0.5 * pulse_ratio -- grossit れき chaque battement
 	-- flips
 	local flipx = frames % 15 < 7
@@ -1819,7 +1819,7 @@ function update_pulsator()
 		pulsator[1].timer += 1
 		if pulsator[1].timer >= beat_delay then
 			-- un battement se produit
-			pulsator[1].pulse_timer = pulsator[1].pulse_duration -- dれたclenche une pulsation visuelle
+			pulsator[1].pulse_timer = pulsator[1].pulse_dur -- dれたclenche une pulsation visuelle
 			pulsator[1].timer = 0
 			-- SFX
 			sfx(47, 0, pulsator[1].light_data.type == "white" and 17 or 20, 1)
@@ -1907,10 +1907,9 @@ function debug_print()
 	if pulsator[1] then
 		print("timer:"..pulsator[1].timer, room.x + 4,room.y+50,11)
 		-- rectfill(room.x + 4, room.y + 50, room.x + 4 + 30, room.y + 50 + 50, 7)
-		for k,v in pairs(rooms_data[15].pulsator[1].light_data) do
-			print(k)
-			print(v)
-		end
+		print(type(pulsator[1].pulse_timer))
+		-- for k,v in pairs(pulsator[1]) do
+		-- end
 	end
 	-- if dynamic_lights[1] and dynamic_lights[2] then
 	-- 	print("two dynas")
@@ -1926,8 +1925,8 @@ function debug_print()
 	-- 		print("keys: "..keys_owned, pactual.x-28,pactual.y-30,8)
 	-- 	end
 	-- end)
-	print("dx: "..pactual.dx, pactual.x,pactual.y-10,8)
-	print("dy: "..pactual.dy, pactual.x,pactual.y-20,8)
+	-- print("dx: "..pactual.dx, pactual.x,pactual.y-10,8)
+	-- print("dy: "..pactual.dy, pactual.x,pactual.y-20,8)
 	-- rectfill(room.x+39, room.y+1, room.x+39+20+8, room.y+1+8, 7)
 	print("lvl: "..i_room, room.x+40,room.y+2,8)
 	-- if chests[1] != nil then
