@@ -1195,9 +1195,9 @@ function init_room()
             pulse_dur = 60,
             pulse_timer = 0,
             beat_delay = 210,
-            {r_max = 128, type = nil, beat_speed = 1, w_opened = 0 }, 
+            light_data = {r_max = 128, type = nil, spd = 1, w_opened = 0 }, 
         },
-        p_data = {117,30,128,"white"},
+        p_data = {117,30,128,"white",0},
     },
     --16
     {
@@ -1507,7 +1507,7 @@ function update_objects()
 	foreach(windows, function(w)
 		if not w.opened and collision(pactual,w) then
 			w.opened = true
-			pulsator[1].light_data.windows_opened += 1
+			pulsator[1].light_data.w_opened += 1
 			create_light(w.x, w.y, 12, "black")
 		end
 	end)
@@ -1657,6 +1657,7 @@ function create_objects()
 		pulsator[1].light_data.r_max = rooms_data[i_room].p_data[3]
 		pulsator[1].light_data.type = rooms_data[i_room].p_data[4]
 		pulsator[1].timer = rooms_data[i_room].p_data[5]
+		pulsator[1].light_data.w_opened = rooms_data[i_room].p_data[6] or 0
 	end
 	--windows
 	foreach(rooms_data[i_room].windows, function(w)
@@ -1809,7 +1810,7 @@ end
 function draw_pulsator()
 	-- osciller uniquement si pulse_timer actif
 	local pulse_ratio = pulsator[1].pulse_timer / pulsator[1].pulse_dur
-	local scale = 3 - (pulsator[1].light_data.windows_opened * 0.1) + 0.5 * pulse_ratio -- grossit れき chaque battement
+	local scale = 3 - (pulsator[1].light_data.w_opened * 0.1) + 0.5 * pulse_ratio -- grossit れき chaque battement
 	-- flips
 	local flipx = frames % 15 < 7
 	local flipy = frames % 30 < 15
@@ -1858,7 +1859,7 @@ function update_pulsator()
 		-- if pulsator[1].timer == 30 and i_room == 15 then sfx(47, 0, 0, 14) end
 
 		--A less before the next pulsation, prevent the player
-		local beat_delay = pulsator[1].beat_delay - pulsator[1].light_data.windows_opened * 30
+		local beat_delay = pulsator[1].beat_delay - pulsator[1].light_data.w_opened * 30
 		-- if pulsator[1].timer == beat_delay - 30 and i_room == 15 then sfx(47, 0, pulsator[1].light_data.type == "white" and 16 or 19, 1) end
 
 		pulsator[1].timer += 1
@@ -1871,7 +1872,7 @@ function update_pulsator()
 			sfx(47, 3, pulsator[1].light_data.type == "white" and 17 or 20, 1)
 			
 			-- update light from pulsator
-			local speed = pulsator[1].light_data.spd + pulsator[1].light_data.windows_opened * (1 / 6)
+			local speed = pulsator[1].light_data.spd + pulsator[1].light_data.w_opened * (1 / 6)
 			local new_dyna_light = create_dynamic_light(pulsator[1].x + pulsator[1].spr_r, pulsator[1].y + pulsator[1].spr_r, pulsator[1].light_data.type, speed, pulsator[1].light_data.r_max)
 			add(dynamic_lights, new_dyna_light)
 			pulsator[1].light_data.type = pulsator[1].light_data.type == "anti" and "white" or "anti"
