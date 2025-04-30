@@ -100,8 +100,8 @@ function init_player()
 		passed = false, --pass lvl
 		shield = {
 			timer = 0,
-			time_set = 5*30,
-			active = true,
+			time_set = 0,
+			active = false,
 			r = 16,
 		}
 	}
@@ -136,8 +136,8 @@ function init_player()
 		passed = false, --pass lvl
 		shield = {
 			timer = 0,
-			time_set = 5*30,
-			active = true,
+			time_set = 0,
+			active = false,
 			r = 16,
 		}
 	}
@@ -1280,11 +1280,11 @@ function next_room()
 	-- ! ---- ! --
 	-- ! TEST ! --
 	-- ! ---- ! -- 
-	if not tp then
-		tp = true
-		x = 896
-		y = 128
-	end
+	-- if not tp then
+	-- 	tp = true
+	-- 	x = 896
+	-- 	y = 128
+	-- end
 	-- if not pulsator_state then
 	-- 	x = 0
 	-- 	y = 256
