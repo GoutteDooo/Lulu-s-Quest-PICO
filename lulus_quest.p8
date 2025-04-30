@@ -1579,43 +1579,31 @@ function create_black_orb(x, y,r)
 end
 
 function delete_objects()
-	--delete all lights from ancient room
-	for l in all(lights) do
-		del(lights,l)
-	end
-	for bl in all(black_lights) do
-		del(black_lights,bl)
-	end
-	for c in all(chests) do
-		del(chests,c)
-	end
-	for k in all(keys) do
-		del(keys,k)
+	local lists_to_clear = {
+		lights,
+		black_lights,
+		chests,
+		keys,
+		shield_cristals,
+		gates,
+		butterflies,
+		messages,
+		dynamic_lights,
+		windows,
+	}
+	--delete all objects from ancient room or actual if restart_level()
+	for _, tbl in ipairs(lists_to_clear) do
+		for obj in all(tbl) do
+			del(tbl, obj)
+		end
 	end
 	keys_owned = 0
-	for sc in all(shield_cristals) do
-		del(shield_cristals,sc)
-	end
-	for g in all(gates) do
-		del(gates,g)
-	end
-	for b in all(butterflies) do
-		del(butterflies,b)
-	end
-	for m in all(messages) do
-		del(messages,m)
-	end
 	--reset data of pulsator
 	if pulsator[1] and rooms_data[i_room].p_data then
 		pulsator[1].timer = 0
 	end
-	for dl in all(dynamic_lights) do
-		del(dynamic_lights,dl)
-	end
-	for w in all(windows) do
-		del(windows,w)
-	end
 end
+
 
 function create_objects()
 	--create lights from new room
