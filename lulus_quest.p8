@@ -1411,7 +1411,7 @@ function init_objects()
 		{"hint","hades can turn off lights\n the same way as lulu"},
 		{"hint","you got all powers left\n at top of the screen"}, 
 		{"hint","the goal is to bring\n your characters..."}, 
-		{"hint","...to their respective doors"}, 
+		{"hint","...to their respective doors."}, 
 		{"hint","good luck!"},
 	}
 	pulsator = {}
@@ -1502,8 +1502,12 @@ function update_objects()
 		update_butterfly(b)
 	end
 	--messages
-	update_messages()
+	if messages[1] and (btnp(❎)) then
+		deli(messages, 1)
+	end
+	--pulsator
 	update_pulsator()
+	--pulsator windows
 	foreach(windows, function(w)
 		if not w.opened and collision(pactual,w) then
 			w.opened = true
@@ -1767,12 +1771,6 @@ function draw_messages()
 		print(messages[1][2],x1+4,y1+8,f_col)
 		if messages[2] then print("❎->",x2-16,y2-6,13) end
 		if not messages[2] then print("❎end",x2-20,y2-6,13) end
-	end
-end
-
-function update_messages()
-	if messages[1] and (btnp(❎)) then
-		deli(messages, 1)
 	end
 end
 
