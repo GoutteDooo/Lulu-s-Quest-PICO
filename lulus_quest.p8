@@ -761,8 +761,8 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 17, y = 10, r = 20},
-				{x = 25, y = 11, r = 22}
+				{17,10,20},
+				{25,11,22}
 			},
 			pos = 
 			{
@@ -784,8 +784,8 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 43, y = 7, r = 24},
-				{x = 35, y = 6, r = 16}
+				{43,7,24},
+				{35,6,16}
 			},
 			pos = 
 			{
@@ -807,8 +807,8 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 50, y = 8, r = 19},
-				{x = 56, y = 8, r = 23}
+				{50,8,19},
+				{56,8,23}
 			},
 			pos = 
 			{
@@ -830,9 +830,9 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 65, y = 8, r = 16},
-				{x = 70, y = 0, r = 24},
-				{x = 72, y = 8, r = 16}
+				{65,8,16},
+				{70,0,24},
+				{72,8,16}
 			},
 			pos = 
 			{
@@ -854,8 +854,8 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 82, y = 9, r = 24},
-				{x = 91, y = 9, r = 32}
+				{82,9,24},
+				{91,9,32}
 			},
 			pos = 
 			{
@@ -877,10 +877,10 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 102, y = 1, r = 16},
-				{x = 108, y = 5, r = 24},
-				{x = 99, y = 6, r = 12},
-				{x = 104, y = 12, r = 24},
+				{102,1,16},
+				{108,5,24},
+				{99,6,12},
+				{104,12,24},
 			},
 			pos = 
 			{
@@ -902,10 +902,10 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 113, y = 13, r = 16},
-				{x = 116, y = 13, r = 16},
-				{x = 119, y = 13, r = 16},
-				{x = 122, y = 9, r = 16},
+				{113,13,16},
+				{116,13,16},
+				{119,13,16},
+				{122,9,16},
 			},
 			pos = 
 			{
@@ -931,9 +931,9 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 8, y = 17, r = 16},
-				{x = 3, y = 21, r = 16},
-				{x = 9, y = 22, r = 16},
+				{8,17,16},
+				{3,21,16},
+				{9,22,16},
 			},
 			pos = 
 			{
@@ -959,12 +959,12 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 22, y = 15, r = 16},
-				{x = 15, y = 16, r = 20},
-				{x = 19, y = 18, r = 16},
-				{x = 25, y = 19, r = 28},
-				{x = 19, y = 21, r = 16},
-				{x = 21, y = 25, r = 24},
+				{22,15,16},
+				{15,16,20},
+				{19,18,16},
+				{25,19,28},
+				{19,21,16},
+				{21,25,24},
 			},
 			pos = 
 			{
@@ -1003,9 +1003,9 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 35, y = 17, r = 16},
-				{x = 35, y = 21, r = 16},
-				{x = 44, y = 24, r = 12},
+				{35,17,16},
+				{35,21,16},
+				{44,24,12},
 			},
 			pos = 
 			{
@@ -1030,8 +1030,8 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 49, y = 17, r = 16},
-				{x = 55, y = 27, r = 8},
+				{49,17,16},
+				{55,27,8},
 			},
 			pos = 
 			{
@@ -1056,14 +1056,14 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 65, y = 16, r = 16},
-				{x = 71, y = 21, r = 8},
-				{x = 69, y = 23, r = 8},
-				{x = 73, y = 23, r = 8},
-				{x = 71, y = 25, r = 8},
-				{x = 71, y = 27, r = 8},
-				{x = 71, y = 29, r = 8},
-				{x = 78, y = 29, r = 8},
+				{65,16,16},
+				{71,21,8},
+				{69,23,8},
+				{73,23,8},
+				{71,25,8},
+				{71,27,8},
+				{71,29,8},
+				{78,29,8},
 			},
 			pos = 
 			{
@@ -1110,7 +1110,7 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 82, y = 27, r = 16}
+				{82,27,16}
 			},
 			pos = 
 			{
@@ -1149,7 +1149,7 @@ function init_room()
 		{
 			lights = 
 			{
-				{x = 101, y = 15, r = 16}
+				{101,15,16}
 			},
 			pos = 
 			{
@@ -1190,7 +1190,7 @@ function init_room()
 		--lvl 15 HEART
 		{
 			lights = {
-				{x = 123, y = 16, r = 12}
+				{123,16,12}
 			},
 			pos = 
 			{
@@ -1217,7 +1217,7 @@ function init_room()
 		--lvl 16
 		{
 			lights = {
-				{x = 14, y = 35, r = 16, type = "black"}
+				{14,35,16,"black"}
 			},
 			pos = 
 			{
@@ -1265,10 +1265,10 @@ function next_room()
 		end
 	end
 	--TEST
-	if not pulsator_state then
-		x = 0
-		y = 256
-	end
+	-- if not pulsator_state then
+	-- 	x = 0
+	-- 	y = 256
+	-- end
 	-- x = 0
 	-- y = 256
 	--END TEST
@@ -1600,7 +1600,7 @@ end
 function create_objects()
 	--create lights from new room
 	for l in all(rooms_data[i_room].lights) do
-		create_light(l.x * 8, l.y * 8, l.r, l.type, l.flag, l.color)
+		create_light(l[1] * 8, l[2] * 8, l[3], l[4], l[5], l[6])
 	end
 	--black orb
 	for bo in all(rooms_data[i_room].black_orb) do
