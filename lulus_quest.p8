@@ -230,10 +230,11 @@ function update_player()
 			if collision_black_light(c, dl) then
 				if dl.type == "white" then
 					c.in_light = true
+					print("collision!", room.x + 10, room.y + 10, 8)
 				elseif dl.type == "anti" then
 					c.in_light = false
-				elseif dl.type == "black" then
-					c.in_light = c == lulu and true or false
+				-- elseif dl.type == "black" then
+				-- 	c.in_light = c == lulu and true or false
 				end
 			end
 		end
@@ -1214,7 +1215,7 @@ function init_room()
 				hades = {x = 14, y = 39}
 			},
 			powers = {lulu = 1, hades = 0},
-			p_data = {x=15, y=47, r_max=256, type="white", timer = 180},
+			p_data = {x=14, y=46, r_max=256, type="white", timer = 180},
 		}
 	}
 end
@@ -1828,12 +1829,7 @@ function update_pulsator()
 			local speed = pulsator[1].light_data.spd + pulsator[1].light_data.windows_opened * (1 / 6)
 			local new_dyna_light = create_dynamic_light(pulsator[1].x + pulsator[1].spr_r, pulsator[1].y + pulsator[1].spr_r, pulsator[1].light_data.type, speed, pulsator[1].light_data.r_max)
 			add(dynamic_lights, new_dyna_light)
-
-			if pulsator[1].light_data.type == "anti" then
-				pulsator[1].light_data.type = "white"
-			else
-				pulsator[1].light_data.type = "anti"
-			end
+			pulsator[1].light_data.type = pulsator[1].light_data.type == "anti" and "white" or "anti"
 		end
 		-- diminuer le pulse progressivement
 		if pulsator[1].pulse_timer > 0 then
@@ -1911,11 +1907,23 @@ function debug_print()
 		-- for k,v in pairs(pulsator[1]) do
 		-- end
 	end
-	for dl in all(dynamic_lights) do
-		for c in all(chars) do
-			local col = collision_black_light(c, dl)
-			print(col and "true" or "false", c.x, c.y + 10)
-		end
+	
+	-- for dl in all(dynamic_lights) do
+	-- 	for c in all(chars) do
+			if dynamic_lights[1] and collision_black_light(lulu, dynamic_lights[1]) then
+				if dynamic_lights[1].type == "white" then
+					lulu.in_light = true
+				elseif dynamic_lights[1].type == "anti" then
+					lulu.in_light = false
+					-- print("collision!", c.x + 10, c.y + 10, 8)
+					-- elseif dl.type == "black" then
+						-- 	c.in_light = c == lulu and true or false
+					end
+				-- end
+			-- end
+			-- print(dl.x)
+			-- print(dl.y)
+			-- print(dl.r)
 	end
 	-- if dynamic_lights[1] and dynamic_lights[2] then
 	-- 	print("two dynas")
@@ -2000,14 +2008,14 @@ function collision_light(p, l)
 end
 
 function collision_black_light(p, l)
-	local lx = l.x + l.r / l.r
-	local ly = l.y + l.r / l.r
+	local lx = l.x + 1
+	local ly = l.y + 1
 	local rx = max(p.x, min(lx, p.x + p.w))
 	local ry = max(p.y, min(ly, p.y + p.h))
 	local dx = lx - rx
 	local dy = ly - ry
 	local dist = sqrt(dx*dx + dy*dy)
-	-- print("dist: "..flr(dist), pactual.x, pactual.y - 10, 7)
+	print("dist: "..flr(dx*dx + dy*dy), pactual.x, pactual.y - 10, 7)
 	-- pset(rx, ry, 11)  -- centre du joueur
 	-- pset(lx, ly, 8)   -- centre du cercle
 	return dist <= l.r
