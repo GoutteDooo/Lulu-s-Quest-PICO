@@ -1249,10 +1249,10 @@ function next_room()
 		end
 	end
 	--TEST
-	if not pulsator_state then
-		x = 0
-		y = 256
-	end
+	--if not pulsator_state then
+		--x = 0
+	--	y = 256
+	--end
 	-- x = 0
 	-- y = 256
 	--END TEST
