@@ -230,7 +230,6 @@ function update_player()
 			if collision_black_light(c, dl) then
 				if dl.type == "white" then
 					c.in_light = true
-					print("collision!", room.x + 10, room.y + 10, 8)
 				elseif dl.type == "anti" then
 					c.in_light = false
 				-- elseif dl.type == "black" then
@@ -1216,6 +1215,15 @@ function init_room()
 			},
 			powers = {lulu = 1, hades = 0},
 			p_data = {x=14, y=46, r_max=256, type="white", timer = 180},
+			butterflies = {
+				{x = 6, y = 36, x1 = 1, y1 = 36, x2 = 10, y2 = 36, target = 1, speed = 0.6, r = 8, light = "white", spr_flip = false}, 
+				{x = 1, y = 36, x1 = 1, y1 = 36, x2 = 1, y2 = 47, target = 2, speed = 1, r = 12, light = "white", spr_flip = true},
+				{x = 6, y = 46, x1 = 6, y1 = 46, x2 = 12, y2 = 40, target = 2, speed = 0.5, r = 18, light = "black", spr_flip = true},
+			},
+			black_orb = 
+			{
+				{x = 8, y = 40, r = 16},
+			}
 		}
 	}
 end
@@ -1900,31 +1908,14 @@ end
 --helper functions
 
 function debug_print()
-	if pulsator[1] then
-		print("timer:"..pulsator[1].timer, room.x + 4,room.y+50,11)
+	print("lvl: "..i_room, room.x+40,room.y+2,8)
+	-- if pulsator[1] then
+	-- 	print("timer:"..pulsator[1].timer, room.x + 4,room.y+50,11)
+	-- 	print(type(pulsator[1].pulse_timer))
 		-- rectfill(room.x + 4, room.y + 50, room.x + 4 + 30, room.y + 50 + 50, 7)
-		print(type(pulsator[1].pulse_timer))
 		-- for k,v in pairs(pulsator[1]) do
 		-- end
-	end
-	
-	-- for dl in all(dynamic_lights) do
-	-- 	for c in all(chars) do
-			if dynamic_lights[1] and collision_black_light(lulu, dynamic_lights[1]) then
-				if dynamic_lights[1].type == "white" then
-					lulu.in_light = true
-				elseif dynamic_lights[1].type == "anti" then
-					lulu.in_light = false
-					-- print("collision!", c.x + 10, c.y + 10, 8)
-					-- elseif dl.type == "black" then
-						-- 	c.in_light = c == lulu and true or false
-					end
-				-- end
-			-- end
-			-- print(dl.x)
-			-- print(dl.y)
-			-- print(dl.r)
-	end
+	-- end
 	-- if dynamic_lights[1] and dynamic_lights[2] then
 	-- 	print("two dynas")
 	-- 	if dynamic_lights[3] then print("three now :(...") end
@@ -1942,7 +1933,6 @@ function debug_print()
 	-- print("dx: "..pactual.dx, pactual.x,pactual.y-10,8)
 	-- print("dy: "..pactual.dy, pactual.x,pactual.y-20,8)
 	-- rectfill(room.x+39, room.y+1, room.x+39+20+8, room.y+1+8, 7)
-	print("lvl: "..i_room, room.x+40,room.y+2,8)
 	-- if chests[1] != nil then
 	-- 	print("chests: "..chests[1].content.name, pactual.x,pactual.y-10,8)
 		-- print("x: "..chests[1].x, pactual.x,pactual.y-20,8)
@@ -2015,7 +2005,7 @@ function collision_black_light(p, l)
 	local dx = lx - rx
 	local dy = ly - ry
 	local dist = sqrt(dx*dx + dy*dy)
-	print("dist: "..flr(dx*dx + dy*dy), pactual.x, pactual.y - 10, 7)
+	-- print("dist: "..flr(dx*dx + dy*dy), pactual.x, pactual.y - 10, 7)
 	-- pset(rx, ry, 11)  -- centre du joueur
 	-- pset(lx, ly, 8)   -- centre du cercle
 	return dist <= l.r
