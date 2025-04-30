@@ -58,13 +58,13 @@ function _draw()
 	--DEBUG
 	if btn(🅾️) and lulu.select then
 		-- Dessiner la grid de la map
-		for i=0,1 do
-			for j=0,16 do
-				if (i == 0) line(0, max(0,room.y + (j*8)),room.x + 128,max(0,room.y + (j*8)), 8)
-				if (i == 1) line(max(0,room.x + (j*8)),0,max(0,room.x + (j*8)),room.y + 128,8)
-			end
-		end
-		pset(ima_light.x,ima_light.y,11)
+		-- for i=0,1 do
+		-- 	for j=0,16 do
+		-- 		if (i == 0) line(0, max(0,room.y + (j*8)),room.x + 128,max(0,room.y + (j*8)), 8)
+		-- 		if (i == 1) line(max(0,room.x + (j*8)),0,max(0,room.x + (j*8)),room.y + 128,8)
+		-- 	end
+		-- end
+		-- pset(ima_light.x,ima_light.y,11)
 	end
 	draw_ui()
 	debug_print()
