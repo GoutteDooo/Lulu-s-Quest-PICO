@@ -1042,11 +1042,18 @@ function next_room()
 		y = 0
 		end
 	end
-	--TEST
-	--if not pulsator_state then
-		--x = 0
-	--	y = 256
-	--end
+	-- ! ---- ! --
+	-- ! TEST ! --
+	-- ! ---- ! -- 
+	-- if not tp then
+	-- 	tp = true
+	-- 	x = 896
+	-- 	y = 128
+	-- end
+	-- if not pulsator_state then
+	-- 	x = 0
+	-- 	y = 256
+	-- end
 	-- x = 0
 	-- y = 256
 	--END TEST
