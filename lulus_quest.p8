@@ -1042,15 +1042,14 @@ function next_room()
 		y = 0
 		end
 	end
-	-- ! ---- ! --
-	-- ! TEST ! --
-	-- ! ---- ! -- 
-	if not tp then
-		tp = true
-		x = 128 * 7
-		y = 128 * 0
-	end
-	-- !!END TEST
+	--TEST
+	--if not pulsator_state then
+		--x = 0
+	--	y = 256
+	--end
+	-- x = 0
+	-- y = 256
+	--END TEST
 	local w = x + 128
 	local h = y + 128
 	local id = room.id + 1
