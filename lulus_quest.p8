@@ -1606,49 +1606,51 @@ end
 
 
 function create_objects()
+	local room = rooms_data[i_room]
 	--create lights from new room
-	for l in all(rooms_data[i_room].lights) do
+	for l in all(room.lights) do
 		create_light(l[1] * 8, l[2] * 8, l[3], l[4], l[5], l[6])
 	end
 	--black orb
-	for bo in all(rooms_data[i_room].black_orbs) do
+	for bo in all(room.black_orbs) do
 		create_black_orb(bo[1] * 8, bo[2] * 8, bo[3]) 
 	end
 	--chests
-	for c in all(rooms_data[i_room].chests) do
-		create_chest(c)
+	for c in all(room.chests) do
+		add(chests, {opened = c[1],locked = c[2],check_lock = c[3],content = c[4],x = c[5] * 8,y = c[6] * 8})
 	end
 	--keys
-	for k in all(rooms_data[i_room].keys) do
-		create_key(k[1] * 8, k[2] * 8, k[3]) 
+	for k in all(room.keys) do
+		add(keys, {x = k[1] * 8, y = k[2] * 8, style = k[3]})
 	end
 	--shield cristals
-	foreach(rooms_data[i_room].shield_cristals, function(sc)
+	foreach(room.shield_cristals, function(sc)
 		add(shield_cristals, {x = sc[1] * 8, y = sc[2] * 8, timer = sc[3], r = sc[4], lives = sc[5], c = sc[6]})
 	end)
 	--gates
-	foreach(rooms_data[i_room].gates, function(g)
+	foreach(room.gates, function(g)
 		add(gates, {x = g[1] * 8, y = g[2] * 8})
 	end)
 	--butterflies
-	foreach(rooms_data[i_room].butterflies, function(b)
+	foreach(room.butterflies, function(b)
 		add(butterflies, {x = b[1] * 8, y = b[2] * 8, x1 = b[3] * 8, y1 = b[4] * 8, x2 = b[5] * 8, y2 = b[6] * 8, target = b[7], speed = b[8], r = b[9], light = b[10]})
 	end)
 	--messages
-	foreach(rooms_data[i_room].messages, function(m)
+	foreach(room.messages, function(m)
 		add(messages, m)
 	end)
 	-- set dynamics data to pulsator
-	if pulsator[1] and rooms_data[i_room].p_data then
-		pulsator[1].x = rooms_data[i_room].p_data[1] * 8
-		pulsator[1].y = rooms_data[i_room].p_data[2] * 8
-		pulsator[1].light_data.r_max = rooms_data[i_room].p_data[3]
-		pulsator[1].light_data.type = rooms_data[i_room].p_data[4]
-		pulsator[1].timer = rooms_data[i_room].p_data[5]
-		pulsator[1].light_data.w_opened = rooms_data[i_room].p_data[6] or 0
+	if pulsator[1] and room.p_data then
+		local p = room.p_data
+		pulsator[1].x = p[1] * 8
+		pulsator[1].y = p[2] * 8
+		pulsator[1].light_data.r_max = p[3]
+		pulsator[1].light_data.type = p[4]
+		pulsator[1].timer = p[5]
+		pulsator[1].light_data.w_opened = p[6] or 0
 	end
 	--windows
-	foreach(rooms_data[i_room].windows, function(w)
+	foreach(room.windows, function(w)
 		add(windows, {x = w[1] * 8, y = w[2] * 8, opened = false})
 	end)
 end
@@ -1709,18 +1711,6 @@ end
 -->8
 --chests
 
-function create_chest(c)
-	local new_chest = {
-		opened = c[1],
-		locked = c[2],
-		check_lock = c[3],
-		content = c[4],
-		x = c[5] * 8,
-		y = c[6] * 8
-	}
-	add(chests, new_chest)
-end
-
 function open_chest(c)
 	sfx_timer = 20
 	sfx(49,3)
@@ -1732,13 +1722,7 @@ function open_chest(c)
 	if c.content[1] == "turnoff" then
 		hades.turnoffs_left = hades.turnoffs_left + 1
 	end
-
 end
-
-function create_key(x, y, style)
-	add(keys, {x = x, y = y, style = style})
-end
-
 -->8
 --keys
 
