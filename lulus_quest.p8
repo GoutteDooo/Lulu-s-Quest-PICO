@@ -1326,19 +1326,20 @@ function create_room()
 	hades.in_light = false
 	disable_shield(lulu)
 	disable_shield(hades)
+	local room = rooms_data[i_room]
 	--doors
-	doors.lulu.x = rooms_data[i_room].doors[1][1] * 8
-	doors.lulu.y = rooms_data[i_room].doors[1][2] * 8
-	doors.hades.x = rooms_data[i_room].doors[2][1] * 8
-	doors.hades.y = rooms_data[i_room].doors[2][2] * 8
+	doors.lulu.x = room.doors[1][1] * 8
+	doors.lulu.y = room.doors[1][2] * 8
+	doors.hades.x = room.doors[2][1] * 8
+	doors.hades.y = room.doors[2][2] * 8
 	--pos
-	lulu.x = rooms_data[i_room].pos[1][1] * 8
-	lulu.y = rooms_data[i_room].pos[1][2] * 8
-	hades.x = rooms_data[i_room].pos[2][1] * 8
-	hades.y = rooms_data[i_room].pos[2][2] * 8
+	lulu.x = room.pos[1][1] * 8
+	lulu.y = room.pos[1][2] * 8
+	hades.x = room.pos[2][1] * 8
+	hades.y = room.pos[2][2] * 8
 	--powers
-	lulu.lights_left = rooms_data[i_room].powers[1]
-	hades.turnoffs_left = rooms_data[i_room].powers[2]
+	lulu.lights_left = room.powers[1]
+	hades.turnoffs_left = room.powers[2]
 	--replay pulsator music if lvl 15 reached
 	if i_room == 15 then
 		music(-1)
