@@ -739,6 +739,22 @@ function init_room()
 		h = 128
 	}
 
+	-- DATAS MANUAL --
+	------------------
+	-- lights = { x, y, r, type}
+	-- pos = { x, y }
+	-- doors = { x, y }
+	-- powers = { lulu (number), hades (number) }
+	-- black_orbs = { x, y, r }
+	-- shield_cristals = { x, y, timer (frames), r, lives, c (couleur)}
+	-- chests = { { opened (boolean), locked (boolean), check_lock (boolean), content = { name (string), r (number)}, x, y } }
+		-- pour les chests : si content.name = "turnoff" -> aucune autre data a insérer
+		-- si content.name = "black_orb" -> content = { name, x, y, r }
+	-- keys = { x, y, style (string = "chest" ou "door") }
+	-- gates = { x, y, opened (boolean) }
+	-- butterflies = { x, y, x1, y1, x2, y2, target (1 ou 2), speed (number), r (number), light (string = "white" ou "black"), spr_flip (boolean) }
+	-- messages = { title (string), text (string) }
+	-- p_data = {x, y, r_max, type (string = "white" ou "anti"), timer (frames)}
 	rooms_data = 
 	{
 		--1
