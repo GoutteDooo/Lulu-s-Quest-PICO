@@ -766,8 +766,8 @@ function init_room()
 			},
 			pos = 
 			{
-				lulu = {x = 19, y = 14},
-				hades = {x = 17, y = 7}
+				lulu = {19,14},
+				hades = {17,7}
 			},
 			doors = 
 			{
@@ -789,8 +789,8 @@ function init_room()
 			},
 			pos = 
 			{
-				lulu = {x = 45, y = 10},
-				hades = {x = 34, y = 10}
+				lulu = {45,10},
+				hades = {34,10}
 			},
 			doors = 
 			{
@@ -812,8 +812,8 @@ function init_room()
 			},
 			pos = 
 			{
-				lulu = {x = 53, y = 10},
-				hades = {x = 62, y = 10}
+				lulu = {53,10},
+				hades = {62,10}
 			},
 			doors = 
 			{
@@ -836,8 +836,8 @@ function init_room()
 			},
 			pos = 
 			{
-				lulu = {x = 67, y = 10},
-				hades = {x = 78, y = 10}
+				lulu = {67,10},
+				hades = {78,10}
 			},
 			doors = 
 			{
@@ -859,8 +859,8 @@ function init_room()
 			},
 			pos = 
 			{
-				lulu = {x = 82, y = 11},
-				hades = {x = 80, y = 14}
+				lulu = {82,11},
+				hades = {80,14}
 			},
 			doors = 
 			{
@@ -884,8 +884,8 @@ function init_room()
 			},
 			pos = 
 			{
-				lulu = {x = 102, y = 2},
-				hades = {x = 104, y = 5}
+				lulu = {102,2},
+				hades = {104,5}
 			},
 			doors = 
 			{
@@ -909,8 +909,8 @@ function init_room()
 			},
 			pos = 
 			{
-				lulu = {x = 113, y = 14},
-				hades = {x = 113, y = 11}
+				lulu = {113,14},
+				hades = {113,11}
 			},
 			doors = 
 			{
@@ -937,8 +937,8 @@ function init_room()
 			},
 			pos = 
 			{
-				lulu = {x = 10, y = 18},
-				hades = {x = 1, y = 18}
+				lulu = {10,18},
+				hades = {1,18}
 			},
 			doors = 
 			{
@@ -968,8 +968,8 @@ function init_room()
 			},
 			pos = 
 			{
-				lulu = {x = 23, y = 17},
-				hades = {x = 30, y = 17}
+				lulu = {23,17},
+				hades = {30,17}
 			},
 			doors = 
 			{
@@ -1009,8 +1009,8 @@ function init_room()
 			},
 			pos = 
 			{
-				lulu = {x = 36, y = 19},
-				hades = {x = 46, y = 18}
+				lulu = {36,19},
+				hades = {46,18}
 			},
 			doors = 
 			{
@@ -1035,8 +1035,8 @@ function init_room()
 			},
 			pos = 
 			{
-				lulu = {x = 49, y = 19},
-				hades = {x = 59, y = 19}
+				lulu = {49,19},
+				hades = {59,19}
 			},
 			doors = 
 			{
@@ -1067,8 +1067,8 @@ function init_room()
 			},
 			pos = 
 			{
-				lulu = {x = 66, y = 18},
-				hades = {x = 76, y = 18}
+				lulu = {66,18},
+				hades = {76,18}
 			},
 			doors = 
 			{
@@ -1114,8 +1114,8 @@ function init_room()
 			},
 			pos = 
 			{
-				lulu = {x = 84, y = 29},
-				hades = {x = 91, y = 29}
+				lulu = {84,29},
+				hades = {91,29}
 			},
 			doors = 
 			{
@@ -1153,8 +1153,8 @@ function init_room()
 			},
 			pos = 
 			{
-				lulu = {x = 103, y = 17},
-				hades = {x = 105, y = 30
+				lulu = {103,17},
+				hades = {105,30
 			}
 			},
 			doors = 
@@ -1194,8 +1194,8 @@ function init_room()
 			},
 			pos = 
 			{
-				lulu = {x = 125, y = 17},
-				hades = {x = 127, y = 17}
+				lulu = {125,17},
+				hades = {127,17}
 			},
 			doors = 
 			{
@@ -1221,8 +1221,8 @@ function init_room()
 			},
 			pos = 
 			{
-				lulu = {x = 13, y = 35},
-				hades = {x = 14, y = 35}
+				lulu = {13,35},
+				hades = {14,35}
 			},
 			doors = 
 			{
@@ -1312,10 +1312,10 @@ function create_room()
 	doors.hades.x = rooms_data[i_room].doors["hades"].x * 8
 	doors.hades.y = rooms_data[i_room].doors["hades"].y * 8
 	--pos
-	lulu.x = rooms_data[i_room].pos["lulu"].x * 8
-	lulu.y = rooms_data[i_room].pos["lulu"].y * 8
-	hades.x = rooms_data[i_room].pos["hades"].x * 8
-	hades.y = rooms_data[i_room].pos["hades"].y * 8
+	lulu.x = rooms_data[i_room].pos["lulu"][1] * 8
+	lulu.y = rooms_data[i_room].pos["lulu"][2] * 8
+	hades.x = rooms_data[i_room].pos["hades"][1] * 8
+	hades.y = rooms_data[i_room].pos["hades"][2] * 8
 	--powers
 	lulu.lights_left = rooms_data[i_room].powers["lulu"]
 	hades.turnoffs_left = rooms_data[i_room].powers["hades"]
