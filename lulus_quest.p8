@@ -20,7 +20,7 @@ function _init()
 	music(0)
 	pulsator_state = false
 	--DEBUG
-	debug_light = false
+	tp = false
 	--TEST
 end
 
@@ -755,493 +755,506 @@ function init_room()
 	-- butterflies = { x, y, x1, y1, x2, y2, target (1 ou 2), speed (number), r (number), light (string = "white" ou "black"), spr_flip (boolean) }
 	-- messages = { title (string), text (string) }
 	-- p_data = {x, y, r_max, type (string = "white" ou "anti"), timer (frames)}
-	rooms_data = 
-	{
-		--1
-		{
-			lights = 
-			{
-				{17,10,20},
-				{25,11,22}
-			},
-			pos = 
-			{
-				lulu = {19,14},
-				hades = {17,7}
-			},
-			doors = 
-			{
-				lulu = {x = 30, y = 13},
-				hades = {x = 31, y = 9}
-			},
-			powers = 
-			{
-				lulu = 1,
-				hades = 1
-			}
-		},
-		--2
-		{
-			lights = 
-			{
-				{43,7,24},
-				{35,6,16}
-			},
-			pos = 
-			{
-				lulu = {45,10},
-				hades = {34,10}
-			},
-			doors = 
-			{
-				lulu = {x = 33, y = 9},
-				hades = {x = 46, y = 9}
-			},
-			powers = 
-			{
-				lulu = 3,
-				hades = 1
-			}
-		},
-		--3
-		{
-			lights = 
-			{
-				{50,8,19},
-				{56,8,23}
-			},
-			pos = 
-			{
-				lulu = {53,10},
-				hades = {62,10}
-			},
-			doors = 
-			{
-				lulu = {x = 63, y = 8},
-				hades = {x = 48, y = 9}
-			},
-			powers = 
-			{
-				lulu = 2,
-				hades = 2
-			}
-		},
-		--4
-		{
-			lights = 
-			{
-				{65,8,16},
-				{70,0,24},
-				{72,8,16}
-			},
-			pos = 
-			{
-				lulu = {67,10},
-				hades = {78,10}
-			},
-			doors = 
-			{
-				lulu = {x = 70, y = 1},
-				hades = {x = 75, y = 1}
-			},
-			powers = 
-			{
-				lulu = 2,
-				hades = 1
-			}
-		},
-		--5
-		{
-			lights = 
-			{
-				{82,9,24},
-				{91,9,32}
-			},
-			pos = 
-			{
-				lulu = {82,11},
-				hades = {80,14}
-			},
-			doors = 
-			{
-				lulu = {x = 94, y = 13},
-				hades = {x = 94, y = 10}
-			},
-			powers = 
-			{
-				lulu = 2,
-				hades = 2
-			}
-		},
-		--6
-		{
-			lights = 
-			{
-				{102,1,16},
-				{108,5,24},
-				{99,6,12},
-				{104,12,24},
-			},
-			pos = 
-			{
-				lulu = {102,2},
-				hades = {104,5}
-			},
-			doors = 
-			{
-				lulu = {x = 101, y = 14},
-				hades = {x = 106, y = 14}
-			},
-			powers = 
-			{
-				lulu = 3,
-				hades = 2
-			}
-		},
-		--7
-		{
-			lights = 
-			{
-				{113,13,16},
-				{116,13,16},
-				{119,13,16},
-				{122,9,16},
-			},
-			pos = 
-			{
-				lulu = {113,14},
-				hades = {113,11}
-			},
-			doors = 
-			{
-				lulu = {x = 126, y = 13},
-				hades = {x = 126, y = 9}
-			},
-			powers = 
-			{
-				lulu = 1,
-				hades = 0
-			},
-			black_orb = 
-			{
-				{x = 122, y = 14, r = 24},
-			}
-		},
-		--8
-		{
-			lights = 
-			{
-				{8,17,16},
-				{3,21,16},
-				{9,22,16},
-			},
-			pos = 
-			{
-				lulu = {10,18},
-				hades = {1,18}
-			},
-			doors = 
-			{
-				lulu = {x = 13, y = 29},
-				hades = {x = 8, y = 29}
-			},
-			powers = 
-			{
-				lulu = 1,
-				hades = 1
-			},
-			black_orb = 
-			{
-				{x = 8, y = 23, r = 32},
-			}
-		},
-		--9
-		{
-			lights = 
-			{
-				{22,15,16},
-				{15,16,20},
-				{19,18,16},
-				{25,19,28},
-				{19,21,16},
-				{21,25,24},
-			},
-			pos = 
-			{
-				lulu = {23,17},
-				hades = {30,17}
-			},
-			doors = 
-			{
-				lulu = {x = 23, y = 29},
-				hades = {x = 24, y = 29}
-			},
-			powers = 
-			{
-				lulu = 4,
-				hades = 7
-			},
-			chests = 
-			{
-				{
-					opened = false,
-					locked = true,
-					check_lock = false,
-					content = {
-						name = "black_orb",
-						r = 36,
-						x = 27,
-						y = 30
-					},
-					x = 28,
-					y = 30,
-				}
-			},
-			keys = {{x = 16,y = 25, style = "chest"}}
-		},
-		--10
-		{
-			lights = 
-			{
-				{35,17,16},
-				{35,21,16},
-				{44,24,12},
-			},
-			pos = 
-			{
-				lulu = {36,19},
-				hades = {46,18}
-			},
-			doors = 
-			{
-				lulu = {x = 46, y = 25},
-				hades = {x = 33, y = 29}
-			},
-			powers = 
-			{
-				lulu = 2,
-				hades = 1
-			},
-			black_orb = {
-				{x = 33, y = 19, r = 32},
-			}
-		},
-		--11
-		{
-			lights = 
-			{
-				{49,17,16},
-				{55,27,8},
-			},
-			pos = 
-			{
-				lulu = {49,19},
-				hades = {59,19}
-			},
-			doors = 
-			{
-				lulu = {x = 55, y = 29},
-				hades = {x = 56, y = 29}
-			},
-			powers = 
-			{
-				lulu = 1,
-				hades = 0
-			},
-			shield_cristals = {
-				{x = 54, y = 19, timer = 4, r = 12},
-			}
-		},
-		--12
-		{
-			lights = 
-			{
-				{65,16,16},
-				{71,21,8},
-				{69,23,8},
-				{73,23,8},
-				{71,25,8},
-				{71,27,8},
-				{71,29,8},
-				{78,29,8},
-			},
-			pos = 
-			{
-				lulu = {66,18},
-				hades = {76,18}
-			},
-			doors = 
-			{
-				lulu = {x = 76, y = 20},
-				hades = {x = 77, y = 20}
-			},
-			powers = 
-			{
-				lulu = 2,
-				hades = 1
-			},
-			shield_cristals = {
-				{x = 70, y = 17, timer = 8, r = 16, lives = 1},
-				{x = 67, y = 21, timer = 10, r = 16, lives = 2},
-				{x = 64, y = 30, timer = 12, r = 24, lives = 1},
-			},
-			chests = 
-			{
-				{
-					opened = false,
-					locked = true,
-					check_lock = false,
-					content = {
-						name = "turnoff"
-					},
-					x = 74,
-					y = 21,
-				}
-			},
-			keys = {
-				{x = 69, y = 28, style = "chest"},
-				{x = 75, y = 28, style = "door"}
-			},
-			gates = {
-				{x = 76, y = 30, opened = false},
-			}
-		},
-		--lvl 13
-		{
-			lights = 
-			{
-				{82,27,16}
-			},
-			pos = 
-			{
-				lulu = {84,29},
-				hades = {91,29}
-			},
-			doors = 
-			{
-				lulu = {x = 89, y = 29},
-				hades = {x = 87, y = 29}
-			},
-			powers = 
-			{
-				lulu = 0,
-				hades = 0
-			},
-			keys = {
-				{x = 92, y = 18, style = "door"},
-				{x = 86, y = 30, style = "door"},
-			},
-			gates = {
-				{x = 85, y = 29, opened = false},
-				{x = 90, y = 29, opened = false},
-			},
-			shield_cristals = {
-				{x = 88, y = 18, timer = 300, r = 32, lives = 1, c = "red"},
-			},
-			butterflies = {
-				{x = 86, y = 17, x1 = 86, y1 = 17, x2 = 85, y2 = 27, target = 2, speed = 0.5, r = 24, light = "white", spr_flip = false},
-			},
-			messages = {
-				{title = "hint", text = "hADES JUMPS HIGHER THAN lULU"},
-			}
-		},
-		--lvl 14
-		{
-			lights = 
-			{
-				{101,15,16}
-			},
-			pos = 
-			{
-				lulu = {103,17},
-				hades = {105,30
-			}
-			},
-			doors = 
-			{
-				lulu = {x = 104, y = 30},
-				hades = {x = 104, y = 16}
-			},
-			powers = 
-			{
-				lulu = 1,
-				hades = 0
-			},
-			keys = {
-				{x = 111, y = 30, style = "door"},
-				{x = 103, y = 23, style = "door"},
-			},
-			gates = {
-				{x = 97, y = 30, opened = false},
-				{x = 102, y = 19, opened = false},
-			},
-			shield_cristals = {
-				{x = 101, y = 17, timer = 10, r = 10, lives = 1},
-				{x = 100, y = 28, timer = 10, r = 10, lives = 1},
-				{x = 106, y = 17, timer = 10, r = 10, lives = 1},
-			},
-			butterflies = {
-				{x = 97, y = 30, x1 = 97, y1 = 30, x2 = 97, y2 = 16, target = 2, speed = 1, r = 12, light = "white", spr_flip = true},
-				{x = 99, y = 28, x1 = 99, y1 = 28, x2 = 107, y2 = 28, target = 2, speed = 1, r = 12, light = "white", spr_flip = true},
-				{x = 103, y = 19, x1 = 99, y1 = 19, x2 = 109, y2 = 19, target = 2, speed = 0.5, r = 18, light = "black", spr_flip = true},
-				{x = 98, y = 23, x1 = 98, y1 = 23, x2 = 108, y2 = 23, target = 2, speed = 0.5, r = 24, light = "black", spr_flip = true},
-			},
-		},
-		--lvl 15 HEART
-		{
-			lights = {
-				{123,16,12}
-			},
-			pos = 
-			{
-				lulu = {125,17},
-				hades = {127,17}
-			},
-			doors = 
-			{
-				lulu = {x = 112, y = 22},
-				hades = {x = 113, y = 22}
-			},
-			powers = {lulu = 0, hades = 1},
-			pulsator = {
-				x = nil,
-				y = nil,
-				spr_r = 24,
-				timer = 150,
-				pulse_dur = 60,
-				pulse_timer = 0,
-				beat_delay = 210,
-				light_data = {r_max = 128, type = nil, spd = 1, windows_opened = 0}},
-			p_data = {x=117, y=30, r_max=128, type="white"}
-		},
-		--lvl 16
-		{
-			lights = {
-				{14,35,16,"black"}
-			},
-			pos = 
-			{
-				lulu = {13,35},
-				hades = {14,35}
-			},
-			doors = 
-			{
-				lulu = {x = 13, y = 39}, 
-				hades = {x = 14, y = 39}
-			},
-			powers = {lulu = 1, hades = 0},
-			p_data = {x=14, y=46, r_max=256, type="white", timer = 180},
-			butterflies = {
-				{x = 6, y = 36, x1 = 1, y1 = 36, x2 = 10, y2 = 36, target = 1, speed = 0.6, r = 8, light = "white", spr_flip = false}, 
-				{x = 1, y = 36, x1 = 1, y1 = 36, x2 = 1, y2 = 47, target = 2, speed = 1, r = 12, light = "white", spr_flip = true},
-				{x = 6, y = 46, x1 = 6, y1 = 46, x2 = 12, y2 = 40, target = 2, speed = 0.5, r = 18, light = "black", spr_flip = true},
-			},
-			black_orb = 
-			{
-				{x = 8, y = 40, r = 16},
-			}
-		}
-	}
+	rooms_data = {
+    --1
+    {
+        lights = {
+            {17,10,20},
+            {25,11,22},
+        },
+        pos = {
+            {19,14},
+            {17,7},
+        },
+        doors = {
+            {30,13},
+            {31,9},
+        },
+        powers = {
+            1,
+            1,
+        },
+    },
+    --2
+    {
+        lights = {
+            {43,  7, 24},
+            {35,  6, 16},
+        },
+        pos = {
+            {45, 10},
+            {34, 10},
+        },
+        doors = {
+            {33,9},
+            {46,9},
+        },
+        powers = {
+            3,
+            1,
+        },
+    },
+    --3
+    {
+        lights = {
+            {50,  8, 19},
+            {56,  8, 23},
+        },
+        pos = {
+            {53, 10},
+            {62, 10},
+        },
+        doors = {
+            {63,8},
+            {48,9},
+        },
+        powers = {
+            2,
+            2
+        },
+    },
+    --4
+    {
+        lights = {
+            {65, 8, 16},
+            {70, 0, 24},
+            {72, 8, 16},
+        },
+        pos = {
+            {67, 10},
+            {78, 10},
+        },
+        doors = {
+            {70,1},
+            {75,1},
+        },
+        powers = {
+            2,
+            1,
+        },
+    },
+    --5
+    {
+        lights = {
+            {82, 9, 24},
+            {91, 9, 32},
+        },
+        pos = {
+            {82, 11},
+            {80, 14},
+        },
+        doors = {
+            {94,13},
+            {94,10},
+        },
+        powers = {
+            2,
+            2,
+        },
+    },
+    --6
+    {
+        lights = {
+            {102,  1, 16},
+            {108,  5, 24},
+            { 99,  6, 12},
+            {104, 12, 24},
+        },
+        pos = {
+            {102, 2},
+            {104, 5},
+        },
+        doors = {
+            {101,14},
+            {106,14},
+        },
+        powers = {
+            3,
+            2,
+        },
+    },
+    --7
+    {
+        lights = {
+            {113, 13, 16},
+            {116, 13, 16},
+            {119, 13, 16},
+            {122,  9, 16},
+        },
+        pos = {
+            {113, 14},
+            {113, 11},
+        },
+        doors = {
+            {126,13},
+            {126,9},
+        },
+        powers = {
+            1,
+            0,
+        },
+        black_orbs = {
+            {122,14,24},
+        },
+    },
+    --8
+    {
+        lights = {
+            {8,17,16},
+            {3,21,16},
+            {9,22,16},
+        },
+        pos = {
+            {10,18},
+            {1,18},
+        },
+        doors = {
+            {13,29},
+            { 8,29},
+        },
+        powers = {
+            1,
+            1,
+        },
+        black_orbs = {
+            {8,23,32},
+        },
+    },
+    --9
+    {
+        lights = {
+            {22, 15, 16},
+            {15, 16, 20},
+            {19, 18, 16},
+            {25, 19, 28},
+            {19, 21, 16},
+            {21, 25, 24},
+        },
+        pos = {
+            {23, 17},
+            {30, 17},
+        },
+        doors = {
+            {23, 29},
+            {24, 29},
+        },
+        powers = {
+            4,
+            7,
+        },
+        chests = {
+            {
+                false,
+                true,
+                false,
+                {
+                    "black_orb",
+                    36,
+                    27,
+                    30,
+                },
+                28,
+                30,
+            },
+        },
+        keys = {
+            {16, 25, "chest"},
+        },
+    },
+    --10
+    {
+        lights = {
+            {35, 17, 16},
+            {35, 21, 16},
+            {44, 24, 12},
+        },
+        pos = {
+            {36, 19},
+            {46, 18},
+        },
+        doors = {
+            {46,25},
+            {33,29},
+        },
+        powers = {
+            2,
+            1,
+        },
+        black_orbs = {
+            {33, 19, 32},
+        },
+    },
+    --11
+    {
+        lights = {
+            {49, 17, 16},
+            {55, 27,  8},
+        },
+        pos = {
+            {49, 19},
+            {59, 19},
+        },
+        doors = {
+            {55, 29},
+            {56, 29},
+        },
+        powers = {
+            1,
+            0,
+        },
+        shield_cristals = {
+            {54, 19, 4, 12},
+        },
+    },
+    --12
+    {
+        lights = {
+            {65, 16, 16},
+            {71, 21,  8},
+            {69, 23,  8},
+            {73, 23,  8},
+            {71, 25,  8},
+            {71, 27,  8},
+            {71, 29,  8},
+            {78, 29,  8},
+        },
+        pos = {
+            {66, 18},
+            {76, 18},
+        },
+        doors = {
+            {76,20},
+            {77,20},
+        },
+        powers = {
+            2,
+            1,
+        },
+        shield_cristals = {
+            {70,17, 8,16,1},
+            {67,21,10,16,2},
+            {64,30,12,24,1},
+        },
+        chests = {
+            {
+                     false,
+                     true,
+                 false,
+                   { "turnoff" },
+                         74,
+                         21,
+            },
+        },
+        keys = {
+            {69,28, "chest"},
+            {75,28, "door"},
+        },
+        gates = {
+            {76,30, false},
+        },
+    },
+    --13
+    {
+        lights = {
+            {82, 27, 16},
+        },
+        pos = {
+            {84, 29},
+            {91, 29},
+        },
+        doors = {
+            {89,29},
+            {87,29},
+        },
+        powers = {
+            0,
+            0,
+        },
+        keys = {
+            {92,18,"door"},
+            {86,30,"door"},
+        },
+        gates = {
+            {85, 29,false},
+            {90, 29,false},
+        },
+        shield_cristals = {
+            {88,18,300,32,1,"red"}, 
+        },
+        butterflies = {
+            {
+                       86,17,
+                      86,  17,
+                      85, 27,
+                  2,
+                   0.5,
+                       24,
+                   "white",
+                 false,
+            },
+        },
+        messages = {
+            {"hint","hADES JUMPS HIGHER THAN lULU" },
+        },
+    },
+    --14
+    {
+        lights = {
+            {101, 15, 16},
+        },
+        pos = {
+            {103, 17},
+            {105, 30},
+        },
+        doors = {
+            {104,30},
+            {104,16},
+        },
+        powers = {
+            1,
+            0,
+        },
+        keys = {
+            {111,30,"door"},
+            {103,23,"door"},
+        },
+        gates = {
+            { 97,30,false},
+            {102,19,false},
+        },
+        shield_cristals = {
+            {101,17,10,10,1},
+            {100,28,10,10,1},
+            {106,17,10,10,1},
+        },
+        butterflies = {
+            {
+                 97,30,
+                 97,30,
+                 97,16,
+                 2,
+                 1,
+                12,
+                "white",
+                 true,
+            },
+            {
+                 99,28,
+                 99,28,
+                107,28,
+                 2,
+                 1,
+                12,
+                "white",
+                 true,
+            },
+            {
+                103,19,
+                 99,19,
+                109,19,
+                 2,
+                0.5,
+                18,
+                "black",
+                 true,
+            },
+            {
+                 98,23,
+                 98,23,
+                108,23,
+                 2,
+                0.5,
+                24,
+                "black",
+                 true,
+            },
+        },
+    },
+    --15 HEART
+    {
+        lights = {
+            {123, 16, 12},
+        },
+        pos = {
+            {125, 17},
+            {127, 17},
+        },
+        doors = {
+            {112,22},
+            {113,22},
+        },
+        powers = {
+            0,
+            1,
+        },
+        pulsator = {
+            nil,
+            nil,
+            24,
+            150,
+            60,
+            0,
+            210,
+            {128,nil,1,0 }, 
+        },
+        p_data = {117,30,128,"white"},
+    },
+    --16
+    {
+        lights = {
+            {14, 35, 16, "black"},
+        },
+        pos = {
+            {13, 35},
+            {14, 35},
+        },
+        doors = {
+            {13,39},
+            {14,39},
+        },
+        powers = {
+            1,
+            0,
+        },
+        p_data = {14,46,256,"white",180},
+        butterflies = {
+            {
+                 6,36,
+                 1,36,
+                10,36,
+                 1,
+                0.6,
+                 8,
+                "white",
+                 false,
+            },
+            {
+                 1,36,
+                 1,36,
+                 1,47,
+                 2,
+                 1,
+                12,
+                "white",
+                 true,
+            },
+            {
+                 6,46,
+                 6,46,
+                12,40,
+                2,
+                0.5,
+                18,
+                "black",
+                true,
+            },
+        },
+        black_orbs = {
+            {8, 40, 16 },
+        },
+    },
+}
+
 end
 
 function update_room()
@@ -1307,18 +1320,18 @@ function create_room()
 	disable_shield(lulu)
 	disable_shield(hades)
 	--doors
-	doors.lulu.x = rooms_data[i_room].doors["lulu"].x * 8
-	doors.lulu.y = rooms_data[i_room].doors["lulu"].y * 8
-	doors.hades.x = rooms_data[i_room].doors["hades"].x * 8
-	doors.hades.y = rooms_data[i_room].doors["hades"].y * 8
+	doors.lulu.x = rooms_data[i_room].doors[1][1] * 8
+	doors.lulu.y = rooms_data[i_room].doors[1][2] * 8
+	doors.hades.x = rooms_data[i_room].doors[2][1] * 8
+	doors.hades.y = rooms_data[i_room].doors[2][2] * 8
 	--pos
-	lulu.x = rooms_data[i_room].pos["lulu"][1] * 8
-	lulu.y = rooms_data[i_room].pos["lulu"][2] * 8
-	hades.x = rooms_data[i_room].pos["hades"][1] * 8
-	hades.y = rooms_data[i_room].pos["hades"][2] * 8
+	lulu.x = rooms_data[i_room].pos[1][1] * 8
+	lulu.y = rooms_data[i_room].pos[1][2] * 8
+	hades.x = rooms_data[i_room].pos[2][1] * 8
+	hades.y = rooms_data[i_room].pos[2][2] * 8
 	--powers
-	lulu.lights_left = rooms_data[i_room].powers["lulu"]
-	hades.turnoffs_left = rooms_data[i_room].powers["hades"]
+	lulu.lights_left = rooms_data[i_room].powers[1]
+	hades.turnoffs_left = rooms_data[i_room].powers[2]
 	--replay pulsator music if lvl 15 reached
 	if i_room == 15 then
 		music(-1)
@@ -1603,8 +1616,8 @@ function create_objects()
 		create_light(l[1] * 8, l[2] * 8, l[3], l[4], l[5], l[6])
 	end
 	--black orb
-	for bo in all(rooms_data[i_room].black_orb) do
-		create_black_orb(bo.x * 8, bo.y * 8, bo.r)
+	for bo in all(rooms_data[i_room].black_orbs) do
+		create_black_orb(bo[1] * 8, bo[2] * 8, bo[3]) 
 	end
 	--chests
 	for c in all(rooms_data[i_room].chests) do
@@ -1612,19 +1625,19 @@ function create_objects()
 	end
 	--keys
 	for k in all(rooms_data[i_room].keys) do
-		create_key(k.x * 8, k.y * 8, k.style)
+		create_key(k[1] * 8, k[2] * 8, k[3]) 
 	end
 	--shield cristals
 	foreach(rooms_data[i_room].shield_cristals, function(sc)
-		add(shield_cristals, {x = sc.x * 8, y = sc.y * 8, timer = sc.timer, r = sc.r, lives = sc.lives, c = sc.c})
+		add(shield_cristals, {x = sc[1] * 8, y = sc[2] * 8, timer = sc[3], r = sc[4], lives = sc[5], c = sc[6]})
 	end)
 	--gates
 	foreach(rooms_data[i_room].gates, function(g)
-		add(gates, {x = g.x * 8, y = g.y * 8})
+		add(gates, {x = g[1] * 8, y = g[2] * 8})
 	end)
 	--butterflies
 	foreach(rooms_data[i_room].butterflies, function(b)
-		add(butterflies, {x = b.x * 8, y = b.y * 8, x1 = b.x1 * 8, y1 = b.y1 * 8, x2 = b.x2 * 8, y2 = b.y2 * 8, target = b.target, speed = b.speed, r = b.r, light = b.light})
+		add(butterflies, {x = b[1] * 8, y = b[2] * 8, x1 = b[3] * 8, y1 = b[4] * 8, x2 = b[5] * 8, y2 = b[6] * 8, target = b[7], speed = b[8], r = b[9], light = b[10]})
 	end)
 	--messages
 	foreach(rooms_data[i_room].messages, function(m)
@@ -1632,15 +1645,15 @@ function create_objects()
 	end)
 	-- set dynamics data to pulsator
 	if pulsator[1] and rooms_data[i_room].p_data then
-		pulsator[1].x = rooms_data[i_room].p_data.x * 8
-		pulsator[1].y = rooms_data[i_room].p_data.y * 8
-		pulsator[1].light_data.r_max = rooms_data[i_room].p_data.r_max
-		pulsator[1].light_data.type = rooms_data[i_room].p_data.type
-		pulsator[1].timer = rooms_data[i_room].p_data.timer
+		pulsator[1].x = rooms_data[i_room].p_data[1] * 8
+		pulsator[1].y = rooms_data[i_room].p_data[2] * 8
+		pulsator[1].light_data.r_max = rooms_data[i_room].p_data[3]
+		pulsator[1].light_data.type = rooms_data[i_room].p_data[4]
+		pulsator[1].timer = rooms_data[i_room].p_data[5]
 	end
 	--windows
 	foreach(rooms_data[i_room].windows, function(w)
-		add(windows, {x = w.x * 8, y = w.y * 8, opened = false})
+		add(windows, {x = w[1] * 8, y = w[2] * 8, opened = false})
 	end)
 end
 
@@ -1702,11 +1715,11 @@ end
 
 function create_chest(c)
 	local new_chest = {
-		opened = c.opened,
-		locked = c.locked,
-		content = c.content,
-		x = c.x * 8,
-		y = c.y * 8
+		opened = c[1],
+		locked = c[2],
+		content = c[3],
+		x = c[4] * 8,
+		y = c[5] * 8
 	}
 	add(chests, new_chest)
 end
@@ -1716,10 +1729,10 @@ function open_chest(c)
 	sfx(49,3)
 	c.opened = true
 	--crれたer le contenu du coffre au-dessus
-	if c.content.name == "black_orb" then
-		create_black_orb(c.content.x * 8, c.content.y * 8, c.content.r)
+	if c.content[1] == "black_orb" then
+		create_black_orb(c.content[2] * 8, c.content[3] * 8, c.content[4])
 	end
-	if c.content.name == "turnoff" then
+	if c.content[1] == "turnoff" then
 		hades.turnoffs_left = hades.turnoffs_left + 1
 	end
 
