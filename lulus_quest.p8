@@ -1584,7 +1584,7 @@ function delete_objects()
 		butterflies,
 		messages,
 		dynamic_lights,
-		acristals,
+		acristals
 	}
 	--delete all objects from ancient room or actual if restart_level()
 	for _, tbl in ipairs(lists_to_clear) do
@@ -1649,6 +1649,7 @@ function create_objects()
 		add(acristals, {x = ac[1] * 8, y = ac[2] * 8, active = false, c_col = nil})
 	end)
 
+	--define walls
 	for i=0,15 do
 		for j=0,15 do
 			-- local x = room.x and (room.x / 8 + i) or i
@@ -1659,6 +1660,13 @@ function create_objects()
 			if fget(t, 2) then
 				add(walls, {x = x * 8, y = y * 8, broken = false, tile = t})
 			end
+		end
+	end
+	--if level restart and walls were broken, then restore them
+	for w in all(walls) do
+		if w.broken then
+			mset(w.x/8, w.y/8, w.tile)
+			w.broken = false
 		end
 	end
 end
