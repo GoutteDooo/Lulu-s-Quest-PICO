@@ -1860,16 +1860,16 @@ function draw_acristals()
 		spr(ac.active and state and 54 or state and 39 or 38, ac.x, ac.y, 1, 1, false, false)
 		-- if ac is active, then it throws a light towards the pulsator
 		if ac.active then
-			-- coordonnées du centre du cristal
+			-- coordonnれたes du centre du cristal
 			local ax = ac.x + 4
 			local ay = ac.y + 4
-			-- coordonnées du centre du pulsator
+			-- coordonnれたes du centre du pulsator
 			local px = pulsator[1].x + 24
 			local py = pulsator[1].y + 24
 
-			-- nombre d'éclairs
+			-- nombre d'れたclairs
 			local nb_bolts = 3
-			-- nombre d'étapes par éclair
+			-- nombre d'れたtapes par れたclair
 			local steps = 8
 
 			for j=1, nb_bolts do
@@ -1884,7 +1884,7 @@ function draw_acristals()
 					pal(14,3+128,1)
 					palt(0, false)
 					palt(12, true)
-					-- couleur aléatoire parmi un choix électrique
+					-- couleur alれたatoire parmi un choix れたlectrique
 					local c = ({10, 14, 0})[1 + flr(rnd(3))]
 					line(x1, y1, x2, y2, c)
 				end
@@ -1958,6 +1958,15 @@ function draw_dynamic_lights()
 		circ(dl.x, dl.y, dl.r, dl.type == "white" and c+1 or 0)
 	end)
 end
+
+-->8
+--walls
+function draw_walls()
+	foreach(walls, function(w)
+		spr(w.broken and 43 or 48, w.x, w.y, 1, 1, false, false)
+	end)
+end
+
 
 -->8
 --UI
@@ -2140,8 +2149,8 @@ __gfx__
 6555555600000000000000005588885588888788888880000076700000828000000a0000000a0000888888880000000011155dddcddd1111c111ccccccccc111
 655555560000000000000000588998858888778888888000076a6700082a2800000a0000000a0000848888880000000001155dddcdddd111cc11cddddd555110
 6555555600000000000000005899998508888880088800000076700000828000000a0000000aa000888888880000000001155dddcccddd111c1cdddddd555110
-6555555600000000000000005899798500888800008000000007000000080000000a0000000a00008888884800000000011155ddcdccdddddccccddddd551110
-666666660000000000000000589779850008800000000000000000000000000000000000000000008888888800000000001155cccddccdddddddcdddd5551100
+6555555600000000000000005899798500888800008000000007000000080000000a0000000a00008888884800600000011155ddcdccdddddccccddddd551110
+666666660000000000000000589779850008800000000000000000000000000000000000000000008888888860660606001155cccddccdddddddcdddd5551100
 66666666ccc0ccccccc0cccc0005500000455400004444000000000000000000000aa000ccc0cccc8888888888888888001115c555ddcdddddddccd555511100
 65565556cc0a0ccccc080ccc005555000000000000455400000000000999999004444440cc0a0ccc8888888888888888000111cc55ddcccddddddcc555111000
 65665556c0a7a0ccc08a80cc055dd5500000000000444400000b00009974449946665554c0a6a0cc8884888888888888000011c555555dccddddddcc51110000
