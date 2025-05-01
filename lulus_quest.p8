@@ -1050,7 +1050,7 @@ function init_room()
             {75,28, "door"},
         },
         gates = {
-            {76,30, false},
+            {76,30},
         },
     },
     --13
@@ -1075,8 +1075,8 @@ function init_room()
             {86,30,"door"},
         },
         gates = {
-            {85, 29,false},
-            {90, 29,false},
+            {85, 29},
+            {90, 29},
         },
         shield_cristals = {
             {88,18,300,32,1,"red"}, 
@@ -1119,8 +1119,8 @@ function init_room()
             {103,23,"door"},
         },
         gates = {
-            { 97,30,false},
-            {102,19,false},
+            { 97,30},
+            {102,19},
         },
         shield_cristals = {
             {101,17,10,10,1},
@@ -1218,36 +1218,9 @@ function init_room()
         },
         p_data = {14,46,256,"white",180},
         butterflies = {
-            {
-                 6,36,
-                 1,36,
-                10,36,
-                 1,
-                0.6,
-                 8,
-                "white",
-                 false,
-            },
-            {
-                 1,36,
-                 1,36,
-                 1,47,
-                 2,
-                 1,
-                12,
-                "white",
-                 true,
-            },
-            {
-                 6,46,
-                 6,46,
-                12,40,
-                2,
-                0.5,
-                18,
-                "black",
-                true,
-            },
+            { 6,36, 1,36,10,36, 1,0.6, 8,"white", false},
+            { 1,36, 1,36, 1,47, 2, 1,12,"white", true},
+            { 6,46, 6,46,12,40,2,0.5,18,"black",true},
         },
         black_orbs = {
             {8, 40, 16 },
@@ -1635,7 +1608,7 @@ function create_objects()
 	end)
 	--gates
 	foreach(room.gates, function(g)
-		add(gates, {x = g[1] * 8, y = g[2] * 8})
+		add(gates, {x = g[1] * 8, y = g[2] * 8, opened = false})
 	end)
 	--butterflies
 	foreach(room.butterflies, function(b)
