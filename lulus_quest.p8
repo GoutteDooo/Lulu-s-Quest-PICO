@@ -1340,6 +1340,7 @@ function create_room()
 	--powers
 	lulu.lights_left = room.powers[1]
 	hades.turnoffs_left = room.powers[2]
+	door_sound_played = false
 	--replay pulsator music if lvl 15 reached
 	if i_room == 15 then
 		music(-1)
@@ -1825,6 +1826,7 @@ end
 
 
 function update_pulsator()
+	if lulu.using_light or hades.using_light then return end
 	if pulsator[1] then
 		--Aprれそs chaque pulsation, on rejoue le SFX electrical effects
 		-- if pulsator[1].timer == 30 and i_room == 15 then sfx(47, 0, 0, 14) end
