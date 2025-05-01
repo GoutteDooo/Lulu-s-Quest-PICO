@@ -204,7 +204,6 @@ function update_player()
 				lulu.flipx = true
 			end
 		end
-		return
 	end
 
 	--switch characters
@@ -213,7 +212,7 @@ function update_player()
 		return
 	end
 
-	move_characters()
+	if not lulu.using_light and not hades.using_light then move_characters() end
 
 	--if fall in water or lava
 
@@ -340,6 +339,7 @@ function update_player()
 		--move
 		if pactual.dx > 0.2 or pactual.dx < -0.2 then
 			pactual.sprite = frames % 8 >= 4 and pactual.default_sprite + 1 or pactual.default_sprite
+			if pactual.using_light then pactual.sprite = pactual.default_sprite end
 			--STEP MOVES
 			-- I think I'll remove it for better listening of music
 			-- if frames % 8 == 0 then
