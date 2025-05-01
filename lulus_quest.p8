@@ -678,7 +678,7 @@ function draw_shields()
 		
 		local cx = lulu.x + lulu.w / 2
 		local cy = lulu.y + lulu.h / 2
-		circfill(cx, cy, r, 12)
+		circfill(cx, cy, r, 10)
 		circ(cx, cy, r, 7) 
 	end
 
