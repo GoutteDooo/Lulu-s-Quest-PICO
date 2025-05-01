@@ -1409,6 +1409,7 @@ function init_objects()
 	pulsator = {}
 	dynamic_lights = {}
 	acristals = {}
+	walls = {}
 end
 
 function update_objects()
@@ -1642,6 +1643,17 @@ function create_objects()
 	foreach(room.acristals, function(ac)
 		add(acristals, {x = ac[1] * 8, y = ac[2] * 8, active = false, c_col = nil})
 	end)
+
+	for i=0,15 do
+		for j=0,15 do
+			local x = room.x / 8 + i
+			local y = room.y / 8 + j
+			local t = mget(x, y)
+			if fget(t, 3) then
+				add(walls, {x = x * 8, y = y * 8, broken = false, tile = t})
+			end
+		end
+	end
 end
 
 --gates
