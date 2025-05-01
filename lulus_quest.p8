@@ -1501,27 +1501,7 @@ function update_objects()
 	update_pulsator()
 
 	--acristals
-	for i, ac in pairs(acristals) do
-		for c in all(chars) do
-			--check if collision with a character
-			if not ac.active and collision(c,ac) then
-				ac.active = true
-				ac.c_col = c
-				pulsator[1].light_data.ac_activated += 1
-				pulsator[1].light_data.room_ac[i] = true
-				break
-			end
-		end
-		--if it has a collision with a char, now check each frames if collisions is still there
-		if ac.active then
-			if not collision(ac.c_col,ac) then
-				ac.active = false
-				pulsator[1].light_data.ac_activated -= 1
-				pulsator[1].light_data.room_ac[i] = false
-				ac.c_col = nil
-			end
-		end
-	end
+	update_acristals()
 end
 
 --animations
@@ -1859,6 +1839,7 @@ function update_pulsator()
 	end
 end
 
+-->8
 --acristals
 function draw_acristals()
 	foreach(acristals, function(ac)
@@ -1884,18 +1865,49 @@ function draw_acristals()
 					local t1 = i / steps
 					local t2 = (i+1) / steps
 
-					local x1 = lerp(ax, px, t1) + rnd(6) - 1
-					local y1 = lerp(ay, py, t1) + rnd(6) - 1
-					local x2 = lerp(ax, px, t2) + rnd(6) - 1
-					local y2 = lerp(ay, py, t2) + rnd(6) - 1
-
+					local x1 = lerp(ax, px, t1) + rnd(7) - 1
+					local y1 = lerp(ay, py, t1) + rnd(7) - 1
+					local x2 = lerp(ax, px, t2) + rnd(7) - 1
+					local y2 = lerp(ay, py, t2) + rnd(7) - 1
+					pal(14,3+128,1)
+					palt(0, false)
+					palt(12, true)
 					-- couleur aléatoire parmi un choix électrique
-					local c = ({7, 10, 12})[1 + flr(rnd(3))]
+					local c = ({10, 14, 0})[1 + flr(rnd(3))]
 					line(x1, y1, x2, y2, c)
 				end
 			end
 		end
 	end)
+	palt(0, true)
+	pal(14,14)
+end
+
+function update_acristals()
+
+	--check for collision with chars
+	for i, ac in pairs(acristals) do
+		for c in all(chars) do
+			--check each frame if collision with a character
+			if not ac.active and collision(c,ac) then
+				ac.active = true
+				ac.c_col = c
+				pulsator[1].light_data.ac_activated += 1
+				pulsator[1].light_data.room_ac[i] = true
+				break
+			end
+		end
+		--if it has a collision with a char, now check each frames if collision is still there
+		if ac.active then
+			if not collision(ac.c_col,ac) then
+				ac.active = false
+				pulsator[1].light_data.ac_activated -= 1
+				pulsator[1].light_data.room_ac[i] = false
+				ac.c_col = nil
+			end
+		end
+	end
+
 end
 
 -->8
