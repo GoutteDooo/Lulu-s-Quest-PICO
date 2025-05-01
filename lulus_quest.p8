@@ -1219,7 +1219,10 @@ function init_room()
 				{7,43},
 				{8,43},
 			},
-			powers = {2,0},
+			-- powers = {2,0},
+			-- !! TEST !!
+			powers = {10,10},
+			-- ! FIN TEST !
 			butterflies = {
 				{4,34, 4,34,9,34, 2,0.6, 16,"anti", false},
 				{2,41, 2,41,2,50, 2,0.6, 8,"anti", false},
@@ -1858,10 +1861,40 @@ end
 
 --acristals
 function draw_acristals()
-	foreach(acristals, function(a)
+	foreach(acristals, function(ac)
 		--alterner toutes les 5 frames
 		local state = frames % 20 >= 10
-		spr(a.active and state and 54 or state and 39 or 38, a.x, a.y, 1, 1, false, false)
+		spr(ac.active and state and 54 or state and 39 or 38, ac.x, ac.y, 1, 1, false, false)
+		-- if ac is active, then it throws a light towards the pulsator
+		if ac.active then
+			-- coordonnées du centre du cristal
+			local ax = ac.x + 4
+			local ay = ac.y + 4
+			-- coordonnées du centre du pulsator
+			local px = pulsator[1].x + 24
+			local py = pulsator[1].y + 24
+
+			-- nombre d'éclairs
+			local nb_bolts = 3
+			-- nombre d'étapes par éclair
+			local steps = 8
+
+			for j=1, nb_bolts do
+				for i=0,steps-1 do
+					local t1 = i / steps
+					local t2 = (i+1) / steps
+
+					local x1 = lerp(ax, px, t1) + rnd(6) - 1
+					local y1 = lerp(ay, py, t1) + rnd(6) - 1
+					local x2 = lerp(ax, px, t2) + rnd(6) - 1
+					local y2 = lerp(ay, py, t2) + rnd(6) - 1
+
+					-- couleur aléatoire parmi un choix électrique
+					local c = ({7, 10, 12})[1 + flr(rnd(3))]
+					line(x1, y1, x2, y2, c)
+				end
+			end
+		end
 	end)
 end
 
@@ -2054,6 +2087,10 @@ function psfx(num)
 	if sfx_timer <= 0 then
 		sfx(num,3)
 	end
+end
+
+function lerp(a,b,t)
+	return a+(b-a)*t
 end
 
 __gfx__
