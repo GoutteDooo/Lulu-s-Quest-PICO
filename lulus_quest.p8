@@ -50,7 +50,7 @@ function _draw()
 	-- screenshake
 	if shake>0 then
 		shake-=1
-		camera()
+		-- camera()
 		if shake>0 then
 			camera(-2+rnd(5)+cx,-2+rnd(5)+cy)
 		end
@@ -1266,7 +1266,7 @@ function init_room()
 				{7,46},
 				{14,40}
 			},
-			p_data = {14,46,256,"white",0}
+			p_data = {14,46,256,"white",180}
 	},
 }
 
@@ -1821,7 +1821,7 @@ end
 function draw_pulsator()
 	-- osciller uniquement si pulse_timer actif
 	local pulse_ratio = pulsator[1].pulse_timer / pulsator[1].pulse_dur
-	local scale = 3 - (pulsator[1].light_data.ac_activated * 0.1) + 0.5 * pulse_ratio -- grossit れき chaque battement
+	local scale = 3 - (pulsator[1].light_data.ac_activated * 0.8) + 0.5 * pulse_ratio -- grossit れき chaque battement
 	-- flips
 	local flipx = frames % 15 < 7
 	local flipy = frames % 30 < 15
@@ -1878,8 +1878,9 @@ function update_pulsator()
 			pulsator[1].pulse_timer = pulsator[1].pulse_dur -- dれたclenche une pulsation visuelle
 			pulsator[1].timer = 0
 			-- SFX
+			if sfx_timer == 0 then sfx(48, -1) end
 			sfx_timer = 30
-			sfx(47, 3, pulsator[1].light_data.type == "white" and 17 or 20, 1)
+			sfx(48, 3, pulsator[1].light_data.type == "white" and 7 or 14, 1)
 			
 			-- update light from pulsator
 			local speed = pulsator[1].light_data.spd + pulsator[1].light_data.ac_activated * (1 / 6)
@@ -1891,6 +1892,37 @@ function update_pulsator()
 		if pulsator[1].pulse_timer > 0 then
 			pulsator[1].pulse_timer -= 1
 		end
+	end
+end
+
+function break_pulsator()
+	--if we are here, then all acristals are activated
+	if not pulsator[1].is_broken then
+		-- this function is called when both characters activated the acristals
+		-- timer of pulsator reset to 0
+		pulsator[1].timer = 0
+		-- wait 1 sec
+		animation_timer = 60
+		-- screenshake
+		shake = 60
+		-- wait 0.5 sec and delete acristals
+		pulsator[1].is_broken = true
+		music(-1)
+		sfx(47, -2)
+		sfx_timer = 120
+		sfx(63)
+	end
+		--when animation is finished, delete the acristals and destroy walls
+	if animation_timer == 0 then 
+		for i=1,#acristals do
+			del(acristals,acristals[i])
+		end
+		foreach(walls, function(w)
+			--break walls
+			w.broken = true
+			mset(w.x/8, w.y/8, 0)
+			--accelerate pulsator just for the end of the lvl
+		end)
 	end
 end
 
@@ -1952,6 +1984,7 @@ function update_acristals()
 				ac.c_col = c
 				pulsator[1].light_data.ac_activated += 1
 				pulsator[1].light_data.room_ac[i] = true
+				psfx(47,3)
 				break
 			end
 		end
@@ -1962,6 +1995,7 @@ function update_acristals()
 				pulsator[1].light_data.ac_activated -= 1
 				pulsator[1].light_data.room_ac[i] = false
 				ac.c_col = nil
+				psfx(47,3)
 			end
 		end
 	end
@@ -1970,30 +2004,7 @@ function update_acristals()
 		for ac in all(pulsator[1].light_data.room_ac) do
 			if not ac then return end
 		end
-		--if we are here, then all acristals are activated
-		if not pulsator[1].is_broken then
-			-- this function is called when both characters activated the acristals
-			-- timer of pulsator reset to 0
-			pulsator[1].timer = 0
-			-- wait 1 sec
-			animation_timer = 45
-			-- screenshake
-			shake = 30
-			-- wait 0.5 sec and delete acristals
-			pulsator[1].is_broken = true
-		end
-			--when animation is finished, delete the acristals and destroy walls
-		if animation_timer == 0 then 
-			for i=1,#acristals do
-				del(acristals,acristals[i])
-			end
-			foreach(walls, function(w)
-				--break walls
-				w.broken = true
-				mset(w.x/8, w.y/8, 0)
-				--accelerate pulsator just for the end of the lvl
-			end)
-		end
+		break_pulsator()
 	end
 end
 
@@ -2082,6 +2093,7 @@ function debug_print()
 	if pulsator[1] then
 		print(pulsator[1].light_data.room_ac[1] and "true" or "false")
 		print(pulsator[1].light_data.room_ac[2] and "true" or "false")
+		print(pulsator[1].light_data.ac_activated)
 	end
 	print("room.x: "..room.x)
 	print("room.y: "..room.y)
@@ -2430,8 +2442,8 @@ d524000020910209301d910249331d910299331d910299331d9102b9301f9102c9331f9102b9331f
 012400003075033700337002e75000000000002c7500000000000000000000000000000000000000000000003075000000000002e75000000000002c750000000000000000000000000000000000000000000000
 9124000014040000002004000000140400000020040000000d0400000019040000000d0400000019040000000f040000001b040000000f040000001b040000001404000000200400000014040000002004000000
 312400003074030720307102e7402e7202e7102c7402c7202c710000000000000000000000000000000000003074030720307102e7402e7202e7102c7402c7202c71000000000000000029724297322974229752
-91240000140400000020040000001404000000200400000015040000002104000000160400000022040000000f040000001b040000000f040000001b04000000140400c000200000500005410054200543005440
-0779000001630026400163002640026300164001630026400263001640016300264001630026400163001600126552e65501600226552a6550260002600016000060001600016000060001600026000160000000
+90240000140400000020040000001404000000200400000015040000002104000000160400000022040000000f040000001b040000000f040000001b04000000140400c000200000500005410054200543005440
+0605000c166301864018630176401663015640166301864019630196401763016640196300b6400163001600126552e65501600226552a6550260002600016000060001600016000060001600026000160000000
 0679010f016300164001630016400263000650126552e655036200163001620026300a650226552a65501600126552e65501600226552a6550260002600016000060001600016000060001600026000160000000
 320400000202005030080400c05010050160501805003020080300d040140501a0501d050080100a0200b0200c0300e0301003013030170401b0401f040250502c05031050350503c0603c0503c0413c0313c021
 000300001904314043100430b0430304315043110430b043050430a04305043030430004300003090030900309003090030900309003090030900309003090030900309003090030900309003090030900309003
@@ -2447,6 +2459,7 @@ d524000020910209301d910249331d910299331d910299331d9102b9301f9102c9331f9102b9331f
 000100000254002540025400454006540095400b5400e5401054012540145401555016550175501755017550165501555013550115500e5500c5400b540095400854007540065400554004540035400254002540
 000200000c5401054014550195501e55022560265602a56016540185401b5501f5502256026560295602c5402e5401e540215502455026550295502b5502d5502f560315603456037560395603c5703e5703f570
 000200000904108031090210c0210e0311203115041190411c04123051270510a0000d0010f00113001170010e0000900005000000002e000240011d00117001120010f0010c0010a00108001060010500105001
+06ff00001363538665126051d605266052d6052e6052a6052d6052c6052b60529605226051a605136050d60507605036050060517605126050d60506605026050060501605016000060001600026000160000600
 __music__
 01 0c0d0e4b
 00 0f100a4b
