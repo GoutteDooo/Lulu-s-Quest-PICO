@@ -21,6 +21,7 @@ function _init()
 	pulsator_state = false
 	animation_timer = 0
 	shake = 0
+	music_object = {false, 0}
 	--DEBUG
 	tp = false
 	--TEST
@@ -86,10 +87,10 @@ function _draw()
 	end
 
 	-- draw outside of the screen for screenshake
-	-- rectfill(-5,-5,-1,133,0)
-	-- rectfill(-5,-5,133,-1,0)
-	-- rectfill(-5,128,133,133,0)
-	-- rectfill(128,-5,133,133,0)
+	rectfill(-5,-5,-1,133,0)
+	rectfill(-5,-5,133,-1,0)
+	rectfill(-5,128,133,133,0)
+	rectfill(128,-5,133,133,0)
 
 	draw_ui()
 	debug_print()
@@ -1227,7 +1228,7 @@ function init_room()
             pulse_timer = 0,
             beat_delay = 210,
 						is_broken = false,
-            light_data = {r_max = 128, type = nil, spd = 1, ac_activated = 0, room_ac = {false, false} }, 
+            light_data = {r_max = 128, type = nil, spd = 1, ac_activated = nil, room_ac = {false, false} }, 
         },
         p_data = {117,30,128,"white",0},
     },
@@ -1244,10 +1245,7 @@ function init_room()
 				{7,43},
 				{8,43},
 			},
-			-- powers = {2,0},
-			-- !! TEST !!
-			powers = {10,10},
-			-- ! FIN TEST !
+			powers = {2,0},
 			butterflies = {
 				{4,34, 4,34,9,34, 2,0.6, 16,"anti", false},
 				{2,41, 2,41,2,50, 2,0.6, 8,"anti", false},
@@ -1332,6 +1330,12 @@ function create_room()
 		pulsator_state = true
 		add(pulsator, rooms_data[15].pulsator)
 	end
+	--handle music
+	if music_object[1] then
+		music_object[1] = false
+		music(music_object[2])
+	end
+
 	delete_objects()
 	create_objects()
 	--characters
@@ -1579,7 +1583,7 @@ function draw_objects()
 	if pulsator[1] then
 		draw_pulsator()
 	end
-	--acristals are in draw()
+	--acristals are in _draw()
 	--walls
 	draw_walls()
 end
@@ -1708,9 +1712,7 @@ function draw_gates(g)
 --butterflies
 
 function update_butterfly(b)
-	if lulu.using_light or hades.using_light then
-		return
-	end
+	if lulu.using_light or hades.using_light then return end
 	--PATROUILLE
 	-- rれたcupれたrer la cible actuelle
 	local tx = b.target == 1 and b.x1 or b.x2
@@ -1821,7 +1823,7 @@ end
 function draw_pulsator()
 	-- osciller uniquement si pulse_timer actif
 	local pulse_ratio = pulsator[1].pulse_timer / pulsator[1].pulse_dur
-	local scale = 3 - (pulsator[1].light_data.ac_activated * 0.8) + 0.5 * pulse_ratio -- grossit れき chaque battement
+	local scale = 2.5 - (pulsator[1].light_data.ac_activated * 0.2) + 0.5 * pulse_ratio -- grossit れき chaque battement
 	-- flips
 	local flipx = frames % 15 < 7
 	local flipy = frames % 30 < 15
@@ -1863,7 +1865,7 @@ function draw_pulsator()
 end
 
 function update_pulsator()
-	if lulu.using_light or hades.using_light then return end
+	if (lulu.using_light or hades.using_light) and i_room > 15 then return end
 	if pulsator[1] then
 		--Aprれそs chaque pulsation, on rejoue le SFX electrical effects
 		-- if pulsator[1].timer == 30 and i_room == 15 then sfx(47, 0, 0, 14) end
@@ -1878,9 +1880,11 @@ function update_pulsator()
 			pulsator[1].pulse_timer = pulsator[1].pulse_dur -- dれたclenche une pulsation visuelle
 			pulsator[1].timer = 0
 			-- SFX
-			if sfx_timer == 0 then sfx(48, -1) end
-			sfx_timer = 30
-			sfx(48, 3, pulsator[1].light_data.type == "white" and 7 or 14, 1)
+			if sfx_timer == 0 and i_room != 15 then
+				sfx(48, -1)
+				sfx_timer = 30
+				sfx(48, 3, pulsator[1].light_data.type == "white" and 7 or 14, 1)
+			end
 			
 			-- update light from pulsator
 			local speed = pulsator[1].light_data.spd + pulsator[1].light_data.ac_activated * (1 / 6)
@@ -1908,6 +1912,8 @@ function break_pulsator()
 		-- wait 0.5 sec and delete acristals
 		pulsator[1].is_broken = true
 		music(-1)
+		music_object[1] = true
+		music_object[2] = 27
 		sfx(47, -2)
 		sfx_timer = 120
 		sfx(63)
@@ -2022,7 +2028,7 @@ function create_dynamic_light(x, y, type, spd, r_max)
 end
 
 function update_dynamic_lights()
-	if lulu.using_light or hades.using_light then return end
+	if (lulu.using_light or hades.using_light) and i_room > 15 then return end
 	foreach(dynamic_lights, function(dl)
 		if dl.r < dl.r_max then
 			dl.r += dl.spd
