@@ -1235,6 +1235,7 @@ function init_room()
     },
     --16
     {
+			lvl_timer = 75,
 			lights = {
 				{6.5, 40, 24, "black"},
 			},
@@ -1269,6 +1270,7 @@ function init_room()
 	},
 	--17
 	{
+		lvl_timer = 60,
 		lights = {
 			{24,32,8}
 		},
@@ -1297,7 +1299,7 @@ function init_room()
 			{28,35},
 			{19,44}
 		},
-		p_data = {21,37,46,"white",180,2,16,1}
+		p_data = {21,37,46,"white",180,2,16,1},
 	}
 }
 
