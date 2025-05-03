@@ -19,6 +19,8 @@ function _init()
 	sfx_timer = 0
 	music(0)
 	pulsator_state = false
+	animation_timer = 0
+	shake = 0
 	--DEBUG
 	tp = false
 	--TEST
@@ -26,20 +28,34 @@ end
 
 function _update()
 	frames=((frames+1)%30)
+	if sfx_timer > 0 then
+		sfx_timer -= 1
+	end
+
+	if animation_timer > 0 then
+		animation_timer -= 1
+		return
+	end
 	update_player()
 	update_room()
 	update_light()
 	update_objects()
 	cx = room.x
 	cy = room.y
-	if sfx_timer > 0 then
-		sfx_timer -= 1
-	end
 end
 
 function _draw()
 	cls()
 	camera(cx, cy)
+	-- screenshake
+	if shake>0 then
+		shake-=1
+		camera()
+		if shake>0 then
+			camera(-2+rnd(5)+cx,-2+rnd(5)+cy)
+		end
+	end
+
 	map(0, 0, 0, 0, 128, 64, 0)
 	draw_light()
 	draw_objects()
@@ -68,6 +84,13 @@ function _draw()
 		end
 		pset(ima_light.x,ima_light.y,11)
 	end
+
+	-- draw outside of the screen for screenshake
+	-- rectfill(-5,-5,-1,133,0)
+	-- rectfill(-5,-5,133,-1,0)
+	-- rectfill(-5,128,133,133,0)
+	-- rectfill(128,-5,133,133,0)
+
 	draw_ui()
 	debug_print()
 end
@@ -1203,6 +1226,7 @@ function init_room()
             pulse_dur = 60,
             pulse_timer = 0,
             beat_delay = 210,
+						is_broken = false,
             light_data = {r_max = 128, type = nil, spd = 1, ac_activated = 0, room_ac = {false, false} }, 
         },
         p_data = {117,30,128,"white",0},
@@ -1645,7 +1669,8 @@ function create_objects()
 		pulsator[1].light_data.type = p[4]
 		pulsator[1].timer = p[5]
 		pulsator[1].light_data.ac_activated = p[6] or 0
-	end
+		pulsator[1].is_broken = false
+		end
 	--acristals
 	foreach(room.acristals, function(ac)
 		add(acristals, {x = ac[1] * 8, y = ac[2] * 8, active = false, c_col = nil})
@@ -1869,6 +1894,7 @@ function update_pulsator()
 	end
 end
 
+
 -->8
 --acristals
 function draw_acristals()
@@ -1945,10 +1971,29 @@ function update_acristals()
 			if not ac then return end
 		end
 		--if we are here, then all acristals are activated
-		foreach(walls, function(w)
-			w.broken = true
-			mset(w.x/8, w.y/8, 0)
-		end)
+		if not pulsator[1].is_broken then
+			-- this function is called when both characters activated the acristals
+			-- timer of pulsator reset to 0
+			pulsator[1].timer = 0
+			-- wait 1 sec
+			animation_timer = 45
+			-- screenshake
+			shake = 30
+			-- wait 0.5 sec and delete acristals
+			pulsator[1].is_broken = true
+		end
+			--when animation is finished, delete the acristals and destroy walls
+		if animation_timer == 0 then 
+			for i=1,#acristals do
+				del(acristals,acristals[i])
+			end
+			foreach(walls, function(w)
+				--break walls
+				w.broken = true
+				mset(w.x/8, w.y/8, 0)
+				--accelerate pulsator just for the end of the lvl
+			end)
+		end
 	end
 end
 
@@ -2044,6 +2089,8 @@ function debug_print()
 		print(walls[1].broken and "true" or "false")
 		print(walls[2].broken and "true" or "false")
 	end
+	print(shake)
+	print(animation_timer)
 	-- if pulsator[1] then
 	-- 	print("timer:"..pulsator[1].timer, room.x + 4,room.y+50,11)
 	-- 	print(type(pulsator[1].pulse_timer))
