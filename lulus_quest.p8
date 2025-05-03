@@ -61,13 +61,14 @@ function _draw()
 	draw_light()
 	draw_objects()
 	map(0, 0, 0, 0, 128, 64, 7)
-	draw_walls() -- TEST
 	foreach(butterflies, function(b)
 		draw_butterfly(b)
 	end)	
 	foreach(gates, function(g)
 		draw_gates(g)
 	end)
+	draw_walls()
+	map(0, 0, 0, 0, 128, 64, 6)
 	-- line()
 	-- Doors
 	draw_doors()
@@ -77,20 +78,20 @@ function _draw()
 	--DEBUG
 	if btn(🅾️) and lulu.select then
 		-- Dessiner la grid de la map
-		for i=0,1 do
-			for j=0,16 do
-				if (i == 0) line(0, max(0,room.y + (j*8)),room.x + 128,max(0,room.y + (j*8)), 8)
-				if (i == 1) line(max(0,room.x + (j*8)),0,max(0,room.x + (j*8)),room.y + 128,8)
-			end
-		end
-		pset(ima_light.x,ima_light.y,11)
+		-- for i=0,1 do
+		-- 	for j=0,16 do
+		-- 		if (i == 0) line(0, max(0,room.y + (j*8)),room.x + 128,max(0,room.y + (j*8)), 8)
+		-- 		if (i == 1) line(max(0,room.x + (j*8)),0,max(0,room.x + (j*8)),room.y + 128,8)
+		-- 	end
+		-- end
+		-- pset(ima_light.x,ima_light.y,11)
 	end
 
 	-- draw outside of the screen for screenshake
-	rectfill(-5,-5,-1,133,0)
-	rectfill(-5,-5,133,-1,0)
-	rectfill(-5,128,133,133,0)
-	rectfill(128,-5,133,133,0)
+	rectfill(-5+cx,-5+cy,-1+cx,133+cy,0)
+	rectfill(-5+cx,-5+cy,133+cx,-1+cy,0)
+	rectfill(-5+cx,128+cy,133+cx,133+cy,0)
+	rectfill(128+cx,-5+cy,133+cx,133+cy,0)
 
 	draw_ui()
 	debug_print()
@@ -1279,7 +1280,7 @@ function init_room()
 			{30,43},
 			{31,43}
 		},
-		powers = {0,0},
+		powers = {2,2},
 		butterflies = {
 		},
 		keys = {
@@ -1353,6 +1354,8 @@ function next_room()
 		music(27)
 		sfx(47, -2)
 	end
+	-- !!  TEST !!
+	keys_owned = 2
 end
 
 function create_room()
@@ -1613,9 +1616,7 @@ function draw_objects()
 	if pulsator[1] then
 		draw_pulsator()
 	end
-	--acristals are in _draw()
-	--walls
-	draw_walls()
+	--acristals and walls are in _draw()
 end
 
 function draw_doors(d)
@@ -1661,42 +1662,42 @@ end
 
 
 function create_objects()
-	local room = rooms_data[i_room]
+	local c_room = rooms_data[i_room]
 	--create lights from new room
-	for l in all(room.lights) do
+	for l in all(c_room.lights) do
 		create_light(l[1] * 8, l[2] * 8, l[3], l[4], l[5], l[6])
 	end
 	--black orb
-	for bo in all(room.black_orbs) do
+	for bo in all(c_room.black_orbs) do
 		create_black_orb(bo[1] * 8, bo[2] * 8, bo[3]) 
 	end
 	--chests
-	for c in all(room.chests) do
+	for c in all(c_room.chests) do
 		add(chests, {opened = c[1],locked = c[2],check_lock = c[3],content = c[4],x = c[5] * 8,y = c[6] * 8})
 	end
 	--keys
-	for k in all(room.keys) do
+	for k in all(c_room.keys) do
 		add(keys, {x = k[1] * 8, y = k[2] * 8, style = k[3]})
 	end
 	--shield cristals
-	foreach(room.shield_cristals, function(sc)
+	foreach(c_room.shield_cristals, function(sc)
 		add(shield_cristals, {x = sc[1] * 8, y = sc[2] * 8, timer = sc[3], r = sc[4], lives = sc[5], c = sc[6]})
 	end)
 	--gates
-	foreach(room.gates, function(g)
+	foreach(c_room.gates, function(g)
 		add(gates, {x = g[1] * 8, y = g[2] * 8})
 	end)
 	--butterflies
-	foreach(room.butterflies, function(b)
+	foreach(c_room.butterflies, function(b)
 		add(butterflies, {x = b[1] * 8, y = b[2] * 8, x1 = b[3] * 8, y1 = b[4] * 8, x2 = b[5] * 8, y2 = b[6] * 8, target = b[7], speed = b[8], r = b[9], light = b[10]})
 	end)
 	--messages
-	foreach(room.messages, function(m)
+	foreach(c_room.messages, function(m)
 		add(messages, m)
 	end)
 	-- set dynamics data to pulsator
-	if pulsator[1] and room.p_data then
-		local p = room.p_data
+	if pulsator[1] and c_room.p_data then
+		local p = c_room.p_data
 		pulsator[1].x = p[1] * 8
 		pulsator[1].y = p[2] * 8
 		pulsator[1].light_data.r_max = p[3]
@@ -1708,17 +1709,15 @@ function create_objects()
 		pulsator[1].light_data.spd = p[8] or 1
 		end
 	--acristals
-	foreach(room.acristals, function(ac)
+	foreach(c_room.acristals, function(ac)
 		add(acristals, {x = ac[1] * 8, y = ac[2] * 8, active = false, c_col = nil})
 	end)
 
 	--define walls
 	for i=0,15 do
 		for j=0,15 do
-			-- local x = room.x and (room.x / 8 + i) or i
-			-- local y = room.y and (room.y / 8 + j) or j
-			local x = i
-			local y = 32 + j
+			local x = room.x > 0 and (room.x / 8 + i) or i
+			local y = room.y > 0 and (room.y / 8 + j) or j
 			local t = mget(x, y)
 			if fget(t, 2) then
 				add(walls, {x = x * 8, y = y * 8, broken = false, tile = t, break_anim = 0})
@@ -2356,7 +2355,7 @@ a51500d66767976797e6240574002736000202313131023131023131310200000200000000000000
 02000000000000000000000000000002020000000000000000000000000000020200000000000000000000000000000202000000000000000000000000000002
 957700000515b5333275247416070037005300023131313131313102020232330200000000000000000000000000000202000000000000000000000000000002
 02000000000000000000000000000002020000000000000000000000000000020200000000000000000000000000000202000000000000000000000000000002
-a50000002425b5000075740000160700020200620231313131313153030300000200000000000000000000000000000202000000000000000000000000000002
+a50000002425b5000075740000160700020200620231313131313153757500000200000000000000000000000000000202000000000000000000000000000002
 02000000000000000000000000000002020000000000000000000000000000020200000000000000000000000000000202000000000000000000000000000002
 a55454b42425869794a4000026001607000202020202020000020202020202020200000000000000000000000000000202000000000000000000000000000002
 02000000000000000000000000000002020000000000000000000000000000020200000000000000000000000000000202000000000000000000000000000002
@@ -2397,7 +2396,7 @@ a55454b42425869794a4000026001607000202020202020000020202020202020200000000000000
 02020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202
 02020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020200000000000000000000000000000000
 __gff__
-0000000000000000000001000202020200000000000000000000020002020202818080000000808000000200020202028500000000008004000002000202020280808080808080010101010100010101808080808001018501010101000101018080808080010100010101010001010080808080800101010101018080808000
+000000000000000000000100020202020000000000000000000002000202020281808000000080800000020002020202850000000000800400000200020202028080808080808001010101010001010180808080800101c501010101000101018080808080010100010101010001010080808080800101010101018080808000
 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __map__
 59595959595959595959595959595f596959595f5959595959595959596969695f594f4f69695959596969694f4f4f4f595959595959595959595959595955564f4f696969696969696969694f4f4f4f59595959595959595959595959595959595f593a3a5a00000058593a3a5959595f595959595959595959595959595959
