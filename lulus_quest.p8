@@ -1363,7 +1363,7 @@ function next_room()
 	create_room()
 	sfx_timer = 30
 	sfx(61,3)
-	if i_room > 15 then
+	if i_room == 16 then
 		music(27)
 		sfx(47, -2)
 	end
