@@ -1291,7 +1291,6 @@ function init_room()
 		},
 		powers = {2,0},
 		butterflies = {
-			{21,46,17,46,29,46,2,0.77,12,"anti",true},
 			{23,46,23,46,31,46,2,0.6,12,"white",true},
 		},
 		keys = {
@@ -2037,7 +2036,7 @@ function update_acristals()
 				pulsator[1].light_data.ac_activated -= 1
 				pulsator[1].light_data.room_ac[i] = false
 				ac.c_col = nil
-				psfx(47,3)
+				sfx(47,-2)
 			end
 		end
 	end
