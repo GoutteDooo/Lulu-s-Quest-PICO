@@ -1912,7 +1912,7 @@ function update_pulsator()
 		-- if pulsator[1].timer == 30 and i_room == 15 then sfx(47, 0, 0, 14) end
 
 		--A less before the next pulsation, prevent the player
-		local beat_delay = pulsator[1].beat_delay - pulsator[1].light_data.ac_activated * 30
+		local beat_delay = pulsator[1].beat_delay - pulsator[1].light_data.ac_activated * 25
 		-- if pulsator[1].timer == beat_delay - 30 and i_room == 15 then sfx(47, 0, pulsator[1].light_data.type == "white" and 16 or 19, 1) end
 
 		pulsator[1].timer += 1
@@ -1950,9 +1950,6 @@ function break_pulsator()
 		shake = 60
 		-- wait 0.5 sec and delete acristals
 		pulsator[1].is_broken = true
-		music(-1)
-		music_object[1] = true
-		music_object[2] = 27
 		sfx(47, -2)
 		sfx_timer = 120
 		sfx(63)
@@ -1968,7 +1965,6 @@ function break_pulsator()
 			mset(w.x/8, w.y/8, 0)
 			--accelerate pulsator just for the end of the lvl
 		end)
-		music_object[1] = true
 	end
 end
 
