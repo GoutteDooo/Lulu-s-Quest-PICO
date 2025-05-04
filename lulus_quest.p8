@@ -136,7 +136,8 @@ function init_player()
 			timer = 0,
 			time_set = 5*30,
 			active = true,
-			r = 16,
+			def_r = 16,
+			r = 16
 		}
 	}
 	hades = {
@@ -172,7 +173,8 @@ function init_player()
 			timer = 0,
 			time_set = 5*30,
 			active = true,
-			r = 16,
+			def_r = 16,
+			r = 16
 		}
 	}
 	--globals to both
@@ -330,6 +332,7 @@ function update_player()
 			disable_shield(hades)
 		end
 	end
+	
 	--grey lights
 	for gl in all(grey_lights) do
 		for c in all(chars) do
@@ -741,14 +744,16 @@ function draw_shields()
 
 	if hades.shield.active then
 		-- on interpole le rayon pour qu'il diminue avec le temps
-		local ratio = 1.2 - hades.shield.timer / hades.shield.time_set
-		local r = ceil(hades.shield.r * ratio)
-		
+		local ratio = 1 - hades.shield.timer / hades.shield.time_set
+		local r = ceil(hades.shield.def_r * ratio)
+		hades.shield.r = r
+
 		local cx = hades.x + hades.w / 2
 		local cy = hades.y + hades.h / 2
 		pal(14,3+128,1)
 		circfill(cx, cy, r, 14)
 		circ(cx, cy, r, 7) 
+		circ(cx,cy, hades.shield.r,8)
 	end
 end
 
@@ -1334,7 +1339,13 @@ function init_room()
 		lights = {
 			{33,32,16},
 			{45,33,12,"black"},
-			{40,39,10,"grey"}
+			{40,39,10,"grey"},
+			{37,42,10},
+			{43,42,10},
+			{46,45,10,"black"},
+			{42,45,10},
+			{37,45,10},
+			{34,46,12,"black"},
 		},
 		pos = {
 			{33, 32},
@@ -1590,6 +1601,7 @@ function update_objects()
 					c.shield.active = true
 					c.shield.time_set = sc.timer * 30
 					c.shield.timer = 0
+					c.shield.def_r = sc.r
 					c.shield.r = sc.r
 				end
 			end
