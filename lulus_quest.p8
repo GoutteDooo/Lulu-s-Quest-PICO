@@ -730,31 +730,34 @@ function draw_grey_lights()
 end
 
 function draw_shields()
-	--shield
-	if lulu.shield.active then
-		-- on interpole le rayon pour qu'il diminue avec le temps
-		local ratio = 1.2 - lulu.shield.timer / lulu.shield.time_set
-		local r = ceil(lulu.shield.r * ratio)
-		
-		local cx = lulu.x + lulu.w / 2
-		local cy = lulu.y + lulu.h / 2
-		circfill(cx, cy, r, 10)
-		circ(cx, cy, r, 7) 
-	end
-
-	if hades.shield.active then
-		-- on interpole le rayon pour qu'il diminue avec le temps
-		local ratio = 1 - hades.shield.timer / hades.shield.time_set
-		local r = ceil(hades.shield.def_r * ratio)
-		hades.shield.r = r
-
-		local cx = hades.x + hades.w / 2
-		local cy = hades.y + hades.h / 2
-		pal(14,3+128,1)
-		circfill(cx, cy, r, 14)
-		circ(cx, cy, r, 7) 
-		circ(cx,cy, hades.shield.r,8)
-	end
+	foreach(chars, function(c)
+		if c.shield.active then
+			-- on interpole le rayon pour qu'il diminue avec le temps
+			local ratio = 1 - c.shield.timer / c.shield.time_set
+			local r = c.shield.r
+	
+			local color_circle = c == hades and 14 or 10
+			if ratio < 0.15 then 
+				if frames % 5 == 0 then
+					color_circle = 0
+				end
+			elseif ratio < 0.25 then
+				if frames % 10 == 0 then
+					color_circle = 0
+				end
+			elseif ratio < 0.4 then
+				if frames % 15 == 0 then
+					color_circle = 0
+				end
+			end
+	
+			local cx = c.x + c.w / 2
+			local cy = c.y + c.h / 2
+			if c == hades then pal(14,3+128,1) end
+			circfill(cx, cy, r, color_circle)
+			circ(cx, cy, r, 7)
+		end
+	end)
 end
 
 function draw_hades_turnoff()
@@ -1393,11 +1396,11 @@ function next_room()
 	-- ! ---- ! --
 	-- ! TEST ! --
 	-- ! ---- ! -- 
-	-- if not tp then
-	-- 	tp = true
-	-- 	x = 128 * 2
-	-- 	y = 128 * 2
-	-- end
+	if not tp then
+		tp = true
+		x = 128 * 2
+		y = 128 * 2
+	end
 	-- if not pulsator_state then
 	-- 	x = 0
 	-- 	y = 256
@@ -2195,20 +2198,20 @@ end
 
 function debug_print()
 	print("lvl: "..i_room, room.x+40,room.y+2,8)
-	if pulsator[1] then
-		print(pulsator[1].light_data.room_ac[1] and "true" or "false")
-		print(pulsator[1].light_data.room_ac[2] and "true" or "false")
-		print(pulsator[1].light_data.ac_activated)
-	end
-	print("room.x: "..room.x)
-	print("room.y: "..room.y)
-	if walls[1] and walls[2] then
-		print(walls[1].broken and "true" or "false")
-		print(walls[2].broken and "true" or "false")
-	end
-	print(shake)
-	print(animation_timer)
-	print(#pulsator)
+	-- if pulsator[1] then
+	-- 	print(pulsator[1].light_data.room_ac[1] and "true" or "false")
+	-- 	print(pulsator[1].light_data.room_ac[2] and "true" or "false")
+	-- 	print(pulsator[1].light_data.ac_activated)
+	-- end
+	-- print("room.x: "..room.x)
+	-- print("room.y: "..room.y)
+	-- if walls[1] and walls[2] then
+	-- 	print(walls[1].broken and "true" or "false")
+	-- 	print(walls[2].broken and "true" or "false")
+	-- end
+	-- print(shake)
+	-- print(animation_timer)
+	-- print(#pulsator)
 	-- if pulsator[1] then
 	-- 	print("timer:"..pulsator[1].timer, room.x + 4,room.y+50,11)
 	-- 	print(type(pulsator[1].pulse_timer))
