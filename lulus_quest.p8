@@ -330,6 +330,14 @@ function update_player()
 			disable_shield(hades)
 		end
 	end
+	--grey lights
+	for gl in all(grey_lights) do
+		for c in all(chars) do
+			if collision_black_light(c, bl) then
+				c.in_light = true
+			end
+		end
+	end
 
 		--CONDITIONS FOR LIGHTS
 	if (not lulu.in_light and not lulu.passed) or (hades.in_light and not hades.passed) or pactual.y >= room.h-1 then
@@ -595,7 +603,7 @@ function update_light_lulu()
 	if btnp(❎) and lulu.select and lulu.lights_left > 0 then
 		local x = ima_light.x - ima_light.r
 		local y = ima_light.y - ima_light.r
-		create_light(x, y, ima_light.r,"white",1,10)
+		create_light(x, y, ima_light.r,"white",10)
 		psfx(57)
 		lulu.lights_left -= 1
 	end
@@ -706,6 +714,13 @@ function draw_lights()
 			circ(bl.x, bl.y, bl.r, 13)
 		end
 	)
+	--grey lights
+	foreach(
+		grey_lights, function(gl)
+			circfill(gl.x, gl.y, gl.r, 7)
+			circ(gl.x, gl.y, gl.r, 5)
+		end
+	)
 end
 
 function draw_shields()
@@ -746,7 +761,7 @@ function draw_hades_turnoff()
 	end
 end
 
-function create_light(x, y, r, type, flag, color)
+function create_light(x, y, r, type, color)
 	local new_light = {
 		id = #lights,
 		x = x,
@@ -754,14 +769,14 @@ function create_light(x, y, r, type, flag, color)
 		r = r,
 		h = 32,
 		w = 32,
-		flag = flag or 1,
 		color = color or 9,
 		type = type or "white"
 	}
 
 	if (type == "black") then
-		new_light.flag = 2
 		add(black_lights, new_light)
+	elseif (type == "grey") then
+		add(grey_lights, new_light)
 	else
 		add(lights, new_light)
 	end
@@ -1310,6 +1325,24 @@ function init_room()
 			{19,43}
 		},
 		p_data = {21,36,46,"white",180,2,16,1}
+	},
+	--18
+	{
+		lights = {
+			{33,32,16},
+			{45,33,12,"black"},
+			{38,38,16,"grey"}
+		},
+		pos = {
+			{33, 32},
+			{46, 32},
+		},
+		doors = {
+			{33,45},
+			{34,45}
+		},
+		powers = {0,0},
+		p_data = false
 	}
 }
 
@@ -1340,7 +1373,7 @@ function next_room()
 	-- ! ---- ! -- 
 	if not tp then
 		tp = true
-		x = 128 * 0
+		x = 128 * 2
 		y = 128 * 2
 	end
 	-- if not pulsator_state then
@@ -1481,6 +1514,7 @@ function init_objects()
 	dynamic_lights = {}
 	acristals = {}
 	walls = {}
+	grey_lights = {}
 end
 
 function update_objects()
@@ -1672,7 +1706,7 @@ function create_objects()
 	local c_room = rooms_data[i_room]
 	--create lights from new room
 	for l in all(c_room.lights) do
-		create_light(l[1] * 8, l[2] * 8, l[3], l[4], l[5], l[6])
+		create_light(l[1] * 8, l[2] * 8, l[3], l[4], l[5])
 	end
 	--black orb
 	for bo in all(c_room.black_orbs) do
@@ -1702,6 +1736,7 @@ function create_objects()
 	foreach(c_room.messages, function(m)
 		add(messages, m)
 	end)
+
 	-- set dynamics data to pulsator
 	if pulsator[1] and c_room.p_data then
 		local p = c_room.p_data
@@ -1714,7 +1749,10 @@ function create_objects()
 		pulsator[1].is_broken = false
 		pulsator[1].spr_r = p[7] or 24
 		pulsator[1].light_data.spd = p[8] or 1
-		end
+	else
+		pulsator_state = false
+	end
+
 	--acristals
 	foreach(c_room.acristals, function(ac)
 		add(acristals, {x = ac[1] * 8, y = ac[2] * 8, active = false, c_col = nil})
@@ -1861,6 +1899,7 @@ end
 --pulsator
 
 function draw_pulsator()
+	if not pulsator_state then return end
 	-- osciller uniquement si pulse_timer actif
 	local pulse_ratio = pulsator[1].pulse_timer / pulsator[1].pulse_dur
 	local scale = pulsator[1].spr_r / 10  - (pulsator[1].light_data.ac_activated * 0.2) + 0.5 * pulse_ratio -- grossit れき chaque battement
@@ -1905,7 +1944,7 @@ function draw_pulsator()
 end
 
 function update_pulsator()
-	if (lulu.using_light or hades.using_light) and i_room > 15 then return end
+	if ((lulu.using_light or hades.using_light) and i_room > 15) or not pulsator_state then return end
 	if pulsator[1] then
 		--Aprれそs chaque pulsation, on rejoue le SFX electrical effects
 		-- if pulsator[1].timer == 30 and i_room == 15 then sfx(47, 0, 0, 14) end
