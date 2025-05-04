@@ -1259,7 +1259,7 @@ function init_room()
 				{4,34, 4,34,9,34, 2,0.6, 16,"anti", false},
 				{2,41, 2,41,2,50, 2,0.6, 8,"anti", false},
 				{5,34, 5,34, 19, 34, 1, 1,16,"white", true},
-				{11,33, 11,33, 11, 50, 1, 0.7,8,"white", true}
+				-- {11,33, 11,33, 11, 50, 1, 0.7,8,"white", true}
 			},
 			keys = {
 				{14,34,"door"},
@@ -1341,7 +1341,7 @@ function next_room()
 	-- ! ---- ! -- 
 	if not tp then
 		tp = true
-		x = 128 * 1
+		x = 128 * 0
 		y = 128 * 2
 	end
 	-- if not pulsator_state then
