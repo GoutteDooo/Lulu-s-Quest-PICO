@@ -20,6 +20,7 @@ function _init()
 	animation_timer = 0
 	shake = 0
 	music_object = {false, 0}
+	game_state = 1 -- 0 = title, 1 = game, 2 = restart_level
 	music(0)
 	create_room()
 	--DEBUG
@@ -28,6 +29,14 @@ function _init()
 end
 
 function _update()
+	if game_state == 1 then
+		update_game()
+	elseif game_state == 2 then
+		restart_level()
+	end
+end
+
+function update_game() 
 	frames=((frames+1)%30)
 	if sfx_timer > 0 then
 		sfx_timer -= 1
@@ -76,7 +85,7 @@ function _draw()
 	-- line()
 	-- Doors
 	draw_doors()
-	draw_player()
+	draw_chars()
 	foreach(butterflies, function(b)
 		draw_butterfly(b)
 	end)
@@ -134,8 +143,8 @@ function init_player()
 		passed = false, --pass lvl
 		shield = {
 			timer = 0,
-			time_set = 5*30,
-			active = true,
+			time_set = 0,
+			active = false,
 			def_r = 16,
 			r = 16
 		}
@@ -171,8 +180,8 @@ function init_player()
 		passed = false, --pass lvl
 		shield = {
 			timer = 0,
-			time_set = 5*30,
-			active = true,
+			time_set = 0,
+			active = false,
 			def_r = 16,
 			r = 16
 		}
@@ -188,8 +197,8 @@ function init_player()
 	chars = { lulu, hades }
 end
 
-function draw_player()
-	--if they have finished the lvl
+function draw_chars()
+	--if they already in current room 
 	if not (lulu.passed) then
 		lulu.sprite = pactual == lulu and lulu.sprite or lulu.sprite_hide
 		spr(lulu.sprite, lulu.x, lulu.y, 1, 1, lulu.flipx)
@@ -203,11 +212,6 @@ function draw_player()
 		spr(hades.sprite, hades.x, hades.y, 1, 1, hades.flipx)
 		palt()
 	end
-
-	-- pset(pactual.x + 9, pactual.y + 6, 8)
-	-- pset(pactual.x + 9, pactual.y + 2, 8)
-	-- pset(pactual.x - 1, pactual.y + 6, 8)
-	-- pset(pactual.x - 1, pactual.y + 2, 8)
 end
 
 function update_player()
@@ -252,7 +256,7 @@ function update_player()
 	--if fall in water or lava
 
 	if check_flag(1, pactual.x + 4, pactual.y) then
-		restart_level()
+		game_state = 2
 		return
 	end
 
@@ -341,7 +345,11 @@ function update_player()
 
 		--CONDITIONS FOR LIGHTS
 	if (not lulu.in_light and not lulu.passed) or (hades.in_light and not hades.passed) or pactual.y >= room.h-1 then
-		restart_level()
+		if lulu.in_light then lulu.sprite = 16 
+		else hades.sprite = 17
+		end
+		animation_timer = 30
+		game_state = 2
 	end
 
 	pactual.y_g = ceil(pactual.y / 8) * 8
@@ -1510,6 +1518,7 @@ function restart_level()
 	delay_switch = 10
 	sfx_timer = 45
 	sfx(53,3)
+	game_state = 1
 end
 
 -->8
