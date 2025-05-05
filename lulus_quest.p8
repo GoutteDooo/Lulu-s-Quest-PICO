@@ -341,11 +341,6 @@ function update_player()
 
 		--CONDITIONS FOR LIGHTS
 	if (not lulu.in_light and not lulu.passed) or (hades.in_light and not hades.passed) or pactual.y >= room.h-1 then
-			-- lives = lives - 1
-		if i_room == 0 then 
-			restart_game()
-			return
-		end
 		restart_level()
 	end
 
@@ -1423,11 +1418,11 @@ function next_room()
 	-- ! ---- ! --
 	-- ! TEST ! --
 	-- ! ---- ! -- 
-	-- if not tp then
-	-- 	tp = true
-	-- 	x = 128 * 2
-	-- 	y = 128 * 2
-	-- end
+	if not tp then
+		tp = true
+		x = 128 * 0
+		y = 128 * 2
+	end
 	-- if not pulsator_state then
 	-- 	x = 0
 	-- 	y = 256
@@ -1514,10 +1509,6 @@ function restart_level()
 	is_in_switch = true
 	sfx_timer = 45
 	sfx(53,3)
-end
-
-function restart_game()
-	_init()
 end
 
 -->8
@@ -1993,6 +1984,7 @@ function update_pulsator()
 		if pulsator[1].timer >= beat_delay then
 			-- un battement se produit
 			pulsator[1].pulse_timer = pulsator[1].pulse_dur -- dれたclenche une pulsation visuelle
+			shake = 10
 			pulsator[1].timer = 0
 			-- SFX
 			if sfx_timer == 0 and i_room != 15 then
