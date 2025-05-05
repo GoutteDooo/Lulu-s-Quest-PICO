@@ -196,20 +196,18 @@ function init_player()
 end
 
 function draw_chars()
-	--if they already in current room 
 	if game_state == 2 then
 		if not lulu.in_light then lulu.sprite = 16 end
 		if hades.in_light then hades.sprite = 17 end
 	end
 	if game_state == 1 then
-		if not (lulu.passed) then
-			lulu.sprite = pactual == lulu and lulu.sprite or lulu.sprite_hide
-		end
-		if not (hades.passed) then
-			hades.sprite = pactual == hades and hades.sprite or hades.sprite_hide
-			if hades.sprite == hades.sprite_hide then
+		--if they already in current room
+		foreach(chars, function(c)
+			if not (c.passed) then
+				c.sprite = pactual == c and c.sprite or c.sprite_hide
+			else c.sprite = 0
 			end
-		end
+		end)
 	end
 	spr(lulu.sprite, lulu.x, lulu.y, 1, 1, lulu.flipx)
 	palt(0,false)
@@ -221,7 +219,7 @@ end
 function update_player()
 	--delay when switching
 	if is_in_switch then
-		delay_switch = delay_switch - 1
+		delay_switch -= 1
 		if delay_switch <= 0 then
 			is_in_switch = false
 			delay_switch = dflt_delay_switch
@@ -230,7 +228,7 @@ function update_player()
 	end
 	--if they have finished the lvl
 	if pactual.passed then
-		switch_character()
+		switch_characters()
 		return
 	end
 
@@ -251,7 +249,7 @@ function update_player()
 
 	--switch characters
 	if btnp(⬇️) and not btn(🅾️) then
-		switch_character()
+		switch_characters()
 		return
 	end
 
@@ -490,20 +488,18 @@ function move_characters()
 end
 
 
-function switch_character()
+function switch_characters()
 	--switch characters
 	if (pactual == lulu) then
 		pactual = hades
 		lulu.select = false
 		reinit_characters()
 		hades.select = true
-		is_in_switch = true
 	elseif (pactual == hades) then
 		pactual = lulu
 		lulu.select = true
 		reinit_characters()
 		hades.select = false
-		is_in_switch = true
 	end
 end
 
@@ -1517,7 +1513,6 @@ function index_room(x, y)
 end
 
 function restart_level()
-	if animation_timer != 0 then return end
 	create_room()
 	reinit_characters()
 	is_in_switch = true
@@ -1557,7 +1552,7 @@ end
 
 function update_objects()
 	-- When someone enter its door, passed will be turn on and character will disappear
-	if collision(pactual, pactual == lulu and doors.lulu or doors.hades) then
+	if not pactual.passed and collision(pactual, pactual == lulu and doors.lulu or doors.hades) then
 		pactual.passed = true
 		delay_switch = 10
 		if lulu.passed and lulu.shield.active then
@@ -2214,6 +2209,11 @@ end
 
 function debug_print()
 	print("lvl: "..i_room, room.x+40,room.y+2,8)
+	print("dsw:"..delay_switch)
+	print(is_in_switch and "true" or "false")
+	print("qui?"..pactual.id)
+	print("atime:"..animation_timer)
+	print("gs"..game_state)
 	-- if pulsator[1] then
 	-- 	print(pulsator[1].light_data.room_ac[1] and "true" or "false")
 	-- 	print(pulsator[1].light_data.room_ac[2] and "true" or "false")
