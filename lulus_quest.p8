@@ -10,7 +10,7 @@ function _init()
 	cy = 0
 	frames = 0
 	room_transition_pending = false
-	i_room = 0
+	i_room = 1
 	is_in_switch = false
 	dflt_delay_switch = 3 --3 frames
 	delay_switch = dflt_delay_switch
@@ -21,6 +21,7 @@ function _init()
 	shake = 0
 	music_object = {false, 0}
 	music(0)
+	create_room()
 	--DEBUG
 	tp = false
 	--TEST
@@ -826,7 +827,7 @@ function init_room()
 				{9,12,16}
 			},
 			pos = {
-				{1,13},
+				{1,14},
 				{15,13},
 			},
 			doors = {
@@ -1422,11 +1423,11 @@ function next_room()
 	-- ! ---- ! --
 	-- ! TEST ! --
 	-- ! ---- ! -- 
-	if not tp then
-		tp = true
-		x = 128 * 2
-		y = 128 * 2
-	end
+	-- if not tp then
+	-- 	tp = true
+	-- 	x = 128 * 2
+	-- 	y = 128 * 2
+	-- end
 	-- if not pulsator_state then
 	-- 	x = 0
 	-- 	y = 256
@@ -1446,7 +1447,7 @@ function next_room()
 	create_room()
 	sfx_timer = 30
 	sfx(61,3)
-	if i_room == 16 then
+	if i_room == 17 then
 		music(27)
 		sfx(47, -2)
 	end
@@ -1457,9 +1458,9 @@ end
 function create_room()
 	-- set pulsator state on
 	-- and put pulsator object into global pulsator object
-	if i_room >= 15 and not pulsator_state then
+	if i_room >= 16 and not pulsator_state then
 		pulsator_state = true
-		add(pulsator, rooms_data[15].pulsator)
+		add(pulsator, rooms_data[16].pulsator)
 	end
 
 	delete_objects()
@@ -1504,7 +1505,7 @@ function new_room(id, x, y, w, h)
 end
 
 function index_room(x, y)
-	return flr(x / 128) + flr(y / 128) * 8
+	return (flr(x / 128) + flr(y / 128) * 8) + 1
 end
 
 function restart_level()
@@ -1524,7 +1525,10 @@ end
 
 function init_objects()
 	-- coordonnれたes pour lvl 1, a update れき chaque changement de room
-	doors = {}
+	doors = {
+		lulu = {x = 0, y = 0},
+		hades = {x = 0, y = 0}
+	}
 	black_orbs = {}
 	ima_light_bo = {
 		x = 0,
