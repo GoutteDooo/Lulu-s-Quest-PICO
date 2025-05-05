@@ -687,6 +687,8 @@ end
 function draw_light()
 	draw_dynamic_lights()
 	draw_lights()
+	--disable possibility to player to draw ima lights
+	if game_state != 1 then return end
 	draw_imaginary_light()
 	draw_hades_turnoff()
 end
