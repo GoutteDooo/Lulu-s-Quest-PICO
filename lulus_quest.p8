@@ -199,19 +199,25 @@ end
 
 function draw_chars()
 	--if they already in current room 
-	if not (lulu.passed) then
-		lulu.sprite = pactual == lulu and lulu.sprite or lulu.sprite_hide
-		spr(lulu.sprite, lulu.x, lulu.y, 1, 1, lulu.flipx)
+	if game_state == 2 then
+		if not lulu.in_light then lulu.sprite = 16 end
+		if hades.in_light then hades.sprite = 17 end
 	end
-	if not (hades.passed) then
-		hades.sprite = pactual == hades and hades.sprite or hades.sprite_hide
-		if hades.sprite == hades.sprite_hide then
-			palt(0,false)
-			palt(12,true)
+	if game_state == 1 then
+		if not (lulu.passed) then
+			lulu.sprite = pactual == lulu and lulu.sprite or lulu.sprite_hide
 		end
-		spr(hades.sprite, hades.x, hades.y, 1, 1, hades.flipx)
-		palt()
+		if not (hades.passed) then
+			hades.sprite = pactual == hades and hades.sprite or hades.sprite_hide
+			if hades.sprite == hades.sprite_hide then
+			end
+		end
 	end
+	spr(lulu.sprite, lulu.x, lulu.y, 1, 1, lulu.flipx)
+	palt(0,false)
+	palt(12,true)
+	spr(hades.sprite, hades.x, hades.y, 1, 1, hades.flipx)
+	palt()
 end
 
 function update_player()
@@ -345,9 +351,6 @@ function update_player()
 
 		--CONDITIONS FOR LIGHTS
 	if (not lulu.in_light and not lulu.passed) or (hades.in_light and not hades.passed) or pactual.y >= room.h-1 then
-		if lulu.in_light then lulu.sprite = 16 
-		else hades.sprite = 17
-		end
 		animation_timer = 30
 		game_state = 2
 	end
