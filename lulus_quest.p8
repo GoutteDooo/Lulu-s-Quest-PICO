@@ -21,6 +21,7 @@ function _init()
 	shake = 0
 	music_object = {false, 0}
 	game_state = 1 -- 0 = title, 1 = game, 2 = restart_level
+	pulsator_room = 16
 	music(0)
 	create_room()
 	--DEBUG
@@ -1358,8 +1359,8 @@ function init_room()
 	--18
 	{
 		lights = {
-			{32,31,8},
-			{35,35,16,"anti"},
+			{33,32,8},
+			{36,36,8,"anti"},
 			{45,33,12,"black"},
 			{40,39,10,"grey"},
 			{37,42,10},
@@ -1370,7 +1371,7 @@ function init_room()
 			{34,46,12,"black"},
 		},
 		pos = {
-			{33, 32},
+			{33, 33},
 			{46, 32},
 		},
 		doors = {
@@ -1386,7 +1387,7 @@ function init_room()
 			{25,43,29,43,47,43,1,0.2,10,"black",false},
 			{25,46,29,46,47,46,1,0.2,10,"black",false},
 		},
-		p_data = {37,29,128,"white",180,4,16,1.25}
+		p_data = {37,29,128,"white",180,4,16,5}
 	}
 }
 
@@ -1433,9 +1434,9 @@ function next_room()
 	create_room()
 	sfx_timer = 30
 	sfx(61,3)
-	if i_room == 17 then
+	if i_room == pulsator_room + 1 then
 		music(27)
-		sfx(47, -2)
+		sfx(48, -2)
 	end
 	-- !!  TEST !!
 	-- keys_owned = 2
@@ -1444,7 +1445,7 @@ end
 function create_room()
 	-- set pulsator state on
 	-- and put pulsator object into global pulsator object
-	if i_room >= 16 and not pulsator_state then
+	if i_room >= pulsator_room and not pulsator_state then
 		pulsator_state = true
 		add(pulsator, rooms_data[16].pulsator)
 	end
@@ -1474,9 +1475,9 @@ function create_room()
 	hades.turnoffs_left = room.powers[2]
 	door_sound_played = false
 	--replay pulsator sfx (with music fct) if lvl 15 reached
-	if i_room == 15 then
+	if i_room == pulsator_room then
 		music(-1)
-		music(44)
+		sfx(48,0)
 	end
 end
 
@@ -1965,7 +1966,7 @@ function draw_pulsator()
 end
 
 function update_pulsator()
-	if ((lulu.using_light or hades.using_light) and i_room > 15) or not pulsator_state then return end
+	if ((lulu.using_light or hades.using_light) and i_room > pulsator_room) or not pulsator_state then return end
 	if pulsator[1] then
 		--Aprれそs chaque pulsation, on rejoue le SFX electrical effects
 		-- if pulsator[1].timer == 30 and i_room == 15 then sfx(47, 0, 0, 14) end
@@ -1981,7 +1982,7 @@ function update_pulsator()
 			shake = 10
 			pulsator[1].timer = 0
 			-- SFX
-			if sfx_timer == 0 and i_room != 15 then
+			if sfx_timer == 0 and i_room != pulsator_room then
 				sfx(48, -1)
 				sfx_timer = 30
 				sfx(48, 3, pulsator[1].light_data.type == "white" and 7 or 14, 1)
@@ -2125,7 +2126,7 @@ function create_dynamic_light(x, y, type, spd, r_max, r_default)
 end
 
 function update_dynamic_lights()
-	if (lulu.using_light or hades.using_light) and i_room > 15 then return end
+	if (lulu.using_light or hades.using_light) and i_room > pulsator_room then return end
 	foreach(dynamic_lights, function(dl)
 		if dl.r < dl.r_max then
 			dl.r += dl.spd
@@ -2406,9 +2407,9 @@ __gfx__
 11111111111111110000000000011000000000000555555555555555555555500555555555555555555555500555555055656655556565665555550500000000
 9696969696f5959596959596969696f5000000020050000000100200000000000200000000020000000000000000000202020202020202020202020202020202
 02020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202
-46740616469695a654d6a65437545485000200000075000000020200000002020202020000020000000000000002020202000000000000000000000000000002
+46740616469695a654d6a65437545485000200000075000000020200000002020200000000020000000000000002020202000000000000000000000000000002
 02000000000000000000000000000002020000000000000000000000000000020200000000000000000000000000000202000000000000000000000000000002
-464607174615b5000000242500000085000202020275000000000002000000000200020000020000000000000000000202000000000000000000000000000002
+464607174615b5000000242500000085000202020275000000000002000000000202020000020000000000000000000202000000000000000000000000000002
 02000000000000000000000000000002020000000000000000000000000000020200000000000000000000000000000202000000000000000000000000000002
 946767677700b57400002425876797f5000000027575757500000000020000000200020000020000000000000000000202000000000000000000000000000002
 02000000000000000000000000000002020000000000000000000000000000020200000000000000000000000000000202000000000000000000000000000002
