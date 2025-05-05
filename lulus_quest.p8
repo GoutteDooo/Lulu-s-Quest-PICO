@@ -482,19 +482,19 @@ function switch_character()
 	if (pactual == lulu) then
 		pactual = hades
 		lulu.select = false
-		reinit_character()
+		reinit_characters()
 		hades.select = true
 		is_in_switch = true
 	elseif (pactual == hades) then
 		pactual = lulu
 		lulu.select = true
-		reinit_character()
+		reinit_characters()
 		hades.select = false
 		is_in_switch = true
 	end
 end
 
-function reinit_character()
+function reinit_characters()
 	foreach(chars, function(c)
 		c.dx = 0
 		c.dy = 0
@@ -1505,8 +1505,9 @@ end
 
 function restart_level()
 	create_room()
-	reinit_character()
+	reinit_characters()
 	is_in_switch = true
+	delay_switch = 10
 	sfx_timer = 45
 	sfx(53,3)
 end
@@ -1545,6 +1546,7 @@ function update_objects()
 	-- When someone enter its door, passed will be turn on and character will disappear
 	if collision(pactual, pactual == lulu and doors.lulu or doors.hades) then
 		pactual.passed = true
+		delay_switch = 10
 		if lulu.passed and lulu.shield.active then
 			disable_shield(lulu)
 		end
