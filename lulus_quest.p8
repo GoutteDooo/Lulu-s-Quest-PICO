@@ -424,7 +424,7 @@ function move_characters()
 		psfx(62,3)
 	end
 	if not btn(⬆️) and pactual.is_jumping and pactual.dy < 0 then
-		pactual.dy = pactual.dy * 0.5
+		pactual.dy = pactual.dy * 0.2
 		pactual.is_jumping = false
 	end
 
@@ -440,25 +440,10 @@ function move_characters()
 	if pactual.dx < 0.1 and pactual.dx > -0.1 then pactual.dx = 0 end
 	--dy
 	foreach(chars, function(c)
-		if c.dy then
-			c.dy += c.gravity
-			c.y += c.dy
-		end
+		c.dy += c.gravity
+		c.y += c.dy
 	end)
-
-	--COLLISIONS
-	--if next moves collides with gates, no more moves possible
-	-- local new_x = pactual.x + pactual.dx
-	-- local new_y = pactual.y + pactual.dy
-	-- foreach(gates, function(g)
-	-- 	if collision({x = new_x, y = new_y, w = pactual.w, h = pactual.h}, g) then
-	-- 		if not g.opened then
-	-- 			pactual.dx = 0
-	-- 			pactual.dy = 0
-	-- 		end
-	-- 	end
-	-- end)
-
+	
 	-- COLLISION SOL
 	local grounded
 	foreach(chars, function(c)
@@ -707,13 +692,12 @@ function draw_imaginary_light()
 	if btn(🅾️) and lulu.select and lulu.lights_left > 0 then
 		circfill(ima_light.x, ima_light.y, ima_light.r, ima_light.color)
 		circ(ima_light.x, ima_light.y, ima_light.r, ima_light.color+1)
-		circ(lulu.x_g, lulu.y_g, lulu.ima_range, 12) --desinner le circle de ima_light
-		-- pset(ima_light.x,ima_light.y,8)
+		circ(lulu.x_g, lulu.y_g, lulu.ima_range, 8)
 	end
 	if pactual.using_black_light then
 		circfill(ima_light_bo.x, ima_light_bo.y, ima_light_bo.r, ima_light_bo.c)
 		circ(ima_light_bo.x, ima_light_bo.y, ima_light_bo.r, ima_light_bo.c+1)
-		circ(pactual.x_g, pactual.y_g, pactual.ima_range, ima_light_bo.c)
+		circ(pactual.x_g, pactual.y_g, pactual.ima_range, 8)
 	end
 end
 
