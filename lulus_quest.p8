@@ -1367,7 +1367,11 @@ function create_objects()
 	end)
 	--butterflies
 	foreach(c_room.butterflies, function(b)
-		add(butterflies, {x = b[1] * 8, y = b[2] * 8, x1 = b[3] * 8, y1 = b[4] * 8, x2 = b[5] * 8, y2 = b[6] * 8, target = b[7], speed = b[8], r = b[9], light = b[10]})
+		local bf = {x = b[1] * 8, y = b[2] * 8, x1 = b[3] * 8, y1 = b[4] * 8, x2 = b[5] * 8, y2 = b[6] * 8, target = b[7], speed = b[8], r = b[9], light = b[10]}
+		add(butterflies, bf)
+		if b[10] == "grey" then
+			add(grey_lights, bf)
+		end
 	end)
 	--messages
 	foreach(c_room.messages, function(m)
