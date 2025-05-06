@@ -115,9 +115,10 @@ end
 -->8
 --player
 
-function init_player()
-	lulu = {
-		id = "lulu",
+function generate_character(name)
+	return 
+	{
+		id = name,
 		x = 0,
 		y = 0,
 		x_g = x,
@@ -127,67 +128,40 @@ function init_player()
 		dx = 0,
 		dy = 0,
 		g = false,
-		gravity = 0.18,
+		gravity = name == "lulu" and 0.18 or 0.11,
 		is_jumping = false,
-		default_sprite = 1,
-		sprite = 1,
-		sprite_hide = 3,
-		flipx = false,
-		select = true,
-		in_light = true,
+		default_sprite = name == "lulu" and 1 or 5,
+		sprite = default_sprite,
+		sprite_hide = name == "lulu" and 3 or 7,
+		flipx = true,
+		select = name == "lulu" and true or false,
+		in_light = name == "lulu" and true or false,
 		using_light = false, --to know if player is holding C key
 		using_black_light = false,
-		ima_range = 6 * 8, --range of ima_light
-		lights_left = 1,
-		passed = false, --pass lvl
+		ima_range = 6 * 8, --range of ima_light for white and black light
+		powers_left = 0,
+		passed = false,
 		shield = {
 			timer = 0,
 			time_set = 0,
 			active = false,
 			def_r = 16,
 			r = 16
-		}
-	}
-	hades = {
-		id = "hades",
-		x = 0,
-		y = 0,
-		x_g = x,
-		y_g = y,
-		h = 8,
-		w = 8,
-		dx = 0,
-		dy = 0,
-		g = false,
-		gravity = 0.11,
-		is_jumping = false,
-		default_sprite = 5,
-		sprite = 5,
-		sprite_hide = 7,
-		flipx = true,
-		select = false,
-		in_light = false,
-		using_light	= false,
-		using_black_light = false,
-		ima_range = 6 * 8, 
-		light_selected = 
+		},
+		light_selected = --for hades
 		{
 			nil, -- id light
 			0 -- index dynamique
 		},
-		turnoffs_left = 1,
-		passed = false, --pass lvl
-		shield = {
-			timer = 0,
-			time_set = 0,
-			active = false,
-			def_r = 16,
-			r = 16
-		}
 	}
+end
+
+function init_player()
+	lulu = generate_character("lulu")
+	hades = generate_character("hades")
 	--globals to both
-	keys_owned = 0
 	pactual = lulu
+	keys_owned = 0
 	friction = 0.7
 	accel = 1
 	accel_air = 0.7
@@ -539,7 +513,7 @@ end
 function update_light()
 	-- lulu
 		if btn(🅾️) then
-			if lulu.select and lulu.lights_left > 0 then
+			if lulu.select and lulu.powers_left > 0 then
 				update_light_lulu()
 			end
 				--hades
@@ -599,19 +573,19 @@ function update_light_lulu()
 		end
 	end
 
-	if btnp(❎) and lulu.select and lulu.lights_left > 0 then
+	if btnp(❎) and lulu.select and lulu.powers_left > 0 then
 		local x = ima_light.x - ima_light.r
 		local y = ima_light.y - ima_light.r
 		create_light(x, y, ima_light.r,"white",10)
 		psfx(57)
 		shake = 6
-		lulu.lights_left -= 1
+		lulu.powers_left -= 1
 	end
 end
 
 function update_light_hades()
 	-- hades a une variable qui stocke temporairement la light selected
-	if #lights > 0 and hades.turnoffs_left > 0 then
+	if #lights > 0 and hades.powers_left > 0 then
 		if not hades.using_light then
 			psfx(55,3)
 			hades.using_light = true
@@ -624,7 +598,7 @@ function update_light_hades()
 		if btnp(❎) then
 			del(lights,hades.light_selected[1])
 			hades.light_selected[2] = 0
-			hades.turnoffs_left -= 1
+			hades.powers_left -= 1
 			psfx(56,3)
 			shake = 6
 	end
@@ -689,7 +663,7 @@ function draw_light()
 end
 
 function draw_imaginary_light()
-	if btn(🅾️) and lulu.select and lulu.lights_left > 0 then
+	if btn(🅾️) and lulu.select and lulu.powers_left > 0 then
 		circfill(ima_light.x, ima_light.y, ima_light.r, ima_light.color)
 		circ(ima_light.x, ima_light.y, ima_light.r, ima_light.color+1)
 		circ(lulu.x_g, lulu.y_g, lulu.ima_range, 8)
@@ -1088,11 +1062,11 @@ function next_room()
 	-- ! ---- ! --
 	-- ! TEST ! --
 	-- ! ---- ! -- 
-	if not tp then
-		tp = true
-		x = 128 * 3
-		y = 128 * 1
-	end
+	-- if not tp then
+	-- 	tp = true
+	-- 	x = 128 * 3
+	-- 	y = 128 * 1
+	-- end
 	-- !!END TEST
 	local w = x + 128
 	local h = y + 128
@@ -1138,8 +1112,8 @@ function create_room()
 		i += 1
 	end)
 	--powers
-	lulu.lights_left = room.powers[1]
-	hades.turnoffs_left = room.powers[2]
+	lulu.powers_left = room.powers[1]
+	hades.powers_left = room.powers[2]
 	door_sound_played = false
 	--replay pulsator sfx (with music fct) if lvl 15 reached
 	if i_room == pulsator_room then
@@ -1531,9 +1505,9 @@ function open_chest(c)
 	if content == "black_orb" then
 		create_black_orb(c.content[2] * 8, c.content[3] * 8, c.content[4])
 	elseif content == "turnoff" then
-		hades.turnoffs_left += 1
+		hades.powers_left += 1
 	elseif content == "white_orb" then
-		lulu.lights_left += 1
+		lulu.powers_left += 1
 	end
 end
 -->8
@@ -1841,11 +1815,11 @@ function draw_ui()
 	palt(0, false)
 	palt(12, true)
 	--# lights
-	for i = 1, lulu.lights_left do
+	for i = 1, lulu.powers_left do
 		spr(49, x + i * 8, y + 4)
 	end
 	--# turnoffs
-	for i = 1, hades.turnoffs_left do
+	for i = 1, hades.powers_left do
 		spr(50, x + 120 - i * 8, y + 4)
 	end
 	--# keys
