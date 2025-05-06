@@ -6,15 +6,14 @@ function _init()
 	init_light()
 	init_room()
 	init_objects()
-	cx = 0
-	cy = 0
+	camx = 0
+	camy = 0
 	frames = 0
 	room_transition_pending = false
 	i_room = 1
 	is_in_switch = false
 	dflt_delay_switch = 3 --3 frames
 	delay_switch = dflt_delay_switch
-	bo_spr = 22
 	sfx_timer = 0
 	pulsator_state = false
 	animation_timer = 0
@@ -56,19 +55,19 @@ function update_game()
 	update_room()
 	update_light()
 	update_objects()
-	cx = room.x
-	cy = room.y
+	camx = room.x
+	camy = room.y
 end
 
 function _draw()
 	cls()
-	camera(cx, cy)
+	camera(camx, camy)
 	-- screenshake
 	if shake>0 then
 		shake-=1
 		-- camera()
 		if shake>0 then
-			camera(-2+rnd(5)+cx,-2+rnd(5)+cy)
+			camera(-2+rnd(5)+camx,-2+rnd(5)+camy)
 		end
 	end
 
@@ -104,10 +103,10 @@ function _draw()
 	end
 
 	-- draw outside of the screen for screenshake
-	rectfill(-5+cx,-5+cy,-1+cx,133+cy,0)
-	rectfill(-5+cx,-5+cy,133+cx,-1+cy,0)
-	rectfill(-5+cx,128+cy,133+cx,133+cy,0)
-	rectfill(128+cx,-5+cy,133+cx,133+cy,0)
+	rectfill(-5+camx,-5+camy,-1+camx,133+camy,0)
+	rectfill(-5+camx,-5+camy,133+camx,-1+camy,0)
+	rectfill(-5+camx,128+camy,133+camx,133+camy,0)
+	rectfill(128+camx,-5+camy,133+camx,133+camy,0)
 
 	draw_ui()
 	debug_print()
@@ -1106,11 +1105,11 @@ function next_room()
 	-- ! ---- ! --
 	-- ! TEST ! --
 	-- ! ---- ! -- 
-	if not tp then
-		tp = true
-		x = 128 * 3
-		y = 128 * 2
-	end
+	-- if not tp then
+	-- 	tp = true
+	-- 	x = 128 * 3
+	-- 	y = 128 * 2
+	-- end
 	-- !!END TEST
 	local w = x + 128
 	local h = y + 128
@@ -1325,9 +1324,9 @@ function draw_objects()
 	--black orbs
 	foreach(
 		black_orbs, function(bo)
-			spr(bo_spr, bo.x, bo.y, 1, 1, false, false)
+			spr(23, bo.x, bo.y, 1, 1, false, false)
 			if frames > 20 then
-				spr(bo_spr+1, bo.x, bo.y, 1, 1, false, false)
+				spr(23+1, bo.x, bo.y, 1, 1, false, false)
 			end
 		end
 	)
