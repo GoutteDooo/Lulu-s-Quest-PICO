@@ -1090,8 +1090,8 @@ function next_room()
 	-- ! ---- ! -- 
 	if not tp then
 		tp = true
-		x = 128 * 7
-		y = 128 * 0
+		x = 128 * 3
+		y = 128 * 1
 	end
 	-- !!END TEST
 	local w = x + 128
@@ -1465,7 +1465,7 @@ function create_objects()
 			local t = mget(x, y)
 			if fget(t, 3) then
 				add(walls, {x = x * 8, y = y * 8, broken = false, tile = t, break_anim = 0})
-			elseif fget(t, 4) then
+			elseif t == 52 or t == 26 then
 				add(gates, {x = x * 8, y = y * 8, tile = t, opened = false})
 			end
 		end
