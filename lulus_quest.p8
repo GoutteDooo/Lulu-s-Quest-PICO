@@ -1469,11 +1469,9 @@ end
 
 function draw_butterfly_light(b)
 	local blight = b.light
-	if blight == "black" then
-		pal(14,3+128,1)
-	end
-	local light_c = blight == "white" and 9 or blight == "black" and 14 or 0
-	local circ_c = blight == "white" and 6 or blight == "black" and 13 or 6
+	if blight == "black" then pal(14,3+128,1) end
+	local light_c = blight == "white" and 9 or blight == "black" and 14 or blight == "grey" and 7 or 0
+	local circ_c = blight == "white" and 6 or blight == "black" and 13 or blight == "grey" and 5 or 6
 	circfill(b.x, b.y, b.r, light_c)
 	circ(b.x, b.y, b.r, circ_c)
 end
