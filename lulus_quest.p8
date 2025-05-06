@@ -75,13 +75,9 @@ function _draw()
 	draw_light()
 	draw_objects()
 	map(0, 0, 0, 0, 128, 64, 7)
-	-- foreach(gates, function(g)
-	-- 	draw_gates(g)
-	-- end)
 	draw_walls()
 	map(0, 0, 0, 0, 128, 64, 3)
 	map(0, 0, 0, 0, 128, 64, 0x10)
-	-- line()
 	-- Doors
 	draw_doors()
 	draw_chars()
@@ -90,6 +86,11 @@ function _draw()
 	end)
 	draw_acristals()
 	draw_messages()
+	-- draw outside of the screen for screenshake
+	rectfill(-5+camx,-5+camy,-1+camx,133+camy,0)
+	rectfill(-5+camx,-5+camy,133+camx,-1+camy,0)
+	rectfill(-5+camx,128+camy,133+camx,133+camy,0)
+	rectfill(128+camx,-5+camy,133+camx,133+camy,0)
 	--DEBUG
 	if btn(🅾️) and lulu.select then
 		-- Dessiner la grid de la map
@@ -101,12 +102,6 @@ function _draw()
 		-- end
 		-- pset(ima_light.x,ima_light.y,11)
 	end
-
-	-- draw outside of the screen for screenshake
-	rectfill(-5+camx,-5+camy,-1+camx,133+camy,0)
-	rectfill(-5+camx,-5+camy,133+camx,-1+camy,0)
-	rectfill(-5+camx,128+camy,133+camx,133+camy,0)
-	rectfill(128+camx,-5+camy,133+camx,133+camy,0)
 
 	draw_ui()
 	debug_print()
@@ -810,7 +805,6 @@ function init_room()
 		{
 			lights = {{-2,10,26},{9,12,16}},
 			pos = {{1,14},{15,13}},
-			doors = {{7,13},{9,13}},
 			powers = {1,1},
 			messages = {
 				{"tutorial","welcome to lulu's quest!"},
@@ -830,49 +824,42 @@ function init_room()
     {
         lights = {{17,10,20},{25,11,22}},
         pos = {{19,14},{17,7}},
-        doors = {{30,13},{31,9}},
         powers = {1,1},
     },
     --3
     {
         lights = {{43,  7, 24},{35,  6, 16}},
         pos = {{45, 10},{34, 10}},
-        doors = {{33,9},{46,9}},
         powers = {3,1},
     },
     --4
     {
         lights = {{50,  8, 19},{56,  8, 23},},
         pos = {{53, 10},{62, 10},},
-        doors = {{63,8},{48,9},},
         powers = {2,2},
     },
     --5
     {
         lights = {{65, 8, 16},{70, 0, 24},{72, 8, 16},},
         pos = {{67, 10},{78, 10},},
-        doors = {{70,1},{75,1},},
         powers = {2,1,},
     },
     --6
     {
         lights = {{82, 9, 24},{91, 9, 32},},
         pos = {{82, 11},{80, 14},},
-        doors = {{94,13},{94,10},},
         powers = {2,2,},
     },
     --7
     {
         lights = {{102,  1, 16},{108,  5, 24},{ 99,  6, 12},{104, 12, 24},},
         pos = {{102, 2},{104, 5},},
-        doors = {{101,14},{106,14},},
         powers = {3,2,},
     },
     --8
     {
         lights = {{113, 12, 16},{117, 12, 16},{122,  9, 16},},
         pos = {{113, 14},{113, 11},},
-        doors = {{126,13},{126,9},},
         powers = {1,0,},
         black_orbs = {{122,14,24},},
     },
@@ -880,7 +867,6 @@ function init_room()
     {
         lights = {{8,17,16},{3,21,16},{9,22,16}},
         pos = {{10,18},{1,18}},
-        doors = {{13,29},{ 8,29}},
         powers = {1,1},
         black_orbs = {{8,23,32}},
     },
@@ -888,7 +874,6 @@ function init_room()
     {
         lights = {{22, 15, 16},{15, 16, 20},{19, 18, 16},{25, 19, 28},{19, 21, 16},{21, 25, 24},},
         pos = {{23, 17},{30, 17},},
-        doors = {{23, 29},{24, 29},},
         powers = {4,7,},
         chests = {
             {false,true,false,{"black_orb",27,30,36,},28,30,},},
@@ -898,7 +883,6 @@ function init_room()
     {
         lights = {{35, 17, 16},{35, 21, 16},{44, 24, 12},},
         pos = {{36, 19},{46, 18},},
-        doors = {{46,25},{33,29},},
         powers = {2,1,},
         black_orbs = {{33, 19, 32},},
     },
@@ -906,7 +890,6 @@ function init_room()
     {
         lights = {{49, 17, 16},{55, 27,  8},},
         pos = {{49, 19},{59, 19},},
-        doors = {{55, 29},{56, 29},},
         powers = {1,0,},
         shield_cristals = {{54, 19, 4, 12},},
     },
@@ -914,7 +897,6 @@ function init_room()
     {
         lights = {{65, 16, 16},{71, 21,  8},{69, 23,  8},{73, 23,  8},{71, 25,  8},{71, 27,  8},{71, 29,  8},{78, 29,  8}},
         pos = {{66, 18},{76, 18}},
-        doors = {{76,20},{77,20}},
         powers = {2,1,},
         shield_cristals = {{70,17, 8,16,1},{67,21,10,16,2},{64,30,12,24,1}},
         chests = {{false,true,false,{ "turnoff" },74,21}},
@@ -924,7 +906,6 @@ function init_room()
     {
         lights = {{82, 27, 16},},
         pos = {{84, 29},{91, 29},},
-        doors = {{89,29},{87,29},},
         powers = {0,0,},
         keys = {{92,18,"door"},{86,30,"door"},},
         shield_cristals = {{88,18,60,32,1,"red"}, },
@@ -934,7 +915,6 @@ function init_room()
     {
         lights = {{101, 15, 16},},
         pos = {{103, 17},{105, 30},},
-        doors = {{104,30},{104,16},},
         powers = {1,0,},
         keys = {{111,30,"door"},{103,23,"door"},},
         shield_cristals = {{101,17,10,10,1},{100,28,10,10,1},{106,17,10,10,1},},
@@ -949,7 +929,6 @@ function init_room()
     {
         lights = {{123, 16, 12},},
         pos = {{125, 17},{127, 17},},
-        doors = {{112,22},{113,22},},
         powers = {0,1,},
         pulsator = {
             x = nil,
@@ -969,7 +948,6 @@ function init_room()
 			lvl_timer = 75,
 			lights = {{6.5, 40, 24, "black"},},
 			pos = {{5, 41},{7, 41},},
-			doors = {{7,43},{8,43},},
 			powers = {2,0},
 			butterflies = {
 				{4,34, 4,34,9,34, 2,0.6, 16,"anti", false},
@@ -984,7 +962,6 @@ function init_room()
 	{
 		lights = {{24,32,8},{30,43,16,"black"}},
 		pos = {{25, 32},{21, 32},},
-		doors = {{30,42},{31,42}},
 		powers = {2,0},
 		butterflies = {{23,46,23,46,31,46,2,0.6,12,"white",true},},
 		keys = {{16,46,"door"},{31,46,"chest"},{31,32,"door"},},
@@ -1007,7 +984,6 @@ function init_room()
 			{34,46,12,"black"},
 		},
 		pos = {{33, 33},{46, 32},},
-		doors = {{33,45},{34,45}},
 		powers = {0,0},
 		messages = {{"hint","white lights takes priority\n over every lights"}},
 		shield_cristals = {{45,40,12,26,1}},
@@ -1027,7 +1003,6 @@ function init_room()
 			{55.5,41.5,12,"grey"},
 		},
 		pos = {{56, 33},{51, 39},},
-		doors = {{62,33},{49,37}},
 		powers = {1,0},
 		shield_cristals = {{53,39,60,20,1},{48,45,12,12,1}},
 		keys = {{62,41,"door"},{49,34,"door"}},
@@ -1105,8 +1080,6 @@ function create_room()
 		c.passed = false
 		c.in_light = c == lulu and true or false
 		disable_shield(c)
-		doors[c.id].x = room.doors[i][1] * 8
-		doors[c.id].y = room.doors[i][2] * 8
 		c.x = room.pos[i][1] * 8
 		c.y = room.pos[i][2] * 8
 		i += 1
@@ -1397,10 +1370,6 @@ function create_objects()
 	foreach(c_room.shield_cristals, function(sc)
 		add(shield_cristals, {x = sc[1] * 8, y = sc[2] * 8, timer = sc[3], r = sc[4], lives = sc[5], c = sc[6]})
 	end)
-	--gates
-	-- foreach(c_room.gates, function(g)
-	-- 	add(gates, {x = g[1] * 8, y = g[2] * 8, rotation = g[3] or false,opened = false})
-	-- end)
 	--butterflies
 	foreach(c_room.butterflies, function(b)
 		add(butterflies, {x = b[1] * 8, y = b[2] * 8, x1 = b[3] * 8, y1 = b[4] * 8, x2 = b[5] * 8, y2 = b[6] * 8, target = b[7], speed = b[8], r = b[9], light = b[10]})
@@ -1431,16 +1400,25 @@ function create_objects()
 		add(acristals, {x = ac[1] * 8, y = ac[2] * 8, active = false, c_col = nil})
 	end)
 
-	--define walls and gates
+	--define walls, gates and doors
 	for i=0,15 do
 		for j=0,15 do
 			local x = room.x > 0 and (room.x / 8 + i) or i
 			local y = room.y > 0 and (room.y / 8 + j) or j
 			local t = mget(x, y)
+			--breaking walls
 			if fget(t, 3) then
 				add(walls, {x = x * 8, y = y * 8, broken = false, tile = t, break_anim = 0})
-			elseif t == 52 or t == 26 then
+			end
+			--gates
+			if t == 52 or t == 26 then
 				add(gates, {x = x * 8, y = y * 8, tile = t, opened = false})
+			end
+			--doors
+			if t == 35 then
+				doors["lulu"] = {x = x * 8, y = y * 8}
+			elseif t == 51 then
+				doors["hades"] = {x = x * 8, y = y * 8}
 			end
 		end
 	end
