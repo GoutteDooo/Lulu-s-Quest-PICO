@@ -1125,23 +1125,18 @@ function create_room()
 	delete_objects()
 	create_objects()
 	--characters
-	lulu.passed = false
-	hades.passed = false
-	lulu.in_light = true
-	hades.in_light = false
-	disable_shield(lulu)
-	disable_shield(hades)
 	local room = rooms_data[i_room]
-	--doors
-	doors.lulu.x = room.doors[1][1] * 8
-	doors.lulu.y = room.doors[1][2] * 8
-	doors.hades.x = room.doors[2][1] * 8
-	doors.hades.y = room.doors[2][2] * 8
-	--pos
-	lulu.x = room.pos[1][1] * 8
-	lulu.y = room.pos[1][2] * 8
-	hades.x = room.pos[2][1] * 8
-	hades.y = room.pos[2][2] * 8
+	local i = 1
+	foreach(chars, function(c) 
+		c.passed = false
+		c.in_light = c == lulu and true or false
+		disable_shield(c)
+		doors[c.id].x = room.doors[i][1] * 8
+		doors[c.id].y = room.doors[i][2] * 8
+		c.x = room.pos[i][1] * 8
+		c.y = room.pos[i][2] * 8
+		i += 1
+	end)
 	--powers
 	lulu.lights_left = room.powers[1]
 	hades.turnoffs_left = room.powers[2]
