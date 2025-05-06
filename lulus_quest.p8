@@ -424,7 +424,7 @@ function move_characters()
 		psfx(62,3)
 	end
 	if not btn(⬆️) and pactual.is_jumping and pactual.dy < 0 then
-		pactual.dy = pactual.dy * 0.2
+		pactual.dy = pactual.dy * 0.33
 		pactual.is_jumping = false
 	end
 
