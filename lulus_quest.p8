@@ -1183,10 +1183,10 @@ function update_objects()
 
 	--keys
 	foreach(keys, function(k)
-		if collision(pactual,k) then
+		if not k.collected and collision(pactual,k) then
 			psfx(60)
 			keys_owned += 1
-			del(keys,k)
+			k.collected = true
 		end
 	end)
 
@@ -1326,6 +1326,9 @@ function delete_objects()
 		for _,p in pairs(room.pos) do
 			mset(p[1], p[2], p[3])
 		end
+		for k in all(keys) do
+			mset(k.x/8, k.y/8, k.tile)
+		end
 		
 	--delete all objects from ancient room or actual if restart_level()
 	for _, tbl in ipairs(lists_to_clear) do
@@ -1358,9 +1361,9 @@ function create_objects()
 		add(chests, {opened = c[1],locked = c[2],check_lock = c[3],content = c[4],x = c[5] * 8,y = c[6] * 8})
 	end
 	--keys
-	for k in all(c_room.keys) do
-		add(keys, {x = k[1] * 8, y = k[2] * 8, style = k[3]})
-	end
+	-- for k in all(c_room.keys) do
+	-- 	add(keys, {x = k[1] * 8, y = k[2] * 8, style = k[3]})
+	-- end
 	--shield cristals
 	foreach(c_room.shield_cristals, function(sc)
 		add(shield_cristals, {x = sc[1] * 8, y = sc[2] * 8, timer = sc[3], r = sc[4], lives = sc[5], c = sc[6]})
@@ -1429,6 +1432,11 @@ function create_objects()
 				room.pos.hades = {x, y, 5}
 				chars[2].x = x * 8
 				chars[2].y = y * 8
+				mset(x, y, 0)
+			end
+			--keys
+			if t == 25 or t == 41 then
+				add(keys, {x=x * 8, y=y * 8, style = t == 25 and "door" or "chest", tile = t, collected = false})
 				mset(x, y, 0)
 			end
 		end
@@ -1501,6 +1509,7 @@ end
 --keys
 
 function draw_keys(k)
+	if k.collected then return end
 	if k.style == "chest" then
 		if frames % 30 < 7 then
 			spr(41, k.x, k.y, 1, 1, false, false)
