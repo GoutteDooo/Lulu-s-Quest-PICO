@@ -986,10 +986,11 @@ function init_room()
 		lights = {
 			{66,42,16,"black"},
 			{79,40,8},
-			{77,42,8,"grey"},
-			{71,39,12,"grey"},
+			{79,38,8},
+			{77,42,12,"grey"},
+			{71,39,16,"grey"},
 		},
-		powers = {2,1},
+		powers = {3,1},
 	}
 }
 
@@ -1234,6 +1235,7 @@ function update_objects()
 		sfx(59,3)
 		del(mushroom, m)
 		mset(m.x/8, m.y/8, 0)
+		ima_light.color = 13
 	end
 end
 
