@@ -266,7 +266,7 @@ function update_player()
 
 	for l in all(lights) do
 		for c in all(chars) do
-			if collision_light(c, l) then
+			if collision_black_light(c, l) then
 				c.in_light = true
 			end
 		end
@@ -569,8 +569,8 @@ function update_light_lulu()
 	end
 
 	if btnp(❎) and lulu.select and lulu.powers_left > 0 then
-		local x = ima_light.x - ima_light.r
-		local y = ima_light.y - ima_light.r
+		local x = ima_light.x
+		local y = ima_light.y
 		if not lulu_bl then 
 			create_light(x, y, ima_light.r,"white",10) 
 		else 
@@ -685,9 +685,8 @@ function draw_lights()
 	--lights
 	foreach(
 		lights, function(l)
-			-- sspr(12 * 8, 0, l.w, l.h, l.x, l.y, l.r, l.r)
-			circfill(l.x+l.r, l.y+l.r, l.r,l.color) 
-			circ(l.x+l.r, l.y+l.r, l.r, 6)
+			circfill(l.x, l.y, l.r,l.color)
+			circ(l.x, l.y, l.r, 6)
 		end
 	)
 	--black lights
@@ -745,8 +744,8 @@ function draw_hades_turnoff()
 	if (hades.light_selected[1] != nil) and #lights > 0 then
 		--check if selected light already exists
 		local i = hades.light_selected[2] + 1
-		local x = lights[i].x + lights[i].r
-		local y = lights[i].y+ lights[i].r
+		local x = lights[i].x
+		local y = lights[i].y
 		local r = lights[i].r
 		circfill(x, y, r, 8)
 		circ(x, y, r, 8+1)
@@ -799,7 +798,7 @@ function init_room()
 	rooms_data = {
 		--1
 		{
-			lights = {{-2,10,26},{9,12,16}},
+			lights = {{2,13,22},{11,14,16}},
 			powers = {1,1},
 			messages = {
 				{"tutorial","welcome to lulu's quest!"},
