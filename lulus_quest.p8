@@ -533,8 +533,8 @@ function update_light()
 		lulu.using_light = false
 		hades.using_light = false
 		hades.light_selected[1] = nil
+		if lulu.using_light then sfx(52,-2) end
 		sfx(55,-2)
-		sfx(52,-2)
 		sfx(58,-2)
 	end
 	update_dynamic_lights()
@@ -659,7 +659,6 @@ function update_black_light()
 		local x = ima_light_bo.x
 		local y = ima_light_bo.y
 		create_light(x, y, ima_light_bo.r, "black")
-		sfx(52, -2)
 		psfx(51)
 		pactual.using_black_light = false
 		shake = 12
@@ -1031,11 +1030,11 @@ function next_room()
 	-- ! ---- ! --
 	-- ! TEST ! --
 	-- ! ---- ! -- 
-	-- if not tp then
-	-- 	tp = true
-	-- 	x = 128 * 4
-	-- 	y = 128 * 2
-	-- end
+	if not tp then
+		tp = true
+		x = 128 * 7
+		y = 128 * 0
+	end
 	-- !!END TEST
 	local w = x + 128
 	local h = y + 128
