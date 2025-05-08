@@ -182,7 +182,13 @@ function draw_chars()
 			end
 		end
 	end)
+	if lulu_bl then
+		pal(9,7)
+		pal(12,2)
+	end
 	spr(lulu.sprite, lulu.x, lulu.y, 1, 1, lulu.flipx)
+	pal(9,9)
+	pal(12,12)
 	if hades.sprite == hades.sprite_hide or hades.sprite == 17 then
 		palt(0,false)
 		palt(12,true)
