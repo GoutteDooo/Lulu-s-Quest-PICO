@@ -1459,7 +1459,7 @@ function create_objects()
 				add(keys, {x=x * 8, y=y * 8, style = t == 25 and "door" or "chest", tile = t, collected = false})
 				mset(x, y, 0)
 			end
-			if t == 18 then 
+			if t == 18 and not mushroom[1] then 
 				add(mushroom, {x=x * 8, y=y * 8, tile = t})
 			end
 		end
