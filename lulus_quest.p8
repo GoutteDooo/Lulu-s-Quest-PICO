@@ -275,8 +275,8 @@ function update_chars()
 					c.in_light = true
 				elseif dl.type == "anti" then
 					c.in_light = false
-				-- elseif dl.type == "black" then
-				-- 	c.in_light = c == lulu and true or false
+				elseif dl.type == "black" then
+					c.in_light = c == lulu and true or false
 				end
 			end
 		end
@@ -1674,6 +1674,7 @@ function update_pulsator()
 
 		pulsator[1].timer += 1
 		if pulsator[1].timer >= beat_delay then
+			local ptype = pulsator[1].light_data.type
 			-- un battement se produit
 			pulsator[1].pulse_timer = pulsator[1].pulse_dur -- dれたclenche une pulsation visuelle
 			shake = 10
@@ -1682,13 +1683,16 @@ function update_pulsator()
 			if sfx_timer == 0 and i_room != pulsator_room then
 				fsfx(48, -1)
 				sfx_timer = 30
-				fsfx(48, 3, pulsator[1].light_data.type == "white" and 7 or 14, 1)
+				fsfx(48, 3, ptype == "white" and 7 or 14, 1)
 			end
 			local pr = pulsator[1].spr_r
 			-- update light from pulsator
-			local new_dyna_light = create_dynamic_light(pulsator[1].x + pr, pulsator[1].y + pr, pulsator[1].light_data.type, pulsator[1].light_data.spd, pulsator[1].light_data.r_max, pr)
+			local new_dyna_light = create_dynamic_light(pulsator[1].x + pr, pulsator[1].y + pr, ptype, pulsator[1].light_data.spd, pulsator[1].light_data.r_max, pr)
 			add(dynamic_lights, new_dyna_light)
-			pulsator[1].light_data.type = pulsator[1].light_data.type == "anti" and "white" or "anti"
+			pulsator[1].light_data.type = ptype == "anti" and "white" or "anti"
+			if pulsator[1].is_broken then
+				pulsator[1].light_data.type = ptype == "anti" and "white" or ptype == "white" and "black" or "anti"
+			end
 		end
 		-- diminuer le pulse progressivement
 		if pulsator[1].pulse_timer > 0 then
@@ -1741,15 +1745,12 @@ function draw_acristals()
 			local ax = ac.x + 4
 			local ay = ac.y + 4
 			-- coordonnれたes du centre du pulsator
-			local px = pulsator[1].x + 24
-			local py = pulsator[1].y + 24
-
-			-- nombre d'れたclairs
-			local nb_bolts = 3
+			local px = pulsator[1].x + pulsator[1].spr_r
+			local py = pulsator[1].y + pulsator[1].spr_r
 			-- nombre d'れたtapes par れたclair
 			local steps = 8
 
-			for j=1, nb_bolts do
+			for j=1, 3 do
 				for i=0,steps-1 do
 					local t1 = i / steps
 					local t2 = (i+1) / steps
