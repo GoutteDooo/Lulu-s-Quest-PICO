@@ -38,11 +38,11 @@ function _init()
 	pulsator_room = 16
 	music(0)
 	--!! DEPLOIEMENT
-	-- create_room()
+	create_room()
 	-- !! FIN DEPLOIEMENT
 	--!! TEST
-	tp = false
-	next_room()
+	-- tp = false
+	-- next_room()
 	--!! FIN TEST
 end
 
@@ -1075,7 +1075,7 @@ function next_room()
 		fsfx(48, -2)
 	end
 	-- !!  TEST !!
-	keys_owned = 2
+	-- keys_owned = 2
 end
 
 function reset_music()
