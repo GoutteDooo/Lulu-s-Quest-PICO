@@ -2,16 +2,16 @@ pico-8 cartridge // http://www.pico-8.com
 version 42
 __lua__
 
-menuitem(1, "music on/off", function() 
+menuitem(1, "next lvl", function() next_room() end)
+menuitem(2, "pass 5 lvls", function()
+	for i=1,5 do
+		next_room()
+	end
+end)
+menuitem(3, "sfxs on/off", function() sfx_enabled = not sfx_enabled end)
+menuitem(4, "music on/off", function() 
 	music_object[3] = not music_object[3]
 	if not music_object[3] then music(-1) else music(music_object[2]) end
- end)
-menuitem(2, "sfxs on/off", function() sfx_enabled = not sfx_enabled end)
-menuitem(3, "next lvl", next_room)
-menuitem(4, "pass 5 lvls", function()
-for i=1,5 do
-	next_room()
-end
 end)
 
 function _init()
