@@ -38,11 +38,11 @@ function _init()
 	pulsator_room = 16
 	music(0)
 	--!! DEPLOIEMENT
-	-- create_room()
+	create_room()
 	-- !! FIN DEPLOIEMENT
 	--!! TEST
 	tp = false
-	next_room()
+	-- next_room()
 	--!! FIN TEST
 end
 
@@ -831,13 +831,14 @@ function init_room()
 			powers = {1,1},
 			messages = {
 				{"tutorial","welcome to lulu's quest!"},
-				{"tutorial","hold 🅾️ and move to\n prepare a light"},
-				{"tutorial","press ❎ when holding 🅾️\n to cast a light"},
-				{"tutorial","lulu (left) can only live\n into lights"},
-				{"tutorial","hades (right) can only\n live out of lights"},
+				{"tutorial","hold 🅾️ and press ⬆️⬅️➡️or⬇️\n to prepare a light"},
+				{"tutorial","press ❎ while holding 🅾️\n to cast a light"},
+				{"tutorial","lulu (left) can only live\n inside of lights"},
 				{"tutorial","press ⬇️ to switch characters"},
-				{"tutorial","hades can turn off lights\n the same way as lulu"},
-				{"tutorial","you got all powers left\n at top of the screen"}, 
+				{"tutorial","hades (right) can only\n live outside of lights"},
+				{"tutorial","as hades, hold 🅾️+⬅️➡️ to\n prepare a turnoff and..."},
+				{"tutorial","...press ❎ while holding 🅾️\n to turn off lights"},
+				{"tutorial","your remaining powers are\n shown at the top left"}, 
 				{"tutorial","the goal is to bring\n your characters..."}, 
 				{"tutorial","...to their respective doors."}, 
 				{"tutorial","good luck!"},
@@ -985,13 +986,13 @@ function init_room()
 			{34,46,12,"black"},
 		},
 		powers = {0,0},
-		messages = {{"hint","white lights takes priority\n over every lights"}},
+		messages = {{"hint","white lights take priority\n over any light"}},
 		shield_cristals = {{45,40,12,26,1}},
 		butterflies = {
 			{25,43,29,43,47,43,1,0.2,10,"black",false},
 			{25,46,29,46,47,46,1,0.2,10,"black",false},
 		},
-		p_data = {38,30,128,"white",180,4,18,5}
+		p_data = {38,30,128,"white",0,4,18,5}
 	},
 	--lvl 20
 	{
@@ -1046,11 +1047,11 @@ function next_room()
 	-- ! ---- ! --
 	-- ! TEST ! --
 	-- ! ---- ! -- 
-	if not tp then
-		tp = true
-		x = 128 * 7
-		y = 128 * 1
-	end
+	-- if not tp then
+	-- 	tp = true
+	-- 	x = 128 * 7
+	-- 	y = 128 * 1
+	-- end
 	-- !!END TEST
 	local w = x + 128
 	local h = y + 128
