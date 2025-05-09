@@ -101,7 +101,6 @@ function _draw()
 		draw_butterfly(b)
 	end)
 	draw_acristals()
-	draw_messages()
 	-- draw outside of the screen for screenshake
 	rectfill(-5+camx,-5+camy,-1+camx,133+camy,0)
 	rectfill(-5+camx,-5+camy,133+camx,-1+camy,0)
@@ -120,6 +119,7 @@ function _draw()
 	-- end
 
 	draw_ui()
+	draw_messages()
 	debug_print()
 end
 
@@ -1594,20 +1594,18 @@ end
 
 function draw_messages()
 	if messages[1] then
-		local bg_col = 7
-		local f_col = 1
-		local title_col = 9
-		local bg_title_col = 5
-		local border_col = 4
 		local x1 = room.x+4
 		local y1 = room.y+14
 		local x2 = room.x+124
 		local y2 = room.y+36
-		rectfill(x1, y1, x2, y2, bg_col)
-		rect(x1, y1, x2, y2, border_col)
-		rectfill(x1+3, y1-2, x1 + 3  + #messages[1][1]*4, y1+4, bg_title_col)
-		print(messages[1][1],x1+4,y1-1,title_col)
-		print(messages[1][2],x1+4,y1+8,f_col)
+		for i=1,3 do
+			rectfill(x1+i, y1+i, x2+i, y2+i, 2)
+		end
+		rectfill(x1, y1, x2, y2, 7)
+		rect(x1, y1, x2, y2, 2)
+		rectfill(x1+3, y1-2, x1 + 3  + #messages[1][1]*4, y1+4, 2)
+		print(messages[1][1],x1+4,y1-1,9)
+		print(messages[1][2],x1+4,y1+8,1)
 		if messages[2] then print("❎->",x2-16,y2-6,13) end
 		if not messages[2] then print("❎end",x2-20,y2-6,13) end
 	end
