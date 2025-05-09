@@ -174,9 +174,9 @@ function init_player()
 	pactual = lulu
 	gkeys = 0
 	wkeys = 0
-	friction = 0.7
-	accel = 1
-	accel_air = 0.7
+	friction = 0.8
+	accel = 0.6
+	accel_air = 0.4
 	jumping = 2.5
 	max_dx = 2.2
 	lulu_bl = false
@@ -237,7 +237,7 @@ function update_chars()
 		return
 	end
 
-	if btn(🅾️) then
+	if btn(❎) then
 		if pactual == lulu and ima_light.x != nil then
 			if ima_light.x > lulu.x then
 				lulu.flipx = false
@@ -248,7 +248,7 @@ function update_chars()
 	end
 
 	--switch characters
-	if btnp(⬇️) and not btn(🅾️) then
+	if btnp(⬇️) and not btn(❎) then
 		switch_characters()
 		return
 	end
@@ -403,17 +403,17 @@ function update_chars()
 end
 
 function move_characters()
-	-- INPUT
+	-- INPUTS
 	local move = 0
 	if btn(⬅️) then move -= 1 pactual.flipx = true end
 	if btn(➡️) then move += 1 pactual.flipx = false end
-	if btnp(⬆️) and pactual.g then
+	if btnp(🅾️) and pactual.g then
 		pactual.dy = -jumping
 		pactual.is_jumping = true
 		psfx(62,3)
 	end
-	if not btn(⬆️) and pactual.is_jumping and pactual.dy < 0 then
-		pactual.dy = pactual.dy * 0.33
+	if not btn(🅾️) and pactual.is_jumping and pactual.dy < 0 then
+		pactual.dy = pactual.dy * 0.33 + 0.33
 		pactual.is_jumping = false
 	end
 
@@ -450,23 +450,23 @@ function move_characters()
 
 	-- MOUVEMENT HORIZONTAL + COLLISIONS
 	if pactual.dx > 0 then
-		if not check_flag(0, pactual.x + 7, pactual.y + 6)
-		and not check_flag(0, pactual.x + 7, pactual.y + 2) then
+		if not check_flag(0, pactual.x + 8, pactual.y + 7)
+		and not check_flag(0, pactual.x + 8, pactual.y + 0) then
 			pactual.x += pactual.dx
 		end
 	elseif pactual.dx < 0 then
-		if not check_flag(0, pactual.x - 1, pactual.y + 6)
-		and not check_flag(0, pactual.x - 1, pactual.y + 2) then
+		if not check_flag(0, pactual.x, pactual.y + 7)
+		and not check_flag(0, pactual.x, pactual.y + 0) then
 			pactual.x += pactual.dx
 		end
 	end
 
 	-- COLLISIONS LATれ웃RALES
 	if check_flag(0, pactual.x + 7, pactual.y + 7) then pactual.x -= 1 end
-	if check_flag(0, pactual.x - 1, pactual.y + 7) then pactual.x += 1 end
+	if check_flag(0, pactual.x + 1, pactual.y + 7) then pactual.x += 1 end
 
 	-- COLLISION PLAFOND
-	if check_flag(0, pactual.x + 1, pactual.y + 1)
+	if check_flag(0, pactual.x + 2, pactual.y + 1)
 	or check_flag(0, pactual.x + 6, pactual.y + 1) then
 		pactual.dy = 0
 		pactual.y += 1
@@ -527,7 +527,7 @@ end
 
 function update_light()
 	-- lulu
-		if btn(🅾️) then
+		if btn(❎) then
 			if lulu.select and lulu.powers_left > 0 then
 				update_light_lulu()
 			end
@@ -536,7 +536,7 @@ function update_light()
 				update_light_hades()
 			end
 		end
-	if not btn(🅾️) then 
+	if not btn(❎) then 
 		lulu.using_light = false
 		hades.using_light = false
 		hades.light_selected[1] = nil
@@ -589,7 +589,7 @@ function update_light_lulu()
 		end
 	end
 
-	if btnp(❎) and lulu.select and lulu.powers_left > 0 then
+	if btnp(🅾️) and lulu.select and lulu.powers_left > 0 then
 		local x = ima_light.x
 		local y = ima_light.y
 		if not lulu_bl then 
@@ -615,7 +615,7 @@ function update_light_hades()
 		hades.light_selected[1] = lights[index + 1]
 		if (btnp(➡️)) hades.light_selected[2] = (hades.light_selected[2] + 1) % nb_lights
 		if (btnp(⬅️)) hades.light_selected[2] = (hades.light_selected[2] - 1) % nb_lights
-		if btnp(❎) then
+		if btnp(🅾️) then
 			del(lights,hades.light_selected[1])
 			hades.light_selected[2] = 0
 			hades.powers_left -= 1
@@ -662,7 +662,7 @@ function update_black_light()
 		end
 	end
 
-	if btnp(❎) then
+	if btnp(🅾️) then
 		local x = ima_light_bo.x
 		local y = ima_light_bo.y
 		create_light(x, y, ima_light_bo.r, "black")
@@ -683,7 +683,7 @@ function draw_light()
 end
 
 function draw_imaginary_light()
-	if btn(🅾️) and lulu.select and lulu.powers_left > 0 then
+	if btn(❎) and lulu.select and lulu.powers_left > 0 then
 		circfill(ima_light.x, ima_light.y, ima_light.r, ima_light.color)
 		circ(ima_light.x, ima_light.y, ima_light.r, ima_light.color+1)
 		circ(lulu.x_g, lulu.y_g, lulu.ima_range, 8)
@@ -823,13 +823,13 @@ function init_room()
 			powers = {1,1},
 			messages = {
 				{"tutorial","welcome to lulu's quest!"},
-				{"tutorial","hold 🅾️ and press ⬆️⬅️➡️or⬇️\n to prepare a light"},
-				{"tutorial","press ❎ while holding 🅾️\n to cast a light"},
+				{"tutorial","hold ❎ and press ⬆️⬅️➡️or⬇️\n to prepare a light"},
+				{"tutorial","press 🅾️ while holding ❎\n to cast a light"},
 				{"tutorial","lulu (left) can only live\n inside of lights"},
 				{"tutorial","press ⬇️ to switch characters"},
 				{"tutorial","hades (right) can only\n live outside of lights"},
-				{"tutorial","as hades, hold 🅾️+⬅️➡️ to\n prepare a turnoff and..."},
-				{"tutorial","...press ❎ while holding 🅾️\n to turn off lights"},
+				{"tutorial","as hades, hold ❎+⬅️➡️ to\n prepare a turnoff and..."},
+				{"tutorial","...press 🅾️ while holding ❎\n to turn off a light"},
 				{"tutorial","your remaining powers are\n shown at the top left"}, 
 				{"tutorial","the goal is to bring\n your characters..."}, 
 				{"tutorial","...to their respective doors."}, 
@@ -1252,7 +1252,7 @@ function update_objects()
 		update_butterfly(b)
 	end
 	--messages
-	if messages[1] and (btnp(❎)) then
+	if messages[1] and (btnp(⬆️)) then
 		deli(messages, 1)
 	end
 	--pulsator
@@ -1598,8 +1598,8 @@ function draw_messages()
 		rectfill(x1+3, y1-2, x1 + 3  + #messages[1][1]*4, y1+4, 2)
 		print(messages[1][1],x1+4,y1-1,9)
 		print(messages[1][2],x1+4,y1+8,1)
-		if messages[2] then print("❎->",x2-16,y2-6,13) end
-		if not messages[2] then print("❎end",x2-20,y2-6,13) end
+		if messages[2] then print("⬆️->",x2-16,y2-6,13) end
+		if not messages[2] then print("⬆️end",x2-20,y2-6,13) end
 	end
 end
 
