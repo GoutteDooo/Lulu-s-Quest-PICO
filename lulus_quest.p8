@@ -266,11 +266,10 @@ function update_chars()
 
 	-- COLLISIONS LIGHTS --
 	----------------------
-	for c in all(chars) do c.in_light = false end
-
-	--dynamic lights
-	for dl in all(dynamic_lights) do
-		for c in all(chars) do
+	for c in all(chars) do 
+		c.in_light = false 
+		--dynamic lights
+		for dl in all(dynamic_lights) do
 			if collision_light(c, dl) then
 				if dl.type == "white" then
 					c.in_light = true
@@ -281,36 +280,27 @@ function update_chars()
 				end
 			end
 		end
-	end
-
-
-	for al in all(anti_lights) do
-		for c in all(chars) do
+		--anti lights
+		for al in all(anti_lights) do
 			if collision_light(c, al) then
 				c.in_light = false
 			end
 		end
-	end
-
-	for l in all(lights) do
-		for c in all(chars) do
+		--white lights
+		for l in all(lights) do
 			if collision_light(c, l) then
 				c.in_light = true
 			end
 		end
-	end
-
-	--maybe pactual has collide with a light, but if it is in black light, it cancels the condition
-	for bl in all(black_lights) do
-		for c in all(chars) do
+		--black lights 
+		--maybe pactual has collide with a light, but if it is in black light, it cancels the condition
+		for bl in all(black_lights) do
 			if collision_light(c, bl) then
 				c.in_light = c == lulu and true or false
 			end
 		end
-	end
-
-	for b in all(butterflies) do
-		for c in all(chars) do
+		--butterflies
+		for b in all(butterflies) do
 			if collision_light(c, b) then
 				if b.light == "white" then
 					c.in_light = true
@@ -322,39 +312,41 @@ function update_chars()
 			end
 		end
 	end
-
-	--shield of lulu
-	if lulu.shield.active then
-		lulu.shield.timer = lulu.shield.timer + 1 -- 30 fps (ex: 150 = 5 secondes)
-		lulu.in_light = true
-		if collision_light(hades, {x = lulu.x or 0, y = lulu.y or 0, r = lulu.shield.r - 4 or 0}) then
-			hades.in_light = true
-		end
-		if lulu.shield.timer > lulu.shield.time_set then
-			disable_shield(lulu)
-		end
-	end
-
-	--shield of hades
-	if hades.shield.active then
-		hades.shield.timer = hades.shield.timer + 1 -- 30 fps (ex: 150 = 5 secondes)
-		hades.in_light = false
-		if collision_light(lulu, {x = hades.x or 0, y = hades.y or 0, r = hades.shield.r or 0}) then
-			lulu.in_light = true
-		end
-		if hades.shield.timer > hades.shield.time_set then
-			disable_shield(hades)
-		end
-	end
 	
-	--grey lights at the end because priority max
-	for gl in all(grey_lights) do
-		for c in all(chars) do
-			if collision_light(c, gl) then
-				c.in_light = true
+		--shield of lulu
+		if lulu.shield.active then
+			lulu.shield.timer = lulu.shield.timer + 1 -- 30 fps (ex: 150 = 5 secondes)
+			lulu.in_light = true
+			if collision_light(hades, {x = lulu.x or 0, y = lulu.y or 0, r = lulu.shield.r - 4 or 0}) then
+				hades.in_light = true
+			end
+			if lulu.shield.timer > lulu.shield.time_set then
+				disable_shield(lulu)
 			end
 		end
-	end
+	
+		--shield of hades
+		if hades.shield.active then
+			hades.shield.timer = hades.shield.timer + 1 -- 30 fps (ex: 150 = 5 secondes)
+			hades.in_light = false
+			if collision_light(lulu, {x = hades.x or 0, y = hades.y or 0, r = hades.shield.r or 0}) then
+				lulu.in_light = true
+			end
+			if hades.shield.timer > hades.shield.time_set then
+				disable_shield(hades)
+			end
+		end
+		
+		--grey lights at the end because priority max
+		for gl in all(grey_lights) do
+			for c in all(chars) do
+				if collision_light(c, gl) then
+					c.in_light = true
+				end
+			end
+		end
+	
+	
 
 		--CONDITIONS FOR LIGHTS
 	if (not lulu.in_light and not lulu.passed) or (hades.in_light and not hades.passed) or pactual.y >= room.h-1 then
@@ -613,16 +605,16 @@ end
 
 function update_light_hades()
 	-- hades a une variable qui stocke temporairement la light selected
-	if #lights > 0 and hades.powers_left > 0 then
+	nb_lights = #lights
+	if nb_lights > 0 and hades.powers_left > 0 then
 		if not hades.using_light then
 			psfx(55,3)
 			hades.using_light = true
 		end
 		local index = hades.light_selected[2]
-		local count = #lights
 		hades.light_selected[1] = lights[index + 1]
-		if (btnp(➡️)) hades.light_selected[2] = (hades.light_selected[2] + 1) % count
-		if (btnp(⬅️)) hades.light_selected[2] = (hades.light_selected[2] - 1) % count
+		if (btnp(➡️)) hades.light_selected[2] = (hades.light_selected[2] + 1) % nb_lights
+		if (btnp(⬅️)) hades.light_selected[2] = (hades.light_selected[2] - 1) % nb_lights
 		if btnp(❎) then
 			del(lights,hades.light_selected[1])
 			hades.light_selected[2] = 0
