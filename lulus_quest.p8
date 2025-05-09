@@ -945,7 +945,7 @@ function init_room()
 					light_data = {r_max = 128, type = nil, spd = 1, ac_activated = nil, room_ac = {false, false} }, 
 			},
 			acristals = {{112,20},{127,22}},
-			p_data = {117,30,128,"white",0},
+			p_data = {118,31,128,"white",200},
     },
     --17
     {
@@ -990,7 +990,7 @@ function init_room()
 			{25,43,29,43,47,43,1,0.2,10,"black",false},
 			{25,46,29,46,47,46,1,0.2,10,"black",false},
 		},
-		p_data = {37,29,128,"white",180,4,16,5}
+		p_data = {38,30,128,"white",180,4,18,5}
 	},
 	--lvl 20
 	{
@@ -1004,7 +1004,7 @@ function init_room()
 		shield_cristals = {{53,39,60,20,1},{48,45,12,12,1}},
 		butterflies = {{53,44,53,44,62,44,2,0.5,10,"anti",true}},
 		acristals = {{51,46},{60,46}},
-		p_data = {53,45,128,"white",0,4,20,2}
+		p_data = {53.75,46,128,"white",0,4,18,2}
 	},
 	--21
 	{
@@ -1047,8 +1047,8 @@ function next_room()
 	-- ! ---- ! -- 
 	if not tp then
 		tp = true
-		x = 128 * 0
-		y = 128 * 2
+		x = 128 * 7
+		y = 128 * 1
 	end
 	-- !!END TEST
 	local w = x + 128
@@ -1430,7 +1430,7 @@ function create_objects()
 		pulsator[1].timer = p[5]
 		pulsator[1].light_data.ac_activated = p[6] or 0
 		pulsator[1].is_broken = false
-		pulsator[1].spr_r = p[7] or 24
+		pulsator[1].spr_r = p[7] or 18
 		pulsator[1].light_data.spd = p[8] or 1
 	else
 		pulsator_state = false
@@ -1601,8 +1601,9 @@ end
 function draw_pulsator()
 	if not pulsator_state then return end
 	-- osciller uniquement si pulse_timer actif
+	local pr = pulsator[1].spr_r
 	local pulse_ratio = pulsator[1].pulse_timer / pulsator[1].pulse_dur
-	local scale = pulsator[1].spr_r / 10  - (pulsator[1].light_data.ac_activated * 0.2) + 0.5 * pulse_ratio -- grossit れき chaque battement
+	local scale = pr / 10  - (pulsator[1].light_data.ac_activated * 0.2) + 0.5 * pulse_ratio -- grossit れき chaque battement
 	-- flips
 	local flipx = frames % 15 < 7
 	local flipy = frames % 30 < 15
@@ -1619,20 +1620,20 @@ function draw_pulsator()
 	end
 
 	-- position
-	local cx = pulsator[1].x + pulsator[1].spr_r
-	local cy = pulsator[1].y + pulsator[1].spr_r
+	local cx = pulsator[1].x + pr
+	local cy = pulsator[1].y + pr
 
 	-- dessiner sprite
-	local w = 32 * scale
-	local h = 32 * scale
-	local x = pulsator[1].x + (32 - w) / 2
-	local y = pulsator[1].y + (32 - h) / 2
+	local w = pr * 2 * scale
+	local h = pr * 2 * scale
+	local x = pulsator[1].x + pr - (w / 2)
+	local y = pulsator[1].y + pr - (h / 2)
 	sspr(12*8, 0, 32, 32, x, y, w, h, flipx, flipy)
 
 	-- effets れたlectriques
 	for i = 1, 5 do
 		local a = rnd(1) * 2 * 3.141592653589793
-		local r1 = (pulsator[1].spr_r * 2 + rnd(5))
+		local r1 = (pr * 2 + rnd(5))
 		local r2 = (r1 + rnd(5)) * 1.5
 		local x1 = cx + cos(a) * r1
 		local y1 = cy + sin(a) * r1
@@ -1669,7 +1670,7 @@ function update_pulsator()
 			end
 			local pr = pulsator[1].spr_r
 			-- update light from pulsator
-			local new_dyna_light = create_dynamic_light(pulsator[1].x + pr, pulsator[1].y + pr, pulsator[1].light_data.type, pulsator[1].light_data.spd, pulsator[1].light_data.r_max, pulsator[1].spr_r)
+			local new_dyna_light = create_dynamic_light(pulsator[1].x + pr, pulsator[1].y + pr, pulsator[1].light_data.type, pulsator[1].light_data.spd, pulsator[1].light_data.r_max, pr)
 			add(dynamic_lights, new_dyna_light)
 			pulsator[1].light_data.type = pulsator[1].light_data.type == "anti" and "white" or "anti"
 		end
