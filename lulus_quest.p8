@@ -7,12 +7,12 @@ __lua__
 -- 	if not music_object[3] then music(-1) else music(music_object[2]) end
 --  end)
 -- menuitem(2, "sfxs on/off", function() sfx_enabled = not sfx_enabled end)
--- menuitem(3, "next lvl", next_room)
--- menuitem(4, "pass 5 lvls", function()
--- for i=1,5 do
--- 	next_room()
--- end
--- end)
+menuitem(3, "next lvl", function() next_room() end)
+menuitem(4, "pass 5 lvls", function()
+for i=1,5 do
+	next_room()
+end
+end)
 
 function _init()
 	init_player()
@@ -91,7 +91,6 @@ function _draw()
 	map(0, 0, 0, 0, 128, 64, 0)
 	draw_light()
 	draw_objects()
-	map(0, 0, 0, 0, 128, 64, 7)
 	draw_walls()
 	map(0, 0, 0, 0, 128, 64, 3)
 	map(0, 0, 0, 0, 128, 64, 0x10)
@@ -109,7 +108,7 @@ function _draw()
 	rectfill(-5+camx,128+camy,133+camx,133+camy,0)
 	rectfill(128+camx,-5+camy,133+camx,133+camy,0)
 	--DEBUG
-	if btn(🅾️) and lulu.select then
+	-- if btn(🅾️) and lulu.select then
 		-- Dessiner la grid de la map
 		-- for i=0,1 do
 		-- 	for j=0,16 do
@@ -118,7 +117,7 @@ function _draw()
 		-- 	end
 		-- end
 		-- pset(ima_light.x,ima_light.y,11)
-	end
+	-- end
 
 	draw_ui()
 	debug_print()
@@ -682,6 +681,7 @@ end
 
 function draw_light()
 	draw_dynamic_lights()
+	-- map(0, 0, 0, 0, 128, 64, 0x80)
 	draw_lights()
 	--disable possibility to player to draw ima lights
 	if game_state != 1 then return end
@@ -967,7 +967,7 @@ function init_room()
 		butterflies = {{23,46,23,46,31,46,2,0.6,12,"white",true},},
 		chests = {{false, true, false, {"white_orb"},16,37}},
 		acristals = {{29,35},{19,43}},
-		p_data = {21,36,46,"white",180,2,16,1}
+		p_data = {22,37,46,"white",180,2,16,1}
 	},
 	--19
 	{
@@ -1047,8 +1047,8 @@ function next_room()
 	-- ! ---- ! -- 
 	if not tp then
 		tp = true
-		x = 128 * 7
-		y = 128 * 0
+		x = 128 * 0
+		y = 128 * 2
 	end
 	-- !!END TEST
 	local w = x + 128
@@ -1625,15 +1625,15 @@ function draw_pulsator()
 	-- dessiner sprite
 	local w = 32 * scale
 	local h = 32 * scale
-	local x = pulsator[1].x + (48 - w) / 2
-	local y = pulsator[1].y + (48 - h) / 2
+	local x = pulsator[1].x + (32 - w) / 2
+	local y = pulsator[1].y + (32 - h) / 2
 	sspr(12*8, 0, 32, 32, x, y, w, h, flipx, flipy)
 
-	-- effets れたlectriques (garde ton effet !)
+	-- effets れたlectriques
 	for i = 1, 5 do
 		local a = rnd(1) * 2 * 3.141592653589793
-		local r1 = (pulsator[1].spr_r * 2 + rnd(5)) * scale * 0.6
-		local r2 = (r1 + rnd(5)) * scale * 0.6
+		local r1 = (pulsator[1].spr_r * 2 + rnd(5))
+		local r2 = (r1 + rnd(5)) * 1.5
 		local x1 = cx + cos(a) * r1
 		local y1 = cy + sin(a) * r1
 		local x2 = cx + cos(a) * r2
@@ -1667,9 +1667,9 @@ function update_pulsator()
 				sfx_timer = 30
 				fsfx(48, 3, pulsator[1].light_data.type == "white" and 7 or 14, 1)
 			end
-			
+			local pr = pulsator[1].spr_r
 			-- update light from pulsator
-			local new_dyna_light = create_dynamic_light(pulsator[1].x + 24, pulsator[1].y + 24, pulsator[1].light_data.type, pulsator[1].light_data.spd, pulsator[1].light_data.r_max, pulsator[1].spr_r)
+			local new_dyna_light = create_dynamic_light(pulsator[1].x + pr, pulsator[1].y + pr, pulsator[1].light_data.type, pulsator[1].light_data.spd, pulsator[1].light_data.r_max, pulsator[1].spr_r)
 			add(dynamic_lights, new_dyna_light)
 			pulsator[1].light_data.type = pulsator[1].light_data.type == "anti" and "white" or "anti"
 		end
