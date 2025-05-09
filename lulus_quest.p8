@@ -140,7 +140,7 @@ function generate_character(name)
 		dy = 0,
 		g = false,
 		gravity = name == "lulu" and 0.18 or 0.11,
-		is_jumping = false,
+		on_ground = false,
 		default_sprite = name == "lulu" and 1 or 5,
 		sprite = default_sprite,
 		sprite_hide = name == "lulu" and 3 or 7,
@@ -164,6 +164,7 @@ function generate_character(name)
 			nil, -- id light
 			0 -- index dynamique
 		},
+		hitbox = { x = 2, y = 1, w = 4, h = 7 },
 	}
 end
 
@@ -174,11 +175,11 @@ function init_player()
 	pactual = lulu
 	gkeys = 0
 	wkeys = 0
-	friction = 0.8
+	FRICTION = 0.8
 	accel = 0.6
 	accel_air = 0.4
-	jumping = 2.5
-	max_dx = 2.2
+	JUMP_VELOCITY = -2.5
+	MAX_DX = 2.2
 	lulu_bl = false
 	chars = { lulu, hades }
 end
@@ -253,7 +254,9 @@ function update_chars()
 		return
 	end
 
-	if not lulu.using_light and not hades.using_light then move_characters() end
+	if not lulu.using_light and not hades.using_light then 
+		foreach(chars, function(c) move_characters(c) end)
+	end
 
 	--if fall in water or lava
 
@@ -384,7 +387,7 @@ function update_chars()
 
 	--animations
 	--jump
-	if not pactual.g then
+	if not pactual.on_ground then
 		pactual.sprite = pactual.default_sprite + 3
 	else
 		--move
@@ -402,75 +405,71 @@ function update_chars()
 	end
 end
 
-function move_characters()
-	-- INPUTS
-	local move = 0
-	if btn(⬅️) then move -= 1 pactual.flipx = true end
-	if btn(➡️) then move += 1 pactual.flipx = false end
-	if btnp(🅾️) and pactual.g then
-		pactual.dy = -jumping
+function move_characters(c)
+	-- 1) handle input
+  local move = 0
+  if btn(⬅️) then
+    move = -1
+    pactual.flipx = true
+  elseif btn(➡️) then
+    move = 1
+    pactual.flipx = false
+  end
+  if btnp(🅾️) and pactual.on_ground then
+    pactual.dy = JUMP_VELOCITY
+    pactual.on_ground = false
 		pactual.is_jumping = true
-		psfx(62,3)
+    psfx(62,3)
 	end
 	if not btn(🅾️) and pactual.is_jumping and pactual.dy < 0 then
-		pactual.dy = pactual.dy * 0.33 + 0.33
-		pactual.is_jumping = false
+  	pactual.dy *= 0.5
+	end
+	if c.dy > 0 then
+		c.on_ground = false
 	end
 
-	local accel = pactual.g and accel or accel_air
+  -- 2) apply horizontal acceleration & friction
+  local acc = c.on_ground and accel or accel_air
+  pactual.dx = mid(-MAX_DX, pactual.dx + move*acc, MAX_DX)
+	pactual.dx *= FRICTION
+	if abs(pactual.dx) < 0.1 then pactual.dx = 0 end
 
-	-- PHYSIQUE
-	-- dx
-	pactual.dx += move * accel
-	pactual.dx *= friction
-	--limit left/right speed
-	pactual.dx = mid(-max_dx, pactual.dx, max_dx)
-	--cut deceleration when stop moving
-	if pactual.dx < 0.1 and pactual.dx > -0.1 then pactual.dx = 0 end
-	--dy
-	foreach(chars, function(c)
-		c.dy += c.gravity
-		c.y += c.dy
-	end)
+  -- 3) apply gravity to both characters
+  c.dy += c.gravity
 
-	-- COLLISION SOL
-	local grounded
-	foreach(chars, function(c)
-		grounded = check_flag(0, c.x + 3, c.y + c.h)
-		or check_flag(0, c.x + 5, c.y + c.h)
-		if grounded then
-			c.g = true
-			c.is_jumping = false
-			c.dy = 0
-			c.y = flr(c.y / c.h) * c.h
-		else
-			c.g = false
-		end
-	end)
-
-	-- MOUVEMENT HORIZONTAL + COLLISIONS
-	if pactual.dx > 0 then
-		if not check_flag(0, pactual.x + 8, pactual.y + 7)
-		and not check_flag(0, pactual.x + 8, pactual.y + 0) then
-			pactual.x += pactual.dx
-		end
-	elseif pactual.dx < 0 then
-		if not check_flag(0, pactual.x, pactual.y + 7)
-		and not check_flag(0, pactual.x, pactual.y + 0) then
-			pactual.x += pactual.dx
-		end
+  -- 4) horizontal move & collision
+	local new_x = c.x + c.dx
+  -- sample bottom-left and bottom-right of hitbox
+  local hb = c.hitbox
+  -- pick two sample heights inside your body
+	local ym = c.y + hb.y + hb.h/2
+	if not ( is_solid_at(new_x + hb.x,       ym)
+			or is_solid_at(new_x + hb.x + hb.w, ym) ) then
+		c.x = new_x
+	else
+		c.dx = 0
 	end
 
-	-- COLLISIONS LATれ웃RALES
-	if check_flag(0, pactual.x + 7, pactual.y + 7) then pactual.x -= 1 end
-	if check_flag(0, pactual.x + 1, pactual.y + 7) then pactual.x += 1 end
-
-	-- COLLISION PLAFOND
-	if check_flag(0, pactual.x + 2, pactual.y + 1)
-	or check_flag(0, pactual.x + 6, pactual.y + 1) then
-		pactual.dy = 0
-		pactual.y += 1
-	end
+  -- 5) vertical move & collision
+  c.y += c.dy
+  if c.dy > 0 then
+    -- landing
+    if is_solid_at(c.x + hb.x,       c.y + hb.y + hb.h)
+    or is_solid_at(c.x + hb.x + hb.w, c.y + hb.y + hb.h) then
+      c.on_ground = true
+      c.dy = 0
+      -- snap to tile grid so y is exact
+      c.y = flr((c.y + hb.y + hb.h)/8)*8 - (hb.y + hb.h)
+    end
+  elseif c.dy < 0 then
+    -- head bump
+    if is_solid_at(c.x + hb.x,       c.y + hb.y)
+    or is_solid_at(c.x + hb.x + hb.w, c.y + hb.y) then
+      c.dy = 0
+      -- push character just below the ceiling tile
+      c.y = flr((c.y + hb.y)/8)*8 + 8 - hb.y
+    end
+  end
 end
 
 
@@ -493,7 +492,7 @@ function reinit_characters()
 	foreach(chars, function(c)
 		c.dx = 0
 		c.dy = 0
-		c.g = false
+		c.on_ground = false
 	end)
 	is_in_switch = true
 end
@@ -1936,6 +1935,9 @@ end
 
 function debug_print()
 	print("lvl: "..i_room, room.x+40,room.y+2,8)
+	print(pactual.on_ground and "on_ground" or "on_air", pactual.x, pactual.y - 10)
+	print("dx:"..pactual.dx, pactual.x, pactual.y - 20)
+	print("dy:"..pactual.dy, pactual.x, pactual.y - 30)
 	-- print("dsw:"..delay_switch)
 	-- print(is_in_switch and "true" or "false")
 	-- print("qui?"..pactual.id)
@@ -2082,6 +2084,10 @@ end
 
 function lerp(a,b,t)
 	return a+(b-a)*t
+end
+function is_solid_at(px, py)
+  local tx, ty = flr(px/8), flr(py/8)
+  return fget(mget(tx, ty), 0)
 end
 
 __gfx__
