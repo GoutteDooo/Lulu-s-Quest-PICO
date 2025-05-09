@@ -6,7 +6,7 @@ function _init()
 	init_light()
 	init_room()
 	init_objects()
-	camx = 0
+	camx = 0   
 	camy = 0
 	frames = 0
 	room_transition_pending = false
@@ -18,7 +18,9 @@ function _init()
 	pulsator_state = false
 	animation_timer = 0
 	shake = 0
-	music_object = {false, 0}
+	music_object = {false, 0, true} 
+	-- {bool = change music, value = music pattern, bool = music on/off}
+	sfx_enabled = true
 	game_state = 1 -- 0 = title, 1 = game, 2 = restart_level
 	pulsator_room = 16
 	music(0)
@@ -49,7 +51,7 @@ function update_game()
 		sfx_timer -= 1
 	end
 	--handle music
-	if music_object[1] then
+	if music_object[1] and music_object[3] then
 		music_object[1] = false
 		music(music_object[2])
 	end
@@ -61,6 +63,13 @@ function update_game()
 	camx = room.x
 	camy = room.y
 end
+
+menuitem(1, "music on/off", function() 
+	music_object[3] = not music_object[3]
+	if not music_object[3] then music(-1) else music(music_object[2]) end
+ end)
+menuitem(2, "sfxs on/off", function() sfx_enabled = not sfx_enabled end)
+
 
 function _draw()
 	cls()
@@ -245,7 +254,7 @@ function update_chars()
 	if check_flag(1, pactual.x + 4, pactual.y) then
 		game_state = 2
 		sfx_timer = 45
-		sfx(53,3)
+		fsfx(53,3)
 		return
 	end
 
@@ -346,7 +355,7 @@ function update_chars()
 		animation_timer = 30
 		game_state = 2
 		sfx_timer = 45
-		sfx(53,3)
+		fsfx(53,3)
 	end
 
 	pactual.y_g = ceil(pactual.y / 8) * 8
@@ -368,7 +377,7 @@ function update_chars()
 					ima_light_bo.y = pactual.y_g
 					ima_light_bo.r = bo.r
 					sfx_timer = 20
-					sfx(52,3)
+					fsfx(52,3)
 					del(black_orbs,bo)
 				end
 			end
@@ -533,9 +542,9 @@ function update_light()
 		lulu.using_light = false
 		hades.using_light = false
 		hades.light_selected[1] = nil
-		if lulu.using_light then sfx(52,-2) end
-		sfx(55,-2)
-		sfx(58,-2)
+		if lulu.using_light then fsfx(52,-2) end
+		fsfx(55,-2)
+		fsfx(58,-2)
 	end
 	update_dynamic_lights()
 end
@@ -1047,11 +1056,11 @@ function next_room()
 	i_room = index_room(room.x, room.y)
 	create_room()
 	sfx_timer = 30
-	sfx(61,3)
+	fsfx(61,3)
 	if i_room >= pulsator_room + 1 and music_object[2] != 27 then
 		music_object[2] = 27
 		music_object[1] = true
-		sfx(48, -2)
+		fsfx(48, -2)
 	end
 	-- !!  TEST !!
 	keys_owned = 2
@@ -1085,7 +1094,7 @@ function create_room()
 	--replay pulsator sfx (with music fct) if lvl 15 reached
 	if i_room == pulsator_room then
 		music(-1)
-		sfx(48,0)
+		fsfx(48,0)
 	end
 end
 
@@ -1245,7 +1254,7 @@ function update_objects()
 		lulu_bl = true
 		sfx_timer = 30
 		music(-1)
-		sfx(59,3)
+		fsfx(59,3)
 		del(mushroom, m)
 		mset(m.x/8, m.y/8, 0)
 		ima_light.color = 13
@@ -1516,7 +1525,7 @@ end
 
 function open_chest(c)
 	sfx_timer = 20
-	sfx(49,3)
+	fsfx(49,3)
 	c.opened = true
 	--crれたer le contenu du coffre au-dessus
 	content = c.content[1]
@@ -1644,9 +1653,9 @@ function update_pulsator()
 			pulsator[1].timer = 0
 			-- SFX
 			if sfx_timer == 0 and i_room != pulsator_room then
-				sfx(48, -1)
+				fsfx(48, -1)
 				sfx_timer = 30
-				sfx(48, 3, pulsator[1].light_data.type == "white" and 7 or 14, 1)
+				fsfx(48, 3, pulsator[1].light_data.type == "white" and 7 or 14, 1)
 			end
 			
 			-- update light from pulsator
@@ -1672,9 +1681,9 @@ function break_pulsator()
 		shake = 60
 		-- wait 0.5 sec and delete acristals
 		pulsator[1].is_broken = true
-		sfx(47, -2)
+		fsfx(47, -2)
 		sfx_timer = 120
-		sfx(63)
+		fsfx(63)
 	end
 		--when animation is finished, delete the acristals and destroy walls
 	if animation_timer == 0 then 
@@ -1759,7 +1768,7 @@ function update_acristals()
 				pulsator[1].light_data.ac_activated -= 1
 				pulsator[1].light_data.room_ac[i] = false
 				ac.c_col = nil
-				sfx(47,-2)
+				fsfx(47,-2)
 			end
 		end
 	end
@@ -2014,9 +2023,15 @@ function collision_gate(p, g)
 				or py2 < gy1)
 end
 
+function fsfx(id, c, o, l)
+	if sfx_enabled then
+		sfx(id, c, o, l)
+	end
+end
+
 function psfx(num)
 	if sfx_timer <= 0 then
-		sfx(num,3)
+		fsfx(num,3)
 	end
 end
 
