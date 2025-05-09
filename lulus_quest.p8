@@ -1,6 +1,19 @@
 pico-8 cartridge // http://www.pico-8.com
 version 42
 __lua__
+
+menuitem(1, "music on/off", function() 
+	music_object[3] = not music_object[3]
+	if not music_object[3] then music(-1) else music(music_object[2]) end
+ end)
+menuitem(2, "sfxs on/off", function() sfx_enabled = not sfx_enabled end)
+menuitem(3, "next lvl", next_room)
+menuitem(4, "pass 5 lvls", function()
+for i=1,5 do
+	next_room()
+end
+end)
+
 function _init()
 	init_player()
 	init_light()
@@ -63,13 +76,6 @@ function update_game()
 	camx = room.x
 	camy = room.y
 end
-
-menuitem(1, "music on/off", function() 
-	music_object[3] = not music_object[3]
-	if not music_object[3] then music(-1) else music(music_object[2]) end
- end)
-menuitem(2, "sfxs on/off", function() sfx_enabled = not sfx_enabled end)
-
 
 function _draw()
 	cls()
@@ -1059,11 +1065,15 @@ function next_room()
 	fsfx(61,3)
 	if i_room >= pulsator_room + 1 and music_object[2] != 27 then
 		music_object[2] = 27
-		music_object[1] = true
+		reset_music()
 		fsfx(48, -2)
 	end
 	-- !!  TEST !!
 	keys_owned = 2
+end
+
+function reset_music()
+	music_object[1] = true
 end
 
 function create_room()
@@ -1259,7 +1269,7 @@ function update_objects()
 		mset(m.x/8, m.y/8, 0)
 		ima_light.color = 13
 		animation_timer = 75
-		music_object[1] = true
+		reset_music()
 	end
 end
 
