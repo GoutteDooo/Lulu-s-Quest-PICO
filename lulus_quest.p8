@@ -140,6 +140,7 @@ function generate_character(name)
 		dy = 0,
 		g = false,
 		gravity = name == "lulu" and 0.18 or 0.11,
+		c_jump = false,
 		on_ground = false,
 		default_sprite = name == "lulu" and 1 or 5,
 		sprite = default_sprite,
@@ -238,7 +239,7 @@ function update_chars()
 		return
 	end
 
-	if btn(❎) then
+	if btn(🅾️) then
 		if pactual == lulu and ima_light.x != nil then
 			if ima_light.x > lulu.x then
 				lulu.flipx = false
@@ -249,7 +250,7 @@ function update_chars()
 	end
 
 	--switch characters
-	if btnp(⬇️) and not btn(❎) then
+	if btnp(⬇️) and not btn(🅾️) then
 		switch_characters()
 		return
 	end
@@ -415,13 +416,15 @@ function move_characters(c)
     move = 1
     pactual.flipx = false
   end
-  if btnp(🅾️) and pactual.on_ground then
+	local jump = btn(❎) and not pactual.p_jump
+	pactual.c_jump = btn(❎)
+  if jump and pactual.on_ground then
     pactual.dy = JUMP_VELOCITY
     pactual.on_ground = false
 		pactual.is_jumping = true
     psfx(62,3)
 	end
-	if not btn(🅾️) and pactual.is_jumping and pactual.dy < 0 then
+	if not btn(❎) and pactual.is_jumping and pactual.dy < 0 then
   	pactual.dy *= 0.5
 	end
 	if c.dy > 0 then
@@ -526,7 +529,7 @@ end
 
 function update_light()
 	-- lulu
-		if btn(❎) then
+		if btn(🅾️) then
 			if lulu.select and lulu.powers_left > 0 then
 				update_light_lulu()
 			end
@@ -535,7 +538,7 @@ function update_light()
 				update_light_hades()
 			end
 		end
-	if not btn(❎) then 
+	if not btn(🅾️) then 
 		lulu.using_light = false
 		hades.using_light = false
 		hades.light_selected[1] = nil
@@ -588,7 +591,7 @@ function update_light_lulu()
 		end
 	end
 
-	if btnp(🅾️) and lulu.select and lulu.powers_left > 0 then
+	if btnp(❎) and lulu.select and lulu.powers_left > 0 then
 		local x = ima_light.x
 		local y = ima_light.y
 		if not lulu_bl then 
@@ -614,7 +617,7 @@ function update_light_hades()
 		hades.light_selected[1] = lights[index + 1]
 		if (btnp(➡️)) hades.light_selected[2] = (hades.light_selected[2] + 1) % nb_lights
 		if (btnp(⬅️)) hades.light_selected[2] = (hades.light_selected[2] - 1) % nb_lights
-		if btnp(🅾️) then
+		if btnp(❎) then
 			del(lights,hades.light_selected[1])
 			hades.light_selected[2] = 0
 			hades.powers_left -= 1
@@ -661,7 +664,7 @@ function update_black_light()
 		end
 	end
 
-	if btnp(🅾️) then
+	if btnp(❎) then
 		local x = ima_light_bo.x
 		local y = ima_light_bo.y
 		create_light(x, y, ima_light_bo.r, "black")
@@ -682,7 +685,7 @@ function draw_light()
 end
 
 function draw_imaginary_light()
-	if btn(❎) and lulu.select and lulu.powers_left > 0 then
+	if btn(🅾️) and lulu.select and lulu.powers_left > 0 then
 		circfill(ima_light.x, ima_light.y, ima_light.r, ima_light.color)
 		circ(ima_light.x, ima_light.y, ima_light.r, ima_light.color+1)
 		circ(lulu.x_g, lulu.y_g, lulu.ima_range, 8)
@@ -822,13 +825,13 @@ function init_room()
 			powers = {1,1},
 			messages = {
 				{"tutorial","welcome to lulu's quest!"},
-				{"tutorial","hold ❎ and press ⬆️⬅️➡️or⬇️\n to prepare a light"},
-				{"tutorial","press 🅾️ while holding ❎\n to cast a light"},
+				{"tutorial","hold 🅾️ and press ⬆️⬅️➡️or⬇️\n to prepare a light"},
+				{"tutorial","press ❎ while holding 🅾️\n to cast a light"},
 				{"tutorial","lulu (left) can only live\n inside of lights"},
 				{"tutorial","press ⬇️ to switch characters"},
 				{"tutorial","hades (right) can only\n live outside of lights"},
-				{"tutorial","as hades, hold ❎+⬅️➡️ to\n prepare a turnoff and..."},
-				{"tutorial","...press 🅾️ while holding ❎\n to turn off a light"},
+				{"tutorial","as hades, hold 🅾️+⬅️➡️ to\n prepare a turnoff and..."},
+				{"tutorial","...press ❎ while holding 🅾️\n to turn off a light"},
 				{"tutorial","your remaining powers are\n shown at the top left"}, 
 				{"tutorial","the goal is to bring\n your characters..."}, 
 				{"tutorial","...to their respective doors."}, 
@@ -944,7 +947,6 @@ function init_room()
     },
     --17
     {
-			lvl_timer = 75,
 			lights = {{6.5, 40, 24, "black"},},
 			powers = {2,0},
 			butterflies = {
@@ -1251,7 +1253,7 @@ function update_objects()
 		update_butterfly(b)
 	end
 	--messages
-	if messages[1] and (btnp(⬆️)) then
+	if messages[1] and (btnp(⬆️)) and not btn(🅾️) then
 		deli(messages, 1)
 	end
 	--pulsator
@@ -1935,9 +1937,11 @@ end
 
 function debug_print()
 	print("lvl: "..i_room, room.x+40,room.y+2,8)
-	print(pactual.on_ground and "on_ground" or "on_air", pactual.x, pactual.y - 10)
-	print("dx:"..pactual.dx, pactual.x, pactual.y - 20)
-	print("dy:"..pactual.dy, pactual.x, pactual.y - 30)
+	-- print(pactual.on_ground and "on_ground" or "on_air", pactual.x, pactual.y - 10)
+	-- print("dx:"..pactual.dx, pactual.x, pactual.y - 20)
+	-- print("dy:"..pactual.dy, pactual.x, pactual.y - 30)
+	print(pactual.c_jump and "cjump: TRUE" or "cjump: FALSE")
+	print(btn(❎) and "jump" or "nojump")
 	-- print("dsw:"..delay_switch)
 	-- print(is_in_switch and "true" or "false")
 	-- print("qui?"..pactual.id)
@@ -2085,6 +2089,7 @@ end
 function lerp(a,b,t)
 	return a+(b-a)*t
 end
+
 function is_solid_at(px, py)
   local tx, ty = flr(px/8), flr(py/8)
   return fget(mget(tx, ty), 0)
