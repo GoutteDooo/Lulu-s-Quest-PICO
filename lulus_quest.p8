@@ -37,11 +37,11 @@ function _init()
 	game_state = 1 -- 0 = title, 1 = game, 2 = restart_level
 	pulsator_room = 16
 	--!! DEPLOIEMENT
-	create_room()
+	-- create_room()
 	-- !! FIN DEPLOIEMENT
 	--!! TEST
 	tp = false
-	-- next_room()
+	next_room()
 	--!! FIN TEST
 end
 
@@ -92,7 +92,7 @@ function _draw()
 	draw_light()
 	draw_objects()
 	draw_walls()
-	map(0, 0, 0, 0, 128, 64, 3)
+	map(0, 0, 0, 0, 128, 64, 0x1)
 	map(0, 0, 0, 0, 128, 64, 0x10)
 	-- Doors
 	draw_doors()
@@ -524,7 +524,6 @@ function init_light()
 		r = 16,
 		color = 12
 	}
-	lights = {}
 end
 
 function update_light()
@@ -557,7 +556,6 @@ function update_light_lulu()
 		lulu.using_light = true
 		if lulu_bl then psfx(52,3) else psfx(58,3) end
 	end
-
 	local xsign = 0
 	local ysign = 0
 	local dirpressed = false
@@ -566,7 +564,7 @@ function update_light_lulu()
 	if (btn(➡️)) xsign = 1
 	if (btn(⬆️)) ysign = -1
 	if (btn(⬇️)) ysign = 1
-	if ((btn(⬅️)) or (btn(➡️)) or (btn(⬆️)) or (btn(⬇️))) dirpressed = true
+	if ((btn(⬅️)) or (btn(➡️)) or (btn(⬆️)) or (btn(⬇️))) then dirpressed = true end
 
 	if dirpressed then
 			local x = ima_light.x + xsign * 8
@@ -671,6 +669,63 @@ function update_black_light()
 		psfx(51)
 		pactual.using_black_light = false
 		shake = 12
+	end
+end
+
+function using_light(magic_used, c)
+	local i_light = magic_used == "orb" and ima_light_bo or ima_light
+
+	local xsign = 0
+	local ysign = 0
+	local dirpressed = false
+	
+	if (btn(⬅️)) xsign = -1
+	if (btn(➡️)) xsign = 1
+	if (btn(⬆️)) ysign = -1
+	if (btn(⬇️)) ysign = 1
+	local dirpressed = ((btn(⬅️)) or (btn(➡️)) or (btn(⬆️)) or (btn(⬇️))) 
+
+	if dirpressed != 0 then
+			local x = i_light.x + xsign * 8
+			local y = i_light.y + ysign * 8
+			
+			-- Vれたrification du dれたplacement normal
+			if frames % 3 == 0 then
+				i_light.x = mid(room.x, flr(x / 8) * 8, room.w)
+				i_light.y = mid(room.y, flr(y / 8) * 8, room.h)
+			end
+
+		-- Vれたrification de la distance par rapport au perso
+		local dx = i_light.x - c.x_g
+		local dy = i_light.y - c.y_g
+		local dist = sqrt(dx * dx + dy * dy)
+
+		if dist > c.ima_range then
+				-- Limiter la position sur le cercle
+				local angle = atan2(dx, dy)
+				i_light.x = c.x_g + round((cos(angle) * c.ima_range)/8)*8
+				i_light.y = c.y_g + round((sin(angle) * c.ima_range)/8)*8
+		end
+	end
+
+	if btnp(❎) then
+		local x = i_light.x
+		local y = i_light.y
+		if c == lulu and lulu.powers_left > 0 then
+				if not lulu_bl then 
+					create_light(x, y, ima_light.r,"white",10) 
+				else 
+					create_light(x, y, ima_light.r,"black",10)
+				end
+				if lulu_bl then psfx(51) else psfx(57) end
+				shake = 6
+				lulu.powers_left -= 1
+		elseif c == hades then
+			create_light(x, y, i_light.r, "black")
+			psfx(51)
+			c.using_black_light = false
+			shake = 12
+		end
 	end
 end
 
@@ -1140,6 +1195,7 @@ function init_objects()
 		lulu = {x = 0, y = 0},
 		hades = {x = 0, y = 0}
 	}
+	lights = {}
 	black_orbs = {}
 	ima_light_bo = {
 		x = 0,
@@ -1940,8 +1996,8 @@ function debug_print()
 	-- print(pactual.on_ground and "on_ground" or "on_air", pactual.x, pactual.y - 10)
 	-- print("dx:"..pactual.dx, pactual.x, pactual.y - 20)
 	-- print("dy:"..pactual.dy, pactual.x, pactual.y - 30)
-	print(pactual.c_jump and "cjump: TRUE" or "cjump: FALSE")
-	print(btn(❎) and "jump" or "nojump")
+	-- print(pactual.c_jump and "cjump: TRUE" or "cjump: FALSE")
+	-- print(btn(❎) and "jump" or "nojump")
 	-- print("dsw:"..delay_switch)
 	-- print(is_in_switch and "true" or "false")
 	-- print("qui?"..pactual.id)
@@ -2372,8 +2428,8 @@ __map__
 0000630000425200470061510000000063006b51000000530000405100005d49594949496a000000000000684d4d4d594949494a00787a0048494a00484d4e594d4d4e4d76767976767679764d4d4e4e7a7f0000630100000073005b000000583a3a594a00630040410042520048495f5a05737f405171604051005347474859
 000063000042520047000000000000007300630000000063004051000075695f5f5959592a2a2a2a2a2a2a2a595959595959595a0071700058595a6f585959595f59696a000000000000000068595f59007876797679767a000000584d4976593a3a5f594a63005051004252485f2a2a597676767976767676797679797a6859
 0000636f004252234b330000000000050000630000620063405100530000235859593a3a3a3a3a3a3a3a3a3a3a3a59593a3a5959494949495959594959593a3a59592a2a2a2a2a2a2a2a2a2a2a2a595900000000630078797a007869696a23583a3a59595a63000000004248593a3a3a5a014060716040510000006300002358
-0100635d5e4252006b000062006f4d4e00006301004d4d4e5100006300000058593a3a3a3a3a3a3a3a3a3a3a3a3a3a59593a3a3a3a3a3a3a3a3a3a3a3a3a3a59593a3a3a3a3a3a3a3a3a3a3a3a3a3a5905000000630000720000000000610058593a3a3a5a234b2a2a4b33583a3a3a595a40517160405d495e000063006f0058
-4d4e4a6d6e484d4e474d4d4e4d4d4f4f4d4d4e4e4d4f4f4f594e4d4d4e4d4d595f5959595959595959595959595959595959593a59595f3a5f3a5959593a59593b3b3b3b3b3b3b3b3b3b3b3b3b3a3a3a594e4d4d4e4d4e4d4e4d4d4d4e4d4d59595f3b3b5a005b3b3b5b00583b3b59595f494949494959595f49494949494959
+0100635d5e4252006b000062006f757600006301004d4d4e5100006300000058593a3a3a3a3a3a3a3a3a3a3a3a3a3a59593a3a3a3a3a3a3a3a3a3a3a3a3a3a59593a3a3a3a3a3a3a3a3a3a3a3a3a3a5905000000630000720000000000610058593a3a3a5a234b2a2a4b33583a3a3a595a40517160405d495e000063006f0058
+4d4e4a6d6e484d4e474d4d4e4d4d494d4d4d4e4e4d4f4f4f594e4d4d4e4d4d595f5959595959595959595959595959595959593a59595f3a5f3a5959593a59593b3b3b3b3b3b3b3b3b3b3b3b3b3a3a3a594e4d4d4e4d4e4d4e4d4d4d4e4d4d59595f3b3b5a005b3b3b5b00583b3b59595f494949494959595f49494949494959
 5a00405161645b000063000042586a2a59596a600071600000000040646061585a5200004041000063000071606d69595f596969696959595969695959596959596a600000007160005041006d593a3a593a59595969696969696969595f596500405161700a0000335b47000040606100000000000000000000000000000000
 5a40510000615b000063000042583a3a596a60007160010040410550647071585a52000050510000630071600061645859550040606168696a63616d696e42586e6000000071600000005041006d593a3a3a59596a41000042520000685959594051000061700001005b00007164707100000000000000000000000001000005
 5a517f0500005b000063010047593a3a5a60005d4d494d4e76797676767976795a524b004252000073716000050061585a0140647071510000630061700042586000000171604b00004b00504105583a3a595f5a0050417f4252000019585f59510048767679767676797a40604b646000000000000000000000002020202020
