@@ -416,7 +416,7 @@ function move_characters(c)
     move = 1
     pactual.flipx = false
   end
-	local jump = btn(❎) and not pactual.p_jump
+	local jump = btn(❎) and not pactual.c_jump
 	pactual.c_jump = btn(❎)
   if jump and pactual.on_ground then
     pactual.dy = JUMP_VELOCITY
