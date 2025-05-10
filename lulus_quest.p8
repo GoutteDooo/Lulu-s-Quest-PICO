@@ -149,7 +149,6 @@ function generate_character(name)
 		select = name == "lulu" and true or false,
 		in_light = name == "lulu" and true or false,
 		using_light = false, --to know if player is holding C key
-		using_black_light = false,
 		ima_range = 6 * 8, --range of ima_light for white and black light
 		powers_left = 0,
 		passed = false,
@@ -176,6 +175,7 @@ function init_player()
 	pactual = lulu
 	gkeys = 0
 	wkeys = 0
+	casting_bl = false
 	FRICTION = 0.8
 	accel = 0.6
 	accel_air = 0.4
@@ -234,8 +234,8 @@ function update_chars()
 		return
 	end
 
-	if pactual.using_black_light then
-		update_black_light()
+	if casting_bl then
+		update_black_light(pactual)
 		return
 	end
 
@@ -254,9 +254,8 @@ function update_chars()
 		switch_characters()
 		return
 	end
-
-	if not lulu.using_light and not hades.using_light then 
-		foreach(chars, function(c) move_characters(c) end)
+	for c in all(chars) do
+		if not c.using_light then move_characters(c) end
 	end
 
 	--if fall in water or lava
@@ -374,7 +373,7 @@ function update_chars()
 		foreach(
 			black_orbs, function(bo)
 				if collision(pactual, bo) then
-					pactual.using_black_light = true
+					casting_bl = true
 					ima_light_bo.x = pactual.x_g
 					ima_light_bo.y = pactual.y_g
 					ima_light_bo.r = bo.r
@@ -556,51 +555,52 @@ function update_light_lulu()
 		lulu.using_light = true
 		if lulu_bl then psfx(52,3) else psfx(58,3) end
 	end
-	local xsign = 0
-	local ysign = 0
-	local dirpressed = false
+	using_light("classic",lulu)
+	-- local xsign = 0
+	-- local ysign = 0
+	-- local dirpressed = false
 	
-	if (btn(⬅️)) xsign = -1
-	if (btn(➡️)) xsign = 1
-	if (btn(⬆️)) ysign = -1
-	if (btn(⬇️)) ysign = 1
-	if ((btn(⬅️)) or (btn(➡️)) or (btn(⬆️)) or (btn(⬇️))) then dirpressed = true end
+	-- if (btn(⬅️)) xsign = -1
+	-- if (btn(➡️)) xsign = 1
+	-- if (btn(⬆️)) ysign = -1
+	-- if (btn(⬇️)) ysign = 1
+	-- if ((btn(⬅️)) or (btn(➡️)) or (btn(⬆️)) or (btn(⬇️))) then dirpressed = true end
 
-	if dirpressed then
-			local x = ima_light.x + xsign * 8
-			local y = ima_light.y + ysign * 8
+	-- if dirpressed then
+	-- 		local x = ima_light.x + xsign * 8
+	-- 		local y = ima_light.y + ysign * 8
 			
-			-- Vれたrification du dれたplacement normal
-			if frames % 3 == 0 then
-				ima_light.x = mid(room.x, flr(x / 8) * 8, room.w)
-				ima_light.y = mid(room.y, flr(y / 8) * 8, room.h)
-			end
+	-- 		-- Vれたrification du dれたplacement normal
+	-- 		if frames % 3 == 0 then
+	-- 			ima_light.x = mid(room.x, flr(x / 8) * 8, room.w)
+	-- 			ima_light.y = mid(room.y, flr(y / 8) * 8, room.h)
+	-- 		end
 
-		-- Vれたrification de la distance par rapport au joueur (lulu)
-		local dx = ima_light.x - lulu.x_g
-		local dy = ima_light.y - lulu.y_g
-		local dist = sqrt(dx * dx + dy * dy)
+	-- 	-- Vれたrification de la distance par rapport au joueur (lulu)
+	-- 	local dx = ima_light.x - lulu.x_g
+	-- 	local dy = ima_light.y - lulu.y_g
+	-- 	local dist = sqrt(dx * dx + dy * dy)
 
-		if dist > lulu.ima_range then
-				-- Limiter la position sur le cercle
-				local angle = atan2(dx, dy)
-				ima_light.x = lulu.x_g + round((cos(angle) * lulu.ima_range)/8)*8
-				ima_light.y = lulu.y_g + round((sin(angle) * lulu.ima_range)/8)*8
-		end
-	end
+	-- 	if dist > lulu.ima_range then
+	-- 			-- Limiter la position sur le cercle
+	-- 			local angle = atan2(dx, dy)
+	-- 			ima_light.x = lulu.x_g + round((cos(angle) * lulu.ima_range)/8)*8
+	-- 			ima_light.y = lulu.y_g + round((sin(angle) * lulu.ima_range)/8)*8
+	-- 	end
+	-- end
 
-	if btnp(❎) and lulu.select and lulu.powers_left > 0 then
-		local x = ima_light.x
-		local y = ima_light.y
-		if not lulu_bl then 
-			create_light(x, y, ima_light.r,"white",10) 
-		else 
-			create_light(x, y, ima_light.r,"black",10)
-		end
-		if lulu_bl then psfx(51) else psfx(57) end
-		shake = 6
-		lulu.powers_left -= 1
-	end
+	-- if btnp(❎) and lulu.select and lulu.powers_left > 0 then
+	-- 	local x = ima_light.x
+	-- 	local y = ima_light.y
+	-- 	if not lulu_bl then 
+	-- 		create_light(x, y, ima_light.r,"white",10) 
+	-- 	else 
+	-- 		create_light(x, y, ima_light.r,"black",10)
+	-- 	end
+	-- 	if lulu_bl then psfx(51) else psfx(57) end
+	-- 	shake = 6
+	-- 	lulu.powers_left -= 1
+	-- end
 end
 
 function update_light_hades()
@@ -628,48 +628,49 @@ function update_light_hades()
 	end
 end
 
-function update_black_light()
-	local xsign = 0
-	local ysign = 0
-	local dirpressed = false
+function update_black_light(char)
+	using_light("orb",char)
+	-- local xsign = 0
+	-- local ysign = 0
+	-- local dirpressed = false
 	
-	if (btn(⬅️)) xsign = -1
-	if (btn(➡️)) xsign = 1
-	if (btn(⬆️)) ysign = -1
-	if (btn(⬇️)) ysign = 1
-	if ((btn(⬅️)) or (btn(➡️)) or (btn(⬆️)) or (btn(⬇️))) dirpressed = true
+	-- if (btn(⬅️)) xsign = -1
+	-- if (btn(➡️)) xsign = 1
+	-- if (btn(⬆️)) ysign = -1
+	-- if (btn(⬇️)) ysign = 1
+	-- if ((btn(⬅️)) or (btn(➡️)) or (btn(⬆️)) or (btn(⬇️))) dirpressed = true
 
-	if dirpressed then
-			local x = ima_light_bo.x + xsign * 8
-			local y = ima_light_bo.y + ysign * 8
+	-- if dirpressed then
+	-- 		local x = ima_light_bo.x + xsign * 8
+	-- 		local y = ima_light_bo.y + ysign * 8
 			
-			-- Vれたrification du dれたplacement normal
-			if frames % 3 == 0 then
-				ima_light_bo.x = mid(room.x, flr(x / 8) * 8, room.w)
-				ima_light_bo.y = mid(room.y, flr(y / 8) * 8, room.h)
-			end
+	-- 		-- Vれたrification du dれたplacement normal
+	-- 		if frames % 3 == 0 then
+	-- 			ima_light_bo.x = mid(room.x, flr(x / 8) * 8, room.w)
+	-- 			ima_light_bo.y = mid(room.y, flr(y / 8) * 8, room.h)
+	-- 		end
 
-		-- Vれたrification de la distance par rapport au joueur (lulu)
-		local dx = ima_light_bo.x - pactual.x_g
-		local dy = ima_light_bo.y - pactual.y_g
-		local dist = sqrt(dx * dx + dy * dy)
+	-- 	-- Vれたrification de la distance par rapport au joueur (lulu)
+	-- 	local dx = ima_light_bo.x - pactual.x_g
+	-- 	local dy = ima_light_bo.y - pactual.y_g
+	-- 	local dist = sqrt(dx * dx + dy * dy)
 
-		if dist > pactual.ima_range then
-				-- Limiter la position sur le cercle
-				local angle = atan2(dx, dy)
-				ima_light_bo.x = pactual.x_g + round((cos(angle) * pactual.ima_range)/8)*8
-				ima_light_bo.y = pactual.y_g + round((sin(angle) * pactual.ima_range)/8)*8
-		end
-	end
+	-- 	if dist > pactual.ima_range then
+	-- 			-- Limiter la position sur le cercle
+	-- 			local angle = atan2(dx, dy)
+	-- 			ima_light_bo.x = pactual.x_g + round((cos(angle) * pactual.ima_range)/8)*8
+	-- 			ima_light_bo.y = pactual.y_g + round((sin(angle) * pactual.ima_range)/8)*8
+	-- 	end
+	-- end
 
-	if btnp(❎) then
-		local x = ima_light_bo.x
-		local y = ima_light_bo.y
-		create_light(x, y, ima_light_bo.r, "black")
-		psfx(51)
-		pactual.using_black_light = false
-		shake = 12
-	end
+	-- if btnp(❎) then
+	-- 	local x = ima_light_bo.x
+	-- 	local y = ima_light_bo.y
+	-- 	create_light(x, y, ima_light_bo.r, "black")
+	-- 	psfx(51)
+	-- 	casting_bl = false
+	-- 	shake = 12
+	-- end
 end
 
 function using_light(magic_used, c)
@@ -711,20 +712,17 @@ function using_light(magic_used, c)
 	if btnp(❎) then
 		local x = i_light.x
 		local y = i_light.y
-		if c == lulu and lulu.powers_left > 0 then
-				if not lulu_bl then 
-					create_light(x, y, ima_light.r,"white",10) 
-				else 
-					create_light(x, y, ima_light.r,"black",10)
-				end
+		if c == lulu and lulu.powers_left > 0 and magic_used != "orb" then
+				create_light(x, y, ima_light.r,lulu_bl and "black" or "white",10) 
 				if lulu_bl then psfx(51) else psfx(57) end
 				shake = 6
 				lulu.powers_left -= 1
-		elseif c == hades then
-			create_light(x, y, i_light.r, "black")
-			psfx(51)
-			c.using_black_light = false
-			shake = 12
+			else
+				create_light(x, y, i_light.r, "black")
+				psfx(51)
+				casting_bl = false
+				shake = 12
+				c.c_jump = true --to prevent char from jumping
 		end
 	end
 end
@@ -745,7 +743,7 @@ function draw_imaginary_light()
 		circ(ima_light.x, ima_light.y, ima_light.r, ima_light.color+1)
 		circ(lulu.x_g, lulu.y_g, lulu.ima_range, 8)
 	end
-	if pactual.using_black_light then
+	if casting_bl then
 		circfill(ima_light_bo.x, ima_light_bo.y, ima_light_bo.r, ima_light_bo.c)
 		circ(ima_light_bo.x, ima_light_bo.y, ima_light_bo.r, ima_light_bo.c+1)
 		circ(pactual.x_g, pactual.y_g, pactual.ima_range, 8)
