@@ -658,18 +658,8 @@ function draw_light()
 end
 
 function draw_imaginary_light()
-	local i_light
-	if btn(🅾️) and lulu.select and lulu.powers_left > 0 then
-		i_light = ima_light
-		-- circfill(ima_light.x, ima_light.y, ima_light.r, ima_light.color)
-		-- circ(ima_light.x, ima_light.y, ima_light.r, ima_light.color+1)
-		-- circ(lulu.x_g, lulu.y_g, lulu.ima_range, 8)
-	elseif casting_bl then
-		i_light = ima_light_bo
-		-- circfill(ima_light_bo.x, ima_light_bo.y, ima_light_bo.r, ima_light_bo.c)
-		-- circ(ima_light_bo.x, ima_light_bo.y, ima_light_bo.r, ima_light_bo.c+1)
-		-- circ(pactual.x_g, pactual.y_g, pactual.ima_range, 8)
-	end
+	local lulu_light = btn(🅾️) and lulu.select and lulu.powers_left > 0
+	local i_light = lulu_light and ima_light or casting_bl and ima_light_bo or nil
 	if i_light then
 		circfill(i_light.x, i_light.y, i_light.r, i_light.c)
 		circ(i_light.x, i_light.y, i_light.r, i_light.c+1)
