@@ -523,7 +523,7 @@ function init_light()
 		x = lulu.x + 4,
 		y = lulu.x + 4,
 		r = 16,
-		color = 12
+		c = 12
 	}
 end
 
@@ -658,14 +658,21 @@ function draw_light()
 end
 
 function draw_imaginary_light()
+	local i_light
 	if btn(🅾️) and lulu.select and lulu.powers_left > 0 then
-		circfill(ima_light.x, ima_light.y, ima_light.r, ima_light.color)
-		circ(ima_light.x, ima_light.y, ima_light.r, ima_light.color+1)
-		circ(lulu.x_g, lulu.y_g, lulu.ima_range, 8)
+		i_light = ima_light
+		-- circfill(ima_light.x, ima_light.y, ima_light.r, ima_light.color)
+		-- circ(ima_light.x, ima_light.y, ima_light.r, ima_light.color+1)
+		-- circ(lulu.x_g, lulu.y_g, lulu.ima_range, 8)
+	elseif casting_bl then
+		i_light = ima_light_bo
+		-- circfill(ima_light_bo.x, ima_light_bo.y, ima_light_bo.r, ima_light_bo.c)
+		-- circ(ima_light_bo.x, ima_light_bo.y, ima_light_bo.r, ima_light_bo.c+1)
+		-- circ(pactual.x_g, pactual.y_g, pactual.ima_range, 8)
 	end
-	if casting_bl then
-		circfill(ima_light_bo.x, ima_light_bo.y, ima_light_bo.r, ima_light_bo.c)
-		circ(ima_light_bo.x, ima_light_bo.y, ima_light_bo.r, ima_light_bo.c+1)
+	if i_light then
+		circfill(i_light.x, i_light.y, i_light.r, i_light.c)
+		circ(i_light.x, i_light.y, i_light.r, i_light.c+1)
 		circ(pactual.x_g, pactual.y_g, pactual.ima_range, 8)
 	end
 end
@@ -1245,7 +1252,7 @@ function update_objects()
 		fsfx(59,3)
 		del(mushroom, m)
 		mset(m.x/8, m.y/8, 0)
-		ima_light.color = 13
+		ima_light.c = 13
 		animation_timer = 75
 		reset_music()
 	end
