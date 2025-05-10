@@ -408,13 +408,15 @@ end
 function move_characters(c)
 	-- 1) handle input
   local move = 0
-  if btn(⬅️) then
-    move = -1
-    pactual.flipx = true
-  elseif btn(➡️) then
-    move = 1
-    pactual.flipx = false
-  end
+	if not pactual.using_light then
+		if btn(⬅️) then
+			move = -1
+			pactual.flipx = true
+		elseif btn(➡️) then
+			move = 1
+			pactual.flipx = false
+		end
+	end
 	local jump = btn(❎) and not pactual.c_jump
 	pactual.c_jump = btn(❎)
   if jump and pactual.on_ground then
@@ -556,51 +558,6 @@ function update_light_lulu()
 		if lulu_bl then psfx(52,3) else psfx(58,3) end
 	end
 	using_light("classic",lulu)
-	-- local xsign = 0
-	-- local ysign = 0
-	-- local dirpressed = false
-	
-	-- if (btn(⬅️)) xsign = -1
-	-- if (btn(➡️)) xsign = 1
-	-- if (btn(⬆️)) ysign = -1
-	-- if (btn(⬇️)) ysign = 1
-	-- if ((btn(⬅️)) or (btn(➡️)) or (btn(⬆️)) or (btn(⬇️))) then dirpressed = true end
-
-	-- if dirpressed then
-	-- 		local x = ima_light.x + xsign * 8
-	-- 		local y = ima_light.y + ysign * 8
-			
-	-- 		-- Vれたrification du dれたplacement normal
-	-- 		if frames % 3 == 0 then
-	-- 			ima_light.x = mid(room.x, flr(x / 8) * 8, room.w)
-	-- 			ima_light.y = mid(room.y, flr(y / 8) * 8, room.h)
-	-- 		end
-
-	-- 	-- Vれたrification de la distance par rapport au joueur (lulu)
-	-- 	local dx = ima_light.x - lulu.x_g
-	-- 	local dy = ima_light.y - lulu.y_g
-	-- 	local dist = sqrt(dx * dx + dy * dy)
-
-	-- 	if dist > lulu.ima_range then
-	-- 			-- Limiter la position sur le cercle
-	-- 			local angle = atan2(dx, dy)
-	-- 			ima_light.x = lulu.x_g + round((cos(angle) * lulu.ima_range)/8)*8
-	-- 			ima_light.y = lulu.y_g + round((sin(angle) * lulu.ima_range)/8)*8
-	-- 	end
-	-- end
-
-	-- if btnp(❎) and lulu.select and lulu.powers_left > 0 then
-	-- 	local x = ima_light.x
-	-- 	local y = ima_light.y
-	-- 	if not lulu_bl then 
-	-- 		create_light(x, y, ima_light.r,"white",10) 
-	-- 	else 
-	-- 		create_light(x, y, ima_light.r,"black",10)
-	-- 	end
-	-- 	if lulu_bl then psfx(51) else psfx(57) end
-	-- 	shake = 6
-	-- 	lulu.powers_left -= 1
-	-- end
 end
 
 function update_light_hades()
@@ -615,6 +572,12 @@ function update_light_hades()
 		hades.light_selected[1] = lights[index + 1]
 		if (btnp(➡️)) hades.light_selected[2] = (hades.light_selected[2] + 1) % nb_lights
 		if (btnp(⬅️)) hades.light_selected[2] = (hades.light_selected[2] - 1) % nb_lights
+		--flip hades when light selected x is > hades.x
+		if hades.light_selected[1].x < hades.x then
+			hades.flipx = true
+		else
+			hades.flipx = false
+		end
 		if btnp(❎) then
 			del(lights,hades.light_selected[1])
 			hades.light_selected[2] = 0
@@ -630,47 +593,6 @@ end
 
 function update_black_light(char)
 	using_light("orb",char)
-	-- local xsign = 0
-	-- local ysign = 0
-	-- local dirpressed = false
-	
-	-- if (btn(⬅️)) xsign = -1
-	-- if (btn(➡️)) xsign = 1
-	-- if (btn(⬆️)) ysign = -1
-	-- if (btn(⬇️)) ysign = 1
-	-- if ((btn(⬅️)) or (btn(➡️)) or (btn(⬆️)) or (btn(⬇️))) dirpressed = true
-
-	-- if dirpressed then
-	-- 		local x = ima_light_bo.x + xsign * 8
-	-- 		local y = ima_light_bo.y + ysign * 8
-			
-	-- 		-- Vれたrification du dれたplacement normal
-	-- 		if frames % 3 == 0 then
-	-- 			ima_light_bo.x = mid(room.x, flr(x / 8) * 8, room.w)
-	-- 			ima_light_bo.y = mid(room.y, flr(y / 8) * 8, room.h)
-	-- 		end
-
-	-- 	-- Vれたrification de la distance par rapport au joueur (lulu)
-	-- 	local dx = ima_light_bo.x - pactual.x_g
-	-- 	local dy = ima_light_bo.y - pactual.y_g
-	-- 	local dist = sqrt(dx * dx + dy * dy)
-
-	-- 	if dist > pactual.ima_range then
-	-- 			-- Limiter la position sur le cercle
-	-- 			local angle = atan2(dx, dy)
-	-- 			ima_light_bo.x = pactual.x_g + round((cos(angle) * pactual.ima_range)/8)*8
-	-- 			ima_light_bo.y = pactual.y_g + round((sin(angle) * pactual.ima_range)/8)*8
-	-- 	end
-	-- end
-
-	-- if btnp(❎) then
-	-- 	local x = ima_light_bo.x
-	-- 	local y = ima_light_bo.y
-	-- 	create_light(x, y, ima_light_bo.r, "black")
-	-- 	psfx(51)
-	-- 	casting_bl = false
-	-- 	shake = 12
-	-- end
 end
 
 function using_light(magic_used, c)
@@ -678,15 +600,13 @@ function using_light(magic_used, c)
 
 	local xsign = 0
 	local ysign = 0
-	local dirpressed = false
 	
 	if (btn(⬅️)) xsign = -1
 	if (btn(➡️)) xsign = 1
 	if (btn(⬆️)) ysign = -1
 	if (btn(⬇️)) ysign = 1
-	local dirpressed = ((btn(⬅️)) or (btn(➡️)) or (btn(⬆️)) or (btn(⬇️))) 
 
-	if dirpressed != 0 then
+	if ((btn(⬅️)) or (btn(➡️)) or (btn(⬆️)) or (btn(⬇️))) then
 			local x = i_light.x + xsign * 8
 			local y = i_light.y + ysign * 8
 			
