@@ -1195,11 +1195,18 @@ function update_objects()
 					if sc.lives and sc.lives <= 0 then
 						del(shield_cristals,sc)
 					end
-					c.shield.active = true
-					c.shield.time_set = sc.timer * 30
-					c.shield.timer = 0
-					c.shield.def_r = sc.r
-					c.shield.r = sc.r
+					c.shield = {
+						active = true,
+						time_set = sc.timer * 30,
+						timer = 0,
+						def_r = sc.r,
+						r = sc.r
+					}
+					-- c.shield.active = true
+					-- c.shield.time_set = sc.timer * 30
+					-- c.shield.timer = 0
+					-- c.shield.def_r = sc.r
+					-- c.shield.r = sc.r
 				end
 			end
 		end
@@ -1413,7 +1420,7 @@ function create_objects()
 
 	--acristals
 	-- foreach(c_room.acristals, function(ac)
-	-- 	add(acristals, {x = ac[1] * 8, y = ac[2] * 8, active = false, c_col = nil})
+	-- 	add(acristals, {x = ac[1] * 8, y = ac[2] * 8, active = false, ch_col = nil})
 	-- end)
 
 	--find tiles to convert into objects
@@ -1458,7 +1465,7 @@ function create_objects()
 			end
 			--acristals
 			if t == 38 then
-				add(acristals, {x = x * 8, y = y * 8, active = false, c_col = nil, used = false, tile = t})
+				add(acristals, {x = x * 8, y = y * 8, active = false, ch_col = nil, used = false, tile = t})
 				mset(x, y, 0)
 			end
 		end
@@ -1702,7 +1709,6 @@ function break_pulsator()
 	if animation_timer == 0 then 
 		foreach(acristals, function(ac)
 			ac.used = true
-			mset(ac.x/8, ac.y/8, 0)
 		end)
 		foreach(walls, function(w)
 			--break walls
@@ -1763,9 +1769,9 @@ function update_acristals()
 	for i, ac in pairs(acristals) do
 		for c in all(chars) do
 			--check each frame if collision with a character
-			if not ac.active and not ac.used  and collision(c,ac) then
+			if not ac.active and not ac.used and collision(c,ac) then
 				ac.active = true
-				ac.c_col = c
+				ac.ch_col = c
 				pulsator[1].light_data.ac_activated += 1
 				pulsator[1].light_data.room_ac[i] = true
 				psfx(47,3)
@@ -1774,11 +1780,11 @@ function update_acristals()
 		end
 		--if it has a collision with a char, now check each frames if collision is still there
 		if not ac.used and ac.active then
-			if not collision(ac.c_col,ac) then
+			if not collision(ac.ch_col,ac) then
 				ac.active = false
 				pulsator[1].light_data.ac_activated -= 1
 				pulsator[1].light_data.room_ac[i] = false
-				ac.c_col = nil
+				ac.ch_col = nil
 				fsfx(47,-2)
 			end
 		end
