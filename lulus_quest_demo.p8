@@ -2,11 +2,11 @@ pico-8 cartridge // http://www.pico-8.com
 version 42
 __lua__
 
--- menuitem(1, "music on/off", function() 
--- 	music_object[3] = not music_object[3]
--- 	if not music_object[3] then music(-1) else music(music_object[2]) end
---  end)
--- menuitem(2, "sfxs on/off", function() sfx_enabled = not sfx_enabled end)
+menuitem(1, "music on/off", function() 
+	music_object[3] = not music_object[3]
+	if not music_object[3] then music(-1) else music(music_object[2]) end
+ end)
+menuitem(2, "sfxs on/off", function() sfx_enabled = not sfx_enabled end)
 menuitem(3, "next lvl", function() next_room() end)
 menuitem(4, "pass 5 lvls", function()
 for i=1,5 do
@@ -1951,8 +1951,9 @@ end
 --helper functions
 
 function debug_print()
+	--!!FOR DEMO
+	print("lvl: "..i_room, room.x+40,room.y+2,8)
 	-- !! TEST
-	-- print("lvl: "..i_room, room.x+40,room.y+2,8)
 	-- print("#dl:"..#dynamic_lights)
 	-- if dynamic_lights[2] then
 	-- 	print("dl2.r:"..dynamic_lights[2].r)
