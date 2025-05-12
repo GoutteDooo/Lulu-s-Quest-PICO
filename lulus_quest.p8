@@ -230,7 +230,7 @@ function update_chars()
 	end
 	--if they have finished the lvl
 	if pactual.passed then
-		switch_characters()
+		switch_characters(pactual)
 		return
 	end
 
@@ -251,7 +251,7 @@ function update_chars()
 
 	--switch characters
 	if btnp(⬇️) and not btn(🅾️) then
-		switch_characters()
+		switch_characters(pactual)
 		return
 	end
 	for c in all(chars) do
@@ -477,19 +477,12 @@ function move_characters(c)
 end
 
 
-function switch_characters()
+function switch_characters(c)
 	--switch characters
-	if (pactual == lulu) then
-		pactual = hades
-		lulu.select = false
-		reinit_characters()
-		hades.select = true
-	elseif (pactual == hades) then
-		pactual = lulu
-		lulu.select = true
-		reinit_characters()
-		hades.select = false
-	end
+	pactual = pactual == hades and lulu or hades
+	c.select = false
+	reinit_characters()
+	pactual.select = true
 end
 
 function reinit_characters()
