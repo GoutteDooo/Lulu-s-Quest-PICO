@@ -1630,10 +1630,11 @@ function draw_pulsator()
 	local pr = pulsator.spr_r
 	local pulse_ratio = pulsator.pulse_timer / pulsator.pulse_dur
 	local scale = pr / 10 + 0.5 * pulse_ratio -- grossit れき chaque battement
+	local broke = pulsator.is_broken
+	scale = broke and scale * 0.75 or scale
 	-- flips
 	local flipx = frames % 15 < 7
 	local flipy = frames % 30 < 15
-	local broke = pulsator.is_broken
 
 	-- palette dynamique pour les fissures du pulsateur
 	if frames % 30 < 10 then
@@ -1663,25 +1664,23 @@ function draw_pulsator()
 		else
 			pal()
 			pal(14,3+128,1)
+			--electrical effects
+			for i = 1, 5 do
+				local a = rnd(1) * 2 * 3.141592653589793
+				local r1 = (pr * 2 + rnd(5)) * 0.05 * pr
+				local r2 = (r1 + rnd(5)) * 1.5
+				local x1 = cx + cos(a) * r1
+				local y1 = cy + sin(a) * r1
+				local x2 = cx + cos(a) * r2
+				local y2 = cy + sin(a) * r2
+				local c = rnd(1) < 0.5 and 7 or 3
+				line(x1, y1, x2, y2, c)
+			end
 		end
 	end
 
 	sspr(12*8, 0, 32, 32, x, y, w, h, flipx, flipy)
 	
-	if not broke then
-	-- effets れたlectriques
-		for i = 1, 5 do
-			local a = rnd(1) * 2 * 3.141592653589793
-			local r1 = (pr * 2 + rnd(5)) * 0.05 * pr
-			local r2 = (r1 + rnd(5)) * 1.5
-			local x1 = cx + cos(a) * r1
-			local y1 = cy + sin(a) * r1
-			local x2 = cx + cos(a) * r2
-			local y2 = cy + sin(a) * r2
-			local c = rnd(1) < 0.5 and 7 or 3
-			line(x1, y1, x2, y2, c)
-		end
-	end
 	pal(1,1)
 	pal(5,5)
 	pal(13,13)
@@ -1693,9 +1692,9 @@ function update_pulsator()
 	if pulsator then
 		--Aprれそs chaque pulsation, on rejoue le SFX electrical effects
 		-- if pulsator.timer == 30 and i_room == 15 then sfx(47, 0, 0, 14) end
-
+		local broken = pulsator.is_broken
 		--A less before the next pulsation, prevent the player
-		local beat_delay = pulsator.beat_delay
+		local beat_delay = broken and  pulsator.beat_delay / 2 or pulsator.beat_delay
 		-- if pulsator.timer == beat_delay - 30 and i_room == 15 then sfx(47, 0, pulsator.light_data.type == "white" and 16 or 19, 1) end
 
 		pulsator.timer += 1
@@ -1715,7 +1714,7 @@ function update_pulsator()
 			-- update light from pulsator
 			local new_dyna_light = create_dynamic_light(pulsator.x + pr, pulsator.y + pr, ptype, pulsator.light_data.spd, pulsator.light_data.r_max, pr)
 			add(dynamic_lights, new_dyna_light)
-			if pulsator.is_broken then
+			if broken then
 				local types = {"white", "black", "anti"}
 				local last_type = ptype
 				local new_type = types[flr(rnd(1) * #types) + 1]
