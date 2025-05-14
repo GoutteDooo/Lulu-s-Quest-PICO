@@ -777,9 +777,9 @@ function init_room()
 		-- pour les chests : si content.name = "turnoff" -> aucune autre data a insれたrer
 		-- si content.name = "black_orb" -> content = { name, x, y, r }
 	-- gates = { x, y, rotation (true = horizontal, nothing = vertical) }
-	-- butterflies = { x, y, x1, y1, x2, y2, target (1 ou 2), speed (number), r (number), light (string = "white" ou "black"), spr_flip (boolean) }
+	-- butterflies = { x, y, x1, y1, x2, y2, target (1 ou 2), speed (number), r (number), light (string = "white" ou "black") }
 	-- messages = { title (string), text (string) }
-	-- p_data = {x, y, r_max, type (string = "white" ou "anti"), timer (frames), acristals (number), spr_r (number), spd (float)}
+	-- p_data = {x, y, r_max, type (string = "white" ou "anti"), timer (frames), (next are optionals: ) spr_r of pul (number), spd of dl (float)}
 	-- acristals = {x,y}
 	rooms_data = {
 		--1
@@ -903,7 +903,7 @@ function init_room()
 					pulse_timer = 0,
 					beat_delay = 210,
 					is_broken = false,
-					light_data = {r_max = 128, type = nil, spd = 1, ac_activated = nil, room_ac = {false, false} }, 
+					light_data = {r_max = 128, type = nil, spd = 1, room_ac = {false, false} }, 
 			},
 			p_data = {118,31,128,"white",0},
     },
@@ -912,8 +912,8 @@ function init_room()
 			lights = {{6.5, 40, 24, "black"},},
 			powers = {2,0},
 			butterflies = {
-				{4,34, 4,34,9,34, 2,0.6, 16,"anti", false},
-				{2,41, 2,41,2,50, 2,0.6, 8,"anti", false},
+				{4,34, 4,34,9,34, 2,0.6, 16,"anti"},
+				{2,41, 2,41,2,50, 2,0.6, 8,"anti"},
 				{5,34, 5,34, 19, 34, 1, 1,16,"white"},
 			},
 			p_data = {14,46,256,"white",180},
@@ -925,7 +925,7 @@ function init_room()
 		powers = {2,0},
 		butterflies = {{23,46,23,46,31,46,2,0.6,12,"white"},},
 		chests = {{false, true, false, {"wkey"},16,37}},
-		p_data = {22,37,46,"white",180,2,16,1}
+		p_data = {22,37,46,"white",180,16}
 	},
 	--19
 	{
@@ -944,7 +944,7 @@ function init_room()
 			{36,43,33,43,47,43,2,0.2,10,"black"},
 			{36,46,33,46,47,46,2,0.2,10,"black"},
 		},
-		p_data = {38,30,128,"white",0,4,18,5}
+		p_data = {38,30,128,"white",0,18,5}
 	},
 	--lvl 20
 	{
@@ -957,7 +957,7 @@ function init_room()
 		powers = {1,0},
 		shield_cristals = {{53,39,60,20,1},{48,45,12,12,1}},
 		butterflies = {{53,44,53,44,62,44,2,0.5,10,"anti"}},
-		p_data = {53.75,46,128,"white",0,4,18,2}
+		p_data = {53.75,46,128,"white",0,18,2}
 	},
 	--21
 	{
@@ -983,7 +983,7 @@ function init_room()
 			{92.5,40.5,16},
 		},
 		powers = {1,1},
-		p_data = {86,30,180,"white",0,0,12,1}
+		p_data = {86,30,180,"white",0,12}
 		--p_data = {x,y,r_max,type (string = "white" ou "anti"), timer (frames), acristals (number), spr_r (number), spd (float)}
 	},
 	--23
@@ -1020,7 +1020,7 @@ function init_room()
 			{83,43,83,43,94,43,1,0.6,10,"grey"},
 			{93,44,83,44,93,44,1,1,10,"anti"},
 		},
-		p_data = {85.33,46,140,"white",0,6,22,8}
+		p_data = {85.33,46,140,"white",0,22,8}
 	},
 }
 
@@ -1050,9 +1050,9 @@ function next_room()
 	-- ! TEST ! --
 	-- ! ---- ! -- 
 	if not tp then
-		-- tp = true
-	 	-- x = 128 * 7
-		-- y = 128 * 1
+		tp = true
+	 	x = 128 * 7
+		y = 128 * 1
 		--lulu_bl = true
 	end
 	-- !!END TEST
@@ -1447,10 +1447,9 @@ function create_objects()
 		pulsator.light_data.r_max = p[3]
 		pulsator.light_data.type = p[4]
 		pulsator.timer = p[5]
-		pulsator.light_data.ac_activated = p[6] or 0
 		pulsator.is_broken = false
-		pulsator.spr_r = p[7] or 18
-		pulsator.light_data.spd = p[8] or 1
+		pulsator.spr_r = p[6] or 18
+		pulsator.light_data.spd = p[7] or 1
 	else
 		pulsator_state = false
 	end
@@ -1631,7 +1630,7 @@ function draw_pulsator()
 	-- osciller uniquement si pulse_timer actif
 	local pr = pulsator.spr_r
 	local pulse_ratio = pulsator.pulse_timer / pulsator.pulse_dur
-	local scale = pr / 10  - (pulsator.light_data.ac_activated * 0.2) + 0.5 * pulse_ratio -- grossit れき chaque battement
+	local scale = pr / 10 + 0.5 * pulse_ratio -- grossit れき chaque battement
 	-- flips
 	local flipx = frames % 15 < 7
 	local flipy = frames % 30 < 15
@@ -1697,7 +1696,7 @@ function update_pulsator()
 		-- if pulsator.timer == 30 and i_room == 15 then sfx(47, 0, 0, 14) end
 
 		--A less before the next pulsation, prevent the player
-		local beat_delay = pulsator.beat_delay - pulsator.light_data.ac_activated * 25
+		local beat_delay = pulsator.beat_delay
 		-- if pulsator.timer == beat_delay - 30 and i_room == 15 then sfx(47, 0, pulsator.light_data.type == "white" and 16 or 19, 1) end
 
 		pulsator.timer += 1
@@ -1705,14 +1704,13 @@ function update_pulsator()
 			local ptype = pulsator.light_data.type
 			-- un battement se produit
 			pulsator.pulse_timer = pulsator.pulse_dur -- dれたclenche une pulsation visuelle
-			if pulsator.light_data.ac_activated < 6 then shake = 10 else shake = 2 end
 			pulsator.timer = 0
 			-- SFX
 			if sfx_timer == 0 and i_room != pulsator_room then
 				fsfx(48, -1)
 				sfx_timer = 30
 				-- fsfx(48, 3, ptype == "white" and 7 or 14, 1)
-				fsfx(48,3, flr((rnd(1)*2)+1)*7,1)
+				fsfx(48,3, ceil((rnd(1)*2))*7,1)
 			end
 			local pr = pulsator.spr_r
 			-- update light from pulsator
@@ -1720,7 +1718,7 @@ function update_pulsator()
 			add(dynamic_lights, new_dyna_light)
 			if pulsator.is_broken then
 				local types = {"white", "black", "anti"}
-				local last_type = pulsator.light_data.type
+				local last_type = ptype
 				local new_type = types[flr(rnd(1) * #types) + 1]
 				while (new_type == last_type) do
 					new_type = types[flr(rnd(1) * #types) + 1]
@@ -1746,7 +1744,7 @@ function break_pulsator()
 		animation_timer = 60
 		-- screenshake
 		shake = 60
-		-- wait 0.5 sec and delete acristals
+		-- wait 2 sec and delete acristals
 		pulsator.is_broken = true
 		fsfx(47, -2)
 		sfx_timer = 120
@@ -1819,7 +1817,6 @@ function update_acristals()
 			if not ac.active and not ac.used and collision(c,ac) then
 				ac.active = true
 				ac.ch_col = c
-				pulsator.light_data.ac_activated += 1
 				pulsator.light_data.room_ac[i] = true
 				psfx(47,3)
 				break
@@ -1829,7 +1826,6 @@ function update_acristals()
 		if not ac.used and ac.active then
 			if not collision(ac.ch_col,ac) then
 				ac.active = false
-				pulsator.light_data.ac_activated -= 1
 				pulsator.light_data.room_ac[i] = false
 				ac.ch_col = nil
 				fsfx(47,-2)
@@ -1964,11 +1960,11 @@ end
 
 function debug_print()
 	print("lvl: "..i_room, room.x+40,room.y+2,8)
-	print("#dl:"..#dynamic_lights)
-	if dynamic_lights[2] then
-		print("dl2.r:"..dynamic_lights[2].r)
-		print("dl2.r_max:"..dynamic_lights[2].r_max)
-	end
+	-- print("#dl:"..#dynamic_lights)
+	-- if dynamic_lights[2] then
+	-- 	print("dl2.r:"..dynamic_lights[2].r)
+	-- 	print("dl2.r_max:"..dynamic_lights[2].r_max)
+	-- end
 	-- print(pactual.on_ground and "on_ground" or "on_air", pactual.x, pactual.y - 10)
 	-- print("dx:"..pactual.dx, pactual.x, pactual.y - 20)
 	-- print("dy:"..pactual.dy, pactual.x, pactual.y - 30)
@@ -1999,7 +1995,6 @@ function debug_print()
 	-- if pulsator then
 	-- 	print(pulsator.light_data.room_ac[1] and "true" or "false")
 	-- 	print(pulsator.light_data.room_ac[2] and "true" or "false")
-	-- 	print(pulsator.light_data.ac_activated)
 	-- end
 	-- print("room.x: "..room.x)
 	-- print("room.y: "..room.y)
