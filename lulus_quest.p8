@@ -892,7 +892,7 @@ function init_room()
     },
     --16 HEART
     {
-			lights = {{120, 17, 12,"black"}},
+			lights = {{120, 17.5, 20,"black"}},
 			powers = {1,1},
 			pulsator = {
 					x = nil,
@@ -1051,8 +1051,8 @@ function next_room()
 	-- ! ---- ! -- 
 	if not tp then
 		tp = true
-	 x = 128 * 1
-		y = 128 * 2
+	 	x = 128 * 7
+		y = 128 * 1
 		--lulu_bl = true
 	end
 	-- !!END TEST
@@ -1718,7 +1718,8 @@ function update_pulsator()
 			add(dynamic_lights, new_dyna_light)
 			pulsator[1].light_data.type = ptype == "anti" and "white" or "anti"
 			if pulsator[1].is_broken then
-				pulsator[1].light_data.type = ptype == "anti" and "white" or ptype == "white" and "black" or "anti"
+				local types = {"white", "black", "anti"}
+				pulsator[1].light_data.type = types[flr(rnd(1) * #types) + 1]
 			end
 		end
 		-- diminuer le pulse progressivement
