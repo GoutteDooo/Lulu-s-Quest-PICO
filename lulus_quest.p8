@@ -930,8 +930,7 @@ function init_room()
 	--19
 	{
 		lights = {
-			{34,33,8},
-			{36,36,8,"anti"},
+			{35,33,8},
 			{45,33,12,"black"},
 			{40,39,10,"grey"},
 			{46,45,10,"black"},
@@ -944,7 +943,7 @@ function init_room()
 			{36,43,33,43,47,43,2,0.2,10,"black"},
 			{36,46,33,46,47,46,2,0.2,10,"black"},
 		},
-		p_data = {38,30,128,"white",0,18,5}
+		p_data = {38,30,128,"white",0,16,3}
 	},
 	--lvl 20
 	{
@@ -1051,8 +1050,8 @@ function next_room()
 	-- ! ---- ! -- 
 	if not tp then
 		tp = true
-	 	x = 128 * 7
-		y = 128 * 1
+	 	x = 128 * 0
+		y = 128 * 2
 		--lulu_bl = true
 	end
 	-- !!END TEST
