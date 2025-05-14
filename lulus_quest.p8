@@ -1050,9 +1050,9 @@ function next_room()
 	-- ! TEST ! --
 	-- ! ---- ! -- 
 	if not tp then
-		tp = true
-	 	x = 128 * 7
-		y = 128 * 1
+		-- tp = true
+	 	-- x = 128 * 7
+		-- y = 128 * 1
 		--lulu_bl = true
 	end
 	-- !!END TEST
@@ -1089,6 +1089,7 @@ function create_room()
 	if i_room >= pulsator_room and not pulsator_state then
 		pulsator_state = true
 		add(pulsator, rooms_data[16].pulsator)
+		pulsator = rooms_data[16].pulsator
 	end
 
 	delete_objects()
@@ -1162,7 +1163,7 @@ function init_objects()
 	gates = {}
 	butterflies = {}
 	messages = {}
-	pulsator = {}
+	pulsator = nil
 	dynamic_lights = {}
 	acristals = {}
 	walls = {}
@@ -1332,7 +1333,7 @@ function draw_objects()
 	end)
 	--gates & butterflies in _draw fct
 	--pulsator
-	if pulsator[1] then
+	if pulsator then
 		draw_pulsator()
 	end
 	--acristals and walls are in _draw()
@@ -1393,10 +1394,10 @@ function delete_objects()
 	gkeys = 0
 	wkeys = 0
 	--reset data of pulsator
-	if pulsator[1] and rooms_data[i_room].p_data then
-		pulsator[1].timer = 0
-		pulsator[1].light_data.room_ac[1] = false
-		pulsator[1].light_data.room_ac[2] = false
+	if pulsator and rooms_data[i_room].p_data then
+		pulsator.timer = 0
+		pulsator.light_data.room_ac[1] = false
+		pulsator.light_data.room_ac[2] = false
 	end
 	--reset sfxs
 	sfx(-2)
@@ -1439,17 +1440,17 @@ function create_objects()
 	end)
 
 	-- set dynamics data to pulsator
-	if pulsator[1] and c_room.p_data then
+	if pulsator and c_room.p_data then
 		local p = c_room.p_data
-		pulsator[1].x = p[1] * 8
-		pulsator[1].y = p[2] * 8
-		pulsator[1].light_data.r_max = p[3]
-		pulsator[1].light_data.type = p[4]
-		pulsator[1].timer = p[5]
-		pulsator[1].light_data.ac_activated = p[6] or 0
-		pulsator[1].is_broken = false
-		pulsator[1].spr_r = p[7] or 18
-		pulsator[1].light_data.spd = p[8] or 1
+		pulsator.x = p[1] * 8
+		pulsator.y = p[2] * 8
+		pulsator.light_data.r_max = p[3]
+		pulsator.light_data.type = p[4]
+		pulsator.timer = p[5]
+		pulsator.light_data.ac_activated = p[6] or 0
+		pulsator.is_broken = false
+		pulsator.spr_r = p[7] or 18
+		pulsator.light_data.spd = p[8] or 1
 	else
 		pulsator_state = false
 	end
@@ -1628,13 +1629,13 @@ end
 function draw_pulsator()
 	if not pulsator_state then return end
 	-- osciller uniquement si pulse_timer actif
-	local pr = pulsator[1].spr_r
-	local pulse_ratio = pulsator[1].pulse_timer / pulsator[1].pulse_dur
-	local scale = pr / 10  - (pulsator[1].light_data.ac_activated * 0.2) + 0.5 * pulse_ratio -- grossit れき chaque battement
+	local pr = pulsator.spr_r
+	local pulse_ratio = pulsator.pulse_timer / pulsator.pulse_dur
+	local scale = pr / 10  - (pulsator.light_data.ac_activated * 0.2) + 0.5 * pulse_ratio -- grossit れき chaque battement
 	-- flips
 	local flipx = frames % 15 < 7
 	local flipy = frames % 30 < 15
-	local broke = pulsator[1].is_broken
+	local broke = pulsator.is_broken
 
 	-- palette dynamique pour les fissures du pulsateur
 	if frames % 30 < 10 then
@@ -1647,14 +1648,14 @@ function draw_pulsator()
 	end
 
 	-- position
-	local cx = pulsator[1].x + pr
-	local cy = pulsator[1].y + pr
+	local cx = pulsator.x + pr
+	local cy = pulsator.y + pr
 
 	-- dessiner sprite
 	local w = pr * 2 * scale
 	local h = pr * 2 * scale
-	local x = pulsator[1].x + pr - (w / 2)
-	local y = pulsator[1].y + pr - (h / 2)
+	local x = pulsator.x + pr - (w / 2)
+	local y = pulsator.y + pr - (h / 2)
 
 	if broke then
 		if frames % 30 < 20 then
@@ -1691,61 +1692,61 @@ end
 
 function update_pulsator()
 	if ((lulu.using_light or hades.using_light) and i_room > pulsator_room) or not pulsator_state then return end
-	if pulsator[1] then
+	if pulsator then
 		--Aprれそs chaque pulsation, on rejoue le SFX electrical effects
-		-- if pulsator[1].timer == 30 and i_room == 15 then sfx(47, 0, 0, 14) end
+		-- if pulsator.timer == 30 and i_room == 15 then sfx(47, 0, 0, 14) end
 
 		--A less before the next pulsation, prevent the player
-		local beat_delay = pulsator[1].beat_delay - pulsator[1].light_data.ac_activated * 25
-		-- if pulsator[1].timer == beat_delay - 30 and i_room == 15 then sfx(47, 0, pulsator[1].light_data.type == "white" and 16 or 19, 1) end
+		local beat_delay = pulsator.beat_delay - pulsator.light_data.ac_activated * 25
+		-- if pulsator.timer == beat_delay - 30 and i_room == 15 then sfx(47, 0, pulsator.light_data.type == "white" and 16 or 19, 1) end
 
-		pulsator[1].timer += 1
-		if pulsator[1].timer >= beat_delay then
-			local ptype = pulsator[1].light_data.type
+		pulsator.timer += 1
+		if pulsator.timer >= beat_delay then
+			local ptype = pulsator.light_data.type
 			-- un battement se produit
-			pulsator[1].pulse_timer = pulsator[1].pulse_dur -- dれたclenche une pulsation visuelle
-			if pulsator[1].light_data.ac_activated < 6 then shake = 10 else shake = 2 end
-			pulsator[1].timer = 0
+			pulsator.pulse_timer = pulsator.pulse_dur -- dれたclenche une pulsation visuelle
+			if pulsator.light_data.ac_activated < 6 then shake = 10 else shake = 2 end
+			pulsator.timer = 0
 			-- SFX
 			if sfx_timer == 0 and i_room != pulsator_room then
 				fsfx(48, -1)
 				sfx_timer = 30
 				fsfx(48, 3, ptype == "white" and 7 or 14, 1)
 			end
-			local pr = pulsator[1].spr_r
+			local pr = pulsator.spr_r
 			-- update light from pulsator
-			local new_dyna_light = create_dynamic_light(pulsator[1].x + pr, pulsator[1].y + pr, ptype, pulsator[1].light_data.spd, pulsator[1].light_data.r_max, pr)
+			local new_dyna_light = create_dynamic_light(pulsator.x + pr, pulsator.y + pr, ptype, pulsator.light_data.spd, pulsator.light_data.r_max, pr)
 			add(dynamic_lights, new_dyna_light)
-			if pulsator[1].is_broken then
+			if pulsator.is_broken then
 				local types = {"white", "black", "anti"}
-				local last_type = pulsator[1].light_data.type
+				local last_type = pulsator.light_data.type
 				local new_type = types[flr(rnd(1) * #types) + 1]
 				while (new_type == last_type) do
 					new_type = types[flr(rnd(1) * #types) + 1]
 				end
-				pulsator[1].light_data.type = new_type
+				pulsator.light_data.type = new_type
 			else
-				pulsator[1].light_data.type = ptype == "anti" and "white" or "anti"
+				pulsator.light_data.type = ptype == "anti" and "white" or "anti"
 			end
 		end
 		-- diminuer le pulse progressivement
-		if pulsator[1].pulse_timer > 0 then
-			pulsator[1].pulse_timer -= 1
+		if pulsator.pulse_timer > 0 then
+			pulsator.pulse_timer -= 1
 		end
 	end
 end
 
 function break_pulsator()
 	--if we are here, then all acristals are activated
-	if not pulsator[1].is_broken then
+	if not pulsator.is_broken then
 		-- timer of pulsator reset to 0
-		pulsator[1].timer = 0
+		pulsator.timer = 0
 		-- wait 1 sec
 		animation_timer = 60
 		-- screenshake
 		shake = 60
 		-- wait 0.5 sec and delete acristals
-		pulsator[1].is_broken = true
+		pulsator.is_broken = true
 		fsfx(47, -2)
 		sfx_timer = 120
 		fsfx(63)
@@ -1779,8 +1780,8 @@ function draw_acristals()
 			local ax = ac.x + 4
 			local ay = ac.y + 4
 			-- coordonnれたes du centre du pulsator
-			local px = pulsator[1].x + pulsator[1].spr_r
-			local py = pulsator[1].y + pulsator[1].spr_r
+			local px = pulsator.x + pulsator.spr_r
+			local py = pulsator.y + pulsator.spr_r
 			-- nombre d'れたtapes par れたclair
 			local steps = 8
 
@@ -1817,8 +1818,8 @@ function update_acristals()
 			if not ac.active and not ac.used and collision(c,ac) then
 				ac.active = true
 				ac.ch_col = c
-				pulsator[1].light_data.ac_activated += 1
-				pulsator[1].light_data.room_ac[i] = true
+				pulsator.light_data.ac_activated += 1
+				pulsator.light_data.room_ac[i] = true
 				psfx(47,3)
 				break
 			end
@@ -1827,16 +1828,16 @@ function update_acristals()
 		if not ac.used and ac.active then
 			if not collision(ac.ch_col,ac) then
 				ac.active = false
-				pulsator[1].light_data.ac_activated -= 1
-				pulsator[1].light_data.room_ac[i] = false
+				pulsator.light_data.ac_activated -= 1
+				pulsator.light_data.room_ac[i] = false
 				ac.ch_col = nil
 				fsfx(47,-2)
 			end
 		end
 	end
 	--check if all acristals are activated
-	if pulsator[1] and #acristals > 0 then
-		for ac in all(pulsator[1].light_data.room_ac) do
+	if pulsator and #acristals > 0 then
+		for ac in all(pulsator.light_data.room_ac) do
 			if not ac then return end
 		end
 		--if we reach this, then all acristals are activated
@@ -1970,13 +1971,13 @@ function debug_print()
 	-- print(pactual.on_ground and "on_ground" or "on_air", pactual.x, pactual.y - 10)
 	-- print("dx:"..pactual.dx, pactual.x, pactual.y - 20)
 	-- print("dy:"..pactual.dy, pactual.x, pactual.y - 30)
-	if pulsator[1] then
+	if pulsator then
 		print(" state: ")
-		print(pulsator[1].is_broken and "broken" or "working")
-		print(" type: "..pulsator[1].light_data.type)
-		print(" timer: "..pulsator[1].timer)
-		print(" ptimer: "..pulsator[1].pulse_timer)
-		print(" beat delay: "..pulsator[1].beat_delay)
+		print(pulsator.is_broken and "broken" or "working")
+		print(" type: "..pulsator.light_data.type)
+		print(" timer: "..pulsator.timer)
+		print(" ptimer: "..pulsator.pulse_timer)
+		print(" beat delay: "..pulsator.beat_delay)
 	end
 	-- print(pactual.c_jump and "cjump: TRUE" or "cjump: FALSE")
 	-- print(btn(❎) and "jump" or "nojump")
@@ -1994,10 +1995,10 @@ function debug_print()
 	-- print("room.pos.lulu.x: "..room.pos.lulu.x)
 	-- print("room.pos.lulu.y: "..room.pos.lulu.y)
 	-- print("room.pos.lulu.t: "..room.pos.lulu.t)
-	-- if pulsator[1] then
-	-- 	print(pulsator[1].light_data.room_ac[1] and "true" or "false")
-	-- 	print(pulsator[1].light_data.room_ac[2] and "true" or "false")
-	-- 	print(pulsator[1].light_data.ac_activated)
+	-- if pulsator then
+	-- 	print(pulsator.light_data.room_ac[1] and "true" or "false")
+	-- 	print(pulsator.light_data.room_ac[2] and "true" or "false")
+	-- 	print(pulsator.light_data.ac_activated)
 	-- end
 	-- print("room.x: "..room.x)
 	-- print("room.y: "..room.y)
@@ -2008,11 +2009,11 @@ function debug_print()
 	-- print(shake)
 	-- print(animation_timer)
 	-- print(#pulsator)
-	-- if pulsator[1] then
-	-- 	print("timer:"..pulsator[1].timer, room.x + 4,room.y+50,11)
-	-- 	print(type(pulsator[1].pulse_timer))
+	-- if pulsator then
+	-- 	print("timer:"..pulsator.timer, room.x + 4,room.y+50,11)
+	-- 	print(type(pulsator.pulse_timer))
 		-- rectfill(room.x + 4, room.y + 50, room.x + 4 + 30, room.y + 50 + 50, 7)
-		-- for k,v in pairs(pulsator[1]) do
+		-- for k,v in pairs(pulsator) do
 		-- end
 	-- end
 	-- if dynamic_lights[1] and dynamic_lights[2] then
