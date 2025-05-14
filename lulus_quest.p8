@@ -950,7 +950,7 @@ function init_room()
 		lights = {
 			{57,34,8},
 			{50,34,12, "grey"},
-			-- {57.5,36,8,"anti"},
+			{51,38,10,"black"},
 			{55.5,41.5,12,"grey"},
 		},
 		powers = {1,0},
@@ -1703,6 +1703,7 @@ function update_pulsator()
 			-- un battement se produit
 			pulsator.pulse_timer = pulsator.pulse_dur -- dれたclenche une pulsation visuelle
 			pulsator.timer = 0
+			shake = 10
 			-- SFX
 			if sfx_timer == 0 and i_room != pulsator_room then
 				fsfx(48, -1)
