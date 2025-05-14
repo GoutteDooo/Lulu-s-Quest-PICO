@@ -1716,10 +1716,16 @@ function update_pulsator()
 			-- update light from pulsator
 			local new_dyna_light = create_dynamic_light(pulsator[1].x + pr, pulsator[1].y + pr, ptype, pulsator[1].light_data.spd, pulsator[1].light_data.r_max, pr)
 			add(dynamic_lights, new_dyna_light)
-			pulsator[1].light_data.type = ptype == "anti" and "white" or "anti"
 			if pulsator[1].is_broken then
 				local types = {"white", "black", "anti"}
-				pulsator[1].light_data.type = types[flr(rnd(1) * #types) + 1]
+				local last_type = pulsator[1].light_data.type
+				local new_type = types[flr(rnd(1) * #types) + 1]
+				while (new_type == last_type) do
+					new_type = types[flr(rnd(1) * #types) + 1]
+				end
+				pulsator[1].light_data.type = new_type
+			else
+				pulsator[1].light_data.type = ptype == "anti" and "white" or "anti"
 			end
 		end
 		-- diminuer le pulse progressivement
@@ -1961,9 +1967,17 @@ function debug_print()
 		print("dl2.r:"..dynamic_lights[2].r)
 		print("dl2.r_max:"..dynamic_lights[2].r_max)
 	end
-	print(pactual.on_ground and "on_ground" or "on_air", pactual.x, pactual.y - 10)
-	print("dx:"..pactual.dx, pactual.x, pactual.y - 20)
-	print("dy:"..pactual.dy, pactual.x, pactual.y - 30)
+	-- print(pactual.on_ground and "on_ground" or "on_air", pactual.x, pactual.y - 10)
+	-- print("dx:"..pactual.dx, pactual.x, pactual.y - 20)
+	-- print("dy:"..pactual.dy, pactual.x, pactual.y - 30)
+	if pulsator[1] then
+		print(" state: ")
+		print(pulsator[1].is_broken and "broken" or "working")
+		print(" type: "..pulsator[1].light_data.type)
+		print(" timer: "..pulsator[1].timer)
+		print(" ptimer: "..pulsator[1].pulse_timer)
+		print(" beat delay: "..pulsator[1].beat_delay)
+	end
 	-- print(pactual.c_jump and "cjump: TRUE" or "cjump: FALSE")
 	-- print(btn(❎) and "jump" or "nojump")
 	-- print("dsw:"..delay_switch)
