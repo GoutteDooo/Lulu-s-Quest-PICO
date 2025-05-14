@@ -1711,7 +1711,8 @@ function update_pulsator()
 			if sfx_timer == 0 and i_room != pulsator_room then
 				fsfx(48, -1)
 				sfx_timer = 30
-				fsfx(48, 3, ptype == "white" and 7 or 14, 1)
+				-- fsfx(48, 3, ptype == "white" and 7 or 14, 1)
+				fsfx(48,3, flr((rnd(1)*2)+1)*7,1)
 			end
 			local pr = pulsator.spr_r
 			-- update light from pulsator
