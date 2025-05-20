@@ -201,14 +201,14 @@ function draw_chars()
 		end
 	end)
 	if lulu_bl then
-		pal(9,7)
-		pal(4,6)
-		pal(12,2)
+		--hairs | 9 orange to pink
+		--coat | 8 red to purple
+		--eyes | 12 blue to green
+		--feet | 4 brown to red
+		pal({[9]=14,[8]=2,[12]=3})
 	end
 	spr(lulu.sprite, lulu.x, lulu.y, 1, 1, lulu.flipx)
-	pal(9,9)
-	pal(4,4)
-	pal(12,12)
+	pal({[9]=9,[8]=8,[12]=12})
 	if hades.sprite == hades.sprite_hide or hades.sprite == 17 then
 		palt(0,false)
 		palt(12,true)
@@ -674,10 +674,10 @@ function draw_lights()
 		end
 	)
 	--black lights
+	pal(3,3+128,1)
 	foreach(
 		black_lights, function(bl)
-			pal(14,3+128,1)
-			circfill(bl.x, bl.y, bl.r, 14)
+			circfill(bl.x, bl.y, bl.r, 3)
 			circ(bl.x, bl.y, bl.r, 13)
 		end
 	)
@@ -697,10 +697,10 @@ function draw_shields()
 	foreach(chars, function(c)
 		if c.shield.active then
 			local r = c.shield.r
-			local color_circle = c == hades and 14 or 10
+			local color_circle = c == hades and 3 or 10
 			local cx = c.x + c.w / 2
 			local cy = c.y + c.h / 2
-			if c == hades then pal(14,3+128,1) end
+			if c == hades then pal(3,3+128,1) end
 			circfill(cx, cy, r, color_circle)
 			circ(cx, cy, r, 7)
 			print(flr(c.shield.timer / 30), c.x + 4, c.y - 5, 11)
@@ -981,23 +981,24 @@ function init_room()
 		powers = {},
 		--p_data = {x,y,r_max,type (string = "white" ou "anti"), timer (frames), acristals (number), spr_r (number), spd (float)}
 	},
-	--26 (idk if i keep it)
+	--26
+	{
+		lights = {0,0,12,"white"},
+		powers = {},
+		--p_data = {x,y,r_max,type (string = "white" ou "anti"), timer (frames), acristals (number), spr_r (number), spd (float)}
+	},
+	--27 (idk if i keep it)
 	{
 		lights = {
-			{81,33,16},
-			{94,35,16,"anti"},
+			{33,49,16},
+			{39,49,16,"anti"},
+			{39,54,16,"black"},
 		},
 		powers = {4,1},
 		butterflies = {
-			-- {84,34,84,34,93,34,2,0.66,12,"anti"},
-			-- {81,38,81,38,87,38,2,0.5,10,"grey"},
-			-- {88,38,88,38,93,38,2,0.5,10,"grey"},
-			-- {85,40,81,40,87,40,2,0.5,10,"anti"},
-			-- {92,40,88,40,95,40,1,0.4,10,"anti"},
-			-- {83,43,83,43,94,43,1,0.6,10,"grey"},
-			-- {93,44,83,44,93,44,1,1,10,"anti"},
+			{39,54,39,54,47,54,2,0.6,12,"black"},
 		},
-		p_data = {85.33,46,140,"white",0,22,8}
+		p_data = {38.25,62,140,"white",0,14,8}
 	},
 }
 
@@ -1028,8 +1029,8 @@ function next_room()
 	-- ! ---- ! -- 
 	if not tp then
 		tp = true
-	 	x = 128 * 7
-		y = 128 * 0
+	 	x = 128 * 2
+		y = 128 * 3
 		lulu_bl = true
 	end
 	-- !!END TEST
@@ -1065,7 +1066,6 @@ function create_room()
 	-- and put pulsator object into global pulsator object
 	if i_room >= pulsator_room and not pulsator_state then
 		pulsator_state = true
-		add(pulsator, rooms_data[16].pulsator)
 		pulsator = rooms_data[16].pulsator
 	end
 
@@ -1527,8 +1527,8 @@ end
 
 function draw_butterfly_light(b)
 	local blight = b.light
-	if blight == "black" then pal(14,3+128,1) end
-	local light_c = blight == "white" and 9 or blight == "black" and 14 or blight == "grey" and 7 or 0
+	if blight == "black" then pal(3,3+128,1) end
+	local light_c = blight == "white" and 9 or blight == "black" and 3 or blight == "grey" and 7 or 0
 	local circ_c = blight == "white" and 6 or blight == "black" and 13 or blight == "grey" and 5 or 6
 	circfill(b.x, b.y, b.r, light_c)
 	circ(b.x, b.y, b.r, circ_c)
@@ -1620,8 +1620,7 @@ function draw_pulsator()
 	elseif frames % 30 < 20 then
 		pal(3,7)
 	else
-		pal(14,3+128,1)
-		pal(3,14)
+		pal(3,3+128,1)
 	end
 
 	-- position
@@ -1641,7 +1640,7 @@ function draw_pulsator()
 			pal(13,6)
 		else
 			pal()
-			pal(14,3+128,1)
+			pal(3,3+128,1)
 		end
 	end
 	--electrical effects
@@ -1770,15 +1769,15 @@ function draw_acristals()
 					local y1 = lerp(ay, py, t1) + rnd(7) - 1
 					local x2 = lerp(ax, px, t2) + rnd(7) - 1
 					local y2 = lerp(ay, py, t2) + rnd(7) - 1
-					pal(14,3+128,1)
+					pal(3,3+128,1)
 					palt(0, false)
 					palt(12, true)
 					-- couleur alれたatoire parmi un choix れたlectrique
-					local c = ({10, 14, 0})[1 + flr(rnd(3))]
+					local c = ({10, 3, 0})[1 + flr(rnd(3))]
 					line(x1, y1, x2, y2, c)
 					palt(12, false)
 					palt(0, true)
-					pal(14,14)
+					pal(3,3)
 				end
 			end
 		end
@@ -1848,8 +1847,8 @@ function draw_dynamic_lights()
 	foreach(dynamic_lights, function(dl)
 		local c = dl.type == "anti" and 0 or 9
 		if dl.type == "black" then
-			pal(14,3+128,1)
-			c = 14
+			pal(3,3+128,1)
+			c = 3
 		end
 		circfill(dl.x, dl.y, dl.r, c)
 		circ(dl.x, dl.y, dl.r, c+1)
@@ -2111,7 +2110,7 @@ __gfx__
 00000000088888800888888001111110088888800222222002222220c111111c02222220ccc0cccc000000000000000000000000000011111111000000000000
 000000008888888888888888111111118888888822222222222222221111111122222222cc040ccc000000000000000000000000011111111111111000000000
 000000008899999888999998114444418899999822222f2222222f2211111d1122222f22c04640cc000000000000000000000001111315555551111110000000
-00000000899ff9f9899ff9f9144dd4d4899ff9f90229ff920229ff92c113dd310229ff92cc040ccc000000000000000000000011115333555555551111000000
+00000000899ff9f9899ff9f9144dd4d4899ff9f90229ff920229ff92c114dd410229ff92cc040ccc000000000000000000000011115333555555551111000000
 0000000089fc9fc989fc9fc914d14d1489fc9fc9022ffff2022ffff2c11dddd1022ffff2cc040ccc0000000000000000000001115555533dd555533511100000
 00000000089fff90089fff90014ddd40089fff900121d1020121d102c01050c10121d102cc0440cc00000000000000000000111355dddd333ddd535551110000
 000000000088880000888800001111000088880001dddd0010dddd00c05555cc01dddd00cc040ccc0000000000000000000111533ddddddd3dddd3dd55111000
