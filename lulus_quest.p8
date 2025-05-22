@@ -347,11 +347,7 @@ function update_chars()
 		for gl in all(grey_lights) do
 			for c in all(chars) do
 				if collision_light(c, gl) then
-					if c == lulu then
-						c.in_light = lulu_bl
-					else
-						c.in_light = true
-					end
+					c.in_light = true
 				end
 			end
 		end
@@ -1037,7 +1033,7 @@ function next_room()
 	-- ! ---- ! -- 
 	if not tp then
 		tp = true
-	 	x = 128 * 2
+	 	x = 128 * 3
 		y = 128 * 2
 		-- lulu_bl = true
 	end
@@ -1261,7 +1257,7 @@ function update_objects()
 	if mushroom[1] and collision(lulu, mushroom[1]) then
 		local m = mushroom[1]
 		lulu_bl = true
-		ima_light.c = 13
+		ima_light.c = 1
 		sfx_timer = 30
 		music(-1)
 		fsfx(59,3)
@@ -1840,7 +1836,7 @@ function create_dynamic_light(x, y, type, spd, r_max, r_default)
 end
 
 function update_dynamic_lights()
-	if (lulu.using_light or hades.using_light) and i_room > pulsator_room or pulsator.is_broken then return end
+	if (lulu.using_light or hades.using_light) and i_room > pulsator_room or (pulsator and pulsator.is_broken) then return end
 	foreach(dynamic_lights, function(dl)
 		if dl.r < dl.r_max then
 			dl.r += dl.spd
