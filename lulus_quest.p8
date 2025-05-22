@@ -524,7 +524,6 @@ function init_light()
 end
 
 function update_light()
-	if messages[1] then return end
 	-- lulu
 		if btn(🅾️) then
 			if lulu.select and lulu.powers_left > 0 then
@@ -901,7 +900,7 @@ function init_room()
 					is_broken = false,
 					light_data = {r_max = 128, type = nil, spd = 1, room_ac = {false, false} }, 
 			},
-			p_data = {118,31,128,"white",0},
+			p_data = {118,31,120,"white",0},
     },
     --17
     {
@@ -1043,8 +1042,8 @@ function next_room()
 	-- ! ---- ! -- 
 	if not tp then
 		tp = true
-	 	x = 128 * 1
-		y = 128 * 2
+	 	x = 128 * 7
+		y = 128 * 1
 		-- super_lulu = true
 	end
 	-- !!END TEST
@@ -1064,6 +1063,7 @@ function next_room()
 	-- if music_object[2] != 27 then reset_music(27) end
 	gkeys = 2
 	wkeys = 2
+	-- !!END TEST
 end
 
 function reset_music(pat)
@@ -1646,7 +1646,6 @@ function draw_pulsator()
 	local pulse_ratio = pulsator.pulse_timer / pulsator.pulse_dur
 	local scale = pr / 10 + 0.5 * pulse_ratio -- grossit れき chaque battement
 	local broke = pulsator.is_broken
-	scale = broke and scale * 0.75 or scale
 	-- flips
 	local flipx = frames % 15 < 7
 	local flipy = frames % 30 < 15
@@ -1661,14 +1660,14 @@ function draw_pulsator()
 	end
 
 	-- position
-	local cx = pulsator.x + pr
-	local cy = pulsator.y + pr
+	local cx = pulsator.x + pr + rnd(1 * pr/10)
+	local cy = pulsator.y + pr + rnd(1 * pr/10)
 
 	-- dessiner sprite
 	local w = pr * 2 * scale
 	local h = pr * 2 * scale
-	local x = pulsator.x + pr - (w / 2)
-	local y = pulsator.y + pr - (h / 2)
+	local x = cx - (w / 2)
+	local y = cy - (h / 2)
 
 	if broke then
 		if frames % 30 < 20 then
@@ -1679,18 +1678,19 @@ function draw_pulsator()
 			pal()
 			pal(3,3+128,1)
 		end
-	end
+	else
 	--electrical effects
-	for i = 1, 5 do
-		local a = rnd(1) * 2 * 3.141592653589793
-		local r1 = (pr * 2 + rnd(5)) * 0.05 * pr
-		local r2 = (r1 + rnd(5)) * 1.5
-		local x1 = cx + cos(a) * r1
-		local y1 = cy + sin(a) * r1
-		local x2 = cx + cos(a) * r2
-		local y2 = cy + sin(a) * r2
-		local c = rnd(1) < 0.5 and 7 or 3
-		line(x1, y1, x2, y2, c)
+		for i = 1, 5 do
+			local a = rnd(1) * 2 * 3.141592653589793
+			local r1 = (pr * 2 + rnd(5)) * 0.05 * pr
+			local r2 = (r1 + rnd(5)) * 1.5
+			local x1 = cx + cos(a) * r1
+			local y1 = cy + sin(a) * r1
+			local x2 = cx + cos(a) * r2
+			local y2 = cy + sin(a) * r2
+			local c = rnd(1) < 0.5 and 7 or 3
+			line(x1, y1, x2, y2, c)
+		end
 	end
 
 	sspr(12*8, 0, 32, 32, x, y, w, h, flipx, flipy)
@@ -1708,8 +1708,8 @@ function update_pulsator()
 		-- if pulsator.timer == 30 and i_room == 15 then sfx(47, 0, 0, 14) end
 		local broken = pulsator.is_broken
 		--A less before the next pulsation, prevent the player
-		local beat_delay = broken and  pulsator.beat_delay / 2 or pulsator.beat_delay
-		if pulsator.timer == beat_delay - 30 then sfx(48, 0, pulsator.light_data.type == "white" and 6 or 13, 1) end
+		local beat_delay = broken and pulsator.beat_delay / 2 or pulsator.beat_delay
+		if pulsator.timer == beat_delay - 30 and i_room != pulsator_room then fsfx(48, 3, pulsator.light_data.type == "white" and 6 or 13, 1) end
 
 		pulsator.timer += 1
 		if pulsator.timer >= beat_delay then
