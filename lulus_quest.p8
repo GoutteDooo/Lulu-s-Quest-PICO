@@ -921,7 +921,7 @@ function init_room()
 		powers = {3,1},
 		butterflies = {{23,46,23,46,31,46,2,0.6,12,"white"},},
 		chests = {{false, true, false, {"wkey"},16,37}},
-		p_data = {22,37,46,"white",180,14}
+		p_data = {22.5,37.5,46,"white",180,12}
 	},
 	--19
 	{
@@ -1043,8 +1043,8 @@ function next_room()
 	-- ! ---- ! -- 
 	if not tp then
 		tp = true
-	 	x = 128 * 0
-		y = 128 * 0
+	 	x = 128 * 1
+		y = 128 * 2
 		-- super_lulu = true
 	end
 	-- !!END TEST
@@ -1709,7 +1709,7 @@ function update_pulsator()
 		local broken = pulsator.is_broken
 		--A less before the next pulsation, prevent the player
 		local beat_delay = broken and  pulsator.beat_delay / 2 or pulsator.beat_delay
-		-- if pulsator.timer == beat_delay - 30 and i_room == 15 then sfx(47, 0, pulsator.light_data.type == "white" and 16 or 19, 1) end
+		if pulsator.timer == beat_delay - 30 then sfx(48, 0, pulsator.light_data.type == "white" and 6 or 13, 1) end
 
 		pulsator.timer += 1
 		if pulsator.timer >= beat_delay then
