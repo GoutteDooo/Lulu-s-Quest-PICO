@@ -180,7 +180,7 @@ function init_player()
 	accel_air = 0.4
 	JUMP_VELOCITY = -2.5
 	MAX_DX = 2.2
-	lulu_bl = false
+	super_lulu = false
 	chars = { lulu, hades }
 end
 
@@ -200,7 +200,7 @@ function draw_chars()
 			end
 		end
 	end)
-	if lulu_bl then
+	if super_lulu then
 		--hairs | 9 orange to pink
 		--coat | 8 red to purple
 		--eyes | 12 blue to green
@@ -537,7 +537,7 @@ function update_light()
 		lulu.using_light = false
 		hades.using_light = false
 		hades.light_selected[1] = nil
-		if lulu_bl then fsfx(52,-2) end
+		if super_lulu then fsfx(52,-2) end
 		fsfx(55,-2)
 		fsfx(58,-2)
 	end
@@ -550,7 +550,7 @@ function update_light_lulu()
 		ima_light.y = lulu.y_g
 		ima_light.x = lulu.x_g
 		lulu.using_light = true
-		if lulu_bl then psfx(52,3) else psfx(58,3) end
+		if super_lulu then psfx(52,3) else psfx(58,3) end
 	end
 	using_light("classic",lulu)
 end
@@ -628,8 +628,8 @@ function using_light(magic_used, c)
 		local x = i_light.x
 		local y = i_light.y
 		if c == lulu and lulu.powers_left > 0 and magic_used != "orb" then
-				create_light(x, y, ima_light.r,lulu_bl and "black" or "white",10) 
-				if lulu_bl then psfx(51) else psfx(57) end
+				create_light(x, y, ima_light.r,super_lulu and "black" or "white",10) 
+				if super_lulu then psfx(51) else psfx(57) end
 				shake = 6
 				lulu.powers_left -= 1
 			else
@@ -1035,7 +1035,7 @@ function next_room()
 		tp = true
 	 	x = 128 * 3
 		y = 128 * 2
-		-- lulu_bl = true
+		-- super_lulu = true
 	end
 	-- !!END TEST
 	local w = x + 128
@@ -1256,7 +1256,7 @@ function update_objects()
 	--mushroom
 	if mushroom[1] and collision(lulu, mushroom[1]) then
 		local m = mushroom[1]
-		lulu_bl = true
+		super_lulu = true
 		ima_light.c = 1
 		sfx_timer = 30
 		music(-1)
@@ -1889,7 +1889,7 @@ function draw_ui()
 	palt(12, true)
 	--# lights
 	if lulu.powers_left > 0 then
-		local lspr = lulu_bl and 19 or 49
+		local lspr = super_lulu and 19 or 49
 		spr(lspr, room.x + 4, ly)
 		palt(0, false)
 		print(lulu.powers_left, x-1, ly, 0)
