@@ -6,3 +6,11 @@ hauteur saut : 3x
 
 butterflies:
 lights : "white" / "black"
+
+touches = 
+🅾️
+❎
+⬆️
+⬇️
+⬅️
+➡️
