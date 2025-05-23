@@ -40,8 +40,7 @@ function _init()
 	-- create_room()
 	-- !! FIN DEPLOIEMENT
 	--!! TEST
-	tp = false
-	next_room()
+	next_room(128 * 7, 128 * 2)
 	--!! FIN TEST
 end
 
@@ -999,7 +998,7 @@ function init_room()
 	},
 	--24
 	{
-		lights = {{119,39,55,"black"}}, 
+		lights = {{119,39,55,"black"}},
 		powers = {7,0},
 		messages = {
 			{"a voice","you made a good job."},
@@ -1010,8 +1009,8 @@ function init_room()
 		},
 		music = 47,
 		display = {
-			{900,288,"   ⬅️  finish"},
-			{940,276,"   continue➡️"},
+			{900,288,"   <-finish"},
+			{940,276,"   continue->"},
 		},
 	},
 	--25
@@ -1052,9 +1051,9 @@ function update_room()
 	end
 end
 
-function next_room()
-	local x = room.x + 128
-	local y = room.y
+function next_room(argx, argy)
+	local x = argx or room.x + 128
+	local y = argy or room.y
 	if (x >= 1024) then
 		x = 0
 		y = y + 128
@@ -1065,12 +1064,7 @@ function next_room()
 	-- ! ---- ! --
 	-- ! TEST ! --
 	-- ! ---- ! -- 
-	if not tp then
-		tp = true
-	 	x = 128 * 7
-		y = 128 * 2
-		super_lulu = true
-	end
+	super_lulu = true
 	-- !!END TEST
 	local w = x + 128
 	local h = y + 128
@@ -1194,6 +1188,14 @@ function update_objects()
 	if not pactual.passed and collision(pactual, pactual == lulu and doors.lulu or doors.hades) then
 		pactual.passed = true
 		delay_switch = 10
+		-- cas particulier : end choice
+		if i_room == 24 then
+			if pactual == lulu then
+				end_finish()
+			else
+				end_continue()
+			end
+		end
 		if lulu.passed and lulu.shield.active then
 			disable_shield(lulu)
 		end
@@ -1205,11 +1207,12 @@ function update_objects()
 			door_sound_played = true
 		end
 	end
-	-- nouvelle vれたrification
+	-- nouvelle vérification
 	if lulu.passed and hades.passed and not room_transition_pending then
 		room_transition_pending = true
 		door_sound_played = false
 	end
+
 	
 	--chests
 	foreach(chests, function(c)
@@ -1997,6 +2000,16 @@ function draw_ui()
 	palt()
 end
 
+-->8 end
+
+function end_finish()
+	next_room()
+end
+
+function end_continue()
+	next_room()
+end
+
 -->8
 --helper functions
 
@@ -2425,8 +2438,8 @@ d424000020910209301d910249331d910299331d910299331d9102b9301f9102c9331f9102b9331f
 000b000013710167101871013720167301874013750187101b7101d7201f7301b7401d7501f71022720247201f7302274024740297502b7502e750267002e7401f7002e720347002e710300002b7003000030000
 000100000254002540025400454006540095400b5400e5401054012540145401555016550175501755017550165501555013550115500e5500c5400b540095400854007540065400554004540035400254002540
 000200000c5401054014550195501e55022560265602a56016540185401b5501f5502256026560295602c5402e5401e540215502455026550295502b5502d5502f560315603456037560395603c5703e5703f570
-000200000904108031090210c0210e0311203115041190411c04123051270510a6000a601126011e601266012c60033600166001a6001e600216012460127601296012c6012f6013260134601366013a6013c601
-06ff0000136453a675126051d605396052d6052e6052a6052d6052c6052b60529605226051a605136050d60507605036050060517605126050d60506605026050060501605016000060001600026000160000600
+000200000904108031090210c0210e0311203115041190411c04123051270510a6000a601126011e60126601186001a6001c6001d6001c6001a60018600186001a6001c6001d6001c6001a600186001a6001c600
+06ff0000136453a675396051d605396052d6052e6052a6052d6052c6052b60529605226051a605136050d60507605036050060517605126050d60506605026050060501605016000060001600026000160000600
 __music__
 01 0c0d0e4b
 00 0f100a4b
