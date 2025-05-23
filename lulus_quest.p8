@@ -1,13 +1,13 @@
 pico-8 cartridge // http://www.pico-8.com
 version 42
 __lua__
-
+	
 -- menuitem(1, "music on/off", function() 
 -- 	music_object[3] = not music_object[3]
 -- 	if not music_object[3] then music(-1) else music(music_object[2]) end
 --  end)
 -- menuitem(2, "sfxs on/off", function() sfx_enabled = not sfx_enabled end)
--- menuitem(3, "next lvl", function() next_room() end)
+menuitem(3, "next lvl", function() next_room() end)
 -- menuitem(4, "pass 5 lvls", function()
 -- for i=1,5 do
 -- 	next_room()
@@ -16,7 +16,6 @@ __lua__
 
 function _init()
 	init_player()
-	init_light()
 	init_room()
 	init_objects()
 	camx = 0   
@@ -43,7 +42,8 @@ function _init()
 	-- create_room()
 	-- !! FIN DEPLOIEMENT
 	--!! TEST
-	next_room(128 * 7, 128 * 2)
+	next_room(128 * 7, 128 * 1)
+	super_lulu = false
 	--!! FIN TEST
 end
 
@@ -59,9 +59,9 @@ function _update()
 		animation_timer -= 1
 		return
 	end
-	if game_state == 1 or game_state == 3 then
+	if game_state != 2 then
 		update_game()
-	elseif game_state == 2 then
+	else
 		restart_level()
 	end
 end
@@ -366,74 +366,49 @@ function update_chars()
 end
 
 function move_characters(c)
-	-- 1) handle input
-  local move = 0
-	if not pactual.using_light then
-		if btn(⬅️) then
-			move = -1
-			pactual.flipx = true
-		elseif btn(➡️) then
-			move = 1
-			pactual.flipx = false
-		end
-	end
-	local jump = btn(❎) and not pactual.c_jump
+	--handle input
+	local move, jump = 0, btn(❎) and not pactual.c_jump
 	pactual.c_jump = btn(❎)
-  if jump and pactual.on_ground then
-    pactual.dy = JUMP_VELOCITY
-    pactual.on_ground = false
-		pactual.is_jumping = true
-    psfx(62,3)
+	if not pactual.using_light then
+		move = btn(⬅️) and -1 or btn(➡️) and 1 or 0
+		if move ~= 0 then pactual.flipx = (move == -1) end
 	end
-	if not btn(❎) and pactual.is_jumping and pactual.dy < 0 then
-  	pactual.dy *= 0.5
+	if jump and pactual.on_ground then
+		pactual.dy, pactual.on_ground, pactual.is_jumping = JUMP_VELOCITY, false, true
+		psfx(62, 3)
+	elseif not btn(❎) and pactual.is_jumping and pactual.dy < 0 then
+		pactual.dy *= 0.5
 	end
-	if c.dy > 0 then
-		c.on_ground = false
-	end
+	if c.dy > 0 then c.on_ground = false end
 
   -- 2) apply horizontal acceleration & friction
-  local acc = c.on_ground and accel or accel_air
-  pactual.dx = mid(-MAX_DX, pactual.dx + (move*acc), MAX_DX)
-	pactual.dx *= FRICTION
+	local acc = c.on_ground and accel or accel_air
+	pactual.dx = mid(-MAX_DX, pactual.dx + move * acc, MAX_DX) * FRICTION
 	if abs(pactual.dx) < 0.1 then pactual.dx = 0 end
 
   -- 3) apply gravity to both characters
-  c.dy += c.gravity
-
-  -- 4) horizontal move & collision
-	local new_x = c.x + c.dx
-  -- sample bottom-left and bottom-right of hitbox
-  local hb = c.hitbox
-  -- pick two sample heights inside your body
-	local ym = c.y + hb.y + hb.h/2
-	if not ( is_solid_at(new_x + hb.x,       ym)
-			or is_solid_at(new_x + hb.x + hb.w, ym) ) then
+	c.dy += c.gravity
+	--horizontal move & collision
+	local new_x, hb, ym = c.x + c.dx, c.hitbox, c.y + c.hitbox.y + c.hitbox.h / 2
+	if not (is_solid_at(new_x + hb.x, ym) or is_solid_at(new_x + hb.x + hb.w, ym)) then
 		c.x = new_x
 	else
 		c.dx = 0
 	end
 
-  -- 5) vertical move & collision
-  c.y += c.dy
-  if c.dy > 0 then
-    -- landing
-    if is_solid_at(c.x + hb.x,       c.y + hb.y + hb.h)
-    or is_solid_at(c.x + hb.x + hb.w, c.y + hb.y + hb.h) then
-      c.on_ground = true
-      c.dy = 0
-      -- snap to tile grid so y is exact
-      c.y = flr((c.y + hb.y + hb.h)/8)*8 - (hb.y + hb.h)
-    end
-  elseif c.dy < 0 then
-    -- head bump
-    if is_solid_at(c.x + hb.x,       c.y + hb.y)
-    or is_solid_at(c.x + hb.x + hb.w, c.y + hb.y) then
-      c.dy = 0
-      -- push character just below the ceiling tile
-      c.y = flr((c.y + hb.y)/8)*8 + 8 - hb.y
-    end
-  end
+	-- 4) vertical move & collision
+	c.y += c.dy
+	if c.dy > 0 then
+		if is_solid_at(c.x + hb.x, c.y + hb.y + hb.h) or is_solid_at(c.x + hb.x + hb.w, c.y + hb.y + hb.h) then
+			c.on_ground, c.dy, c.y = true, 0, flr((c.y + hb.y + hb.h) / 8) * 8 - (hb.y + hb.h)
+		end
+	elseif c.dy < 0 then
+		--head bump
+		if is_solid_at(c.x + hb.x, c.y + hb.y) or is_solid_at(c.x + hb.x + hb.w, c.y + hb.y) then
+			c.dy, c.y = 0, flr((c.y + hb.y) / 8) * 8 + 8 - hb.y
+			--c.y push character just below the ceiling tile
+		end
+	end
 end
 
 
@@ -447,16 +422,14 @@ end
 
 function reinit_characters()
 	foreach(chars, function(c)
-		c.dx = 0
-		c.dy = 0
-		c.on_ground = false
+		c.dx, c.dy, c.on_ground = 0, 0, false
 	end)
 	is_in_switch = true
 end
 
-function disable_shield(character)
-	character.shield.active = false
-	character.shield.timer = 0
+function disable_shield(c)
+	c.shield.active = false
+	c.shield.timer = 0
 end
 
 -->8
@@ -469,15 +442,6 @@ end
 
 -->8
 --lights
-
-function init_light()
-	ima_light = {
-		x = lulu.x + 4,
-		y = lulu.x + 4,
-		r = 16,
-		c = 12
-	}
-end
 
 function update_light()
 	-- lulu
@@ -713,18 +677,15 @@ function init_room()
 	-- DATAS MANUAL --
 	------------------
 	-- lights = { x, y, r, type(optional)}
-	-- doors = { x, y }
 	-- powers = { lulu (number), hades (number) }
 	-- black_orbs = { x, y, r }
 	-- shield_cristals = { x, y, timer (seconds), r, lives, c (couleur)}
 	-- chests = { { opened (boolean), locked (boolean), check_lock (boolean), content = { name (string), r (number)}, x, y } }
-		-- pour les chests : si content.name = "turnoff" -> aucune autre data a insれたrer
+		-- pour les chests : si content.name = "turnoff" -> aucune autre data à insérer
 		-- si content.name = "black_orb" -> content = { name, x, y, r }
-	-- gates = { x, y, rotation (true = horizontal, nothing = vertical) }
 	-- butterflies = { x, y, x1, y1, x2, y2, target (1 ou 2), speed (number), r (number), light (string = "white" ou "black") }
 	-- messages = { title (string), text (string) }
 	-- p_data = {x, y, r_max, type (string = "white" ou "anti"), timer (frames), (next are optionals: ) spr_r of pul (number), spd of dl (float)}
-	-- acristals = {x,y}
 	rooms_data = {
 		--1
 		{
@@ -1020,7 +981,6 @@ function init_room()
 		p_data = false
 	},
 }
-
 end
 
 function update_room()
@@ -1028,32 +988,17 @@ function update_room()
 	if room_transition_pending then
 		next_room()
 		room_transition_pending = false
-		lulu.passed = false
-		hades.passed = false
+		lulu.passed, hades.passed = false, false
 	end
 end
 
 function next_room(argx, argy)
-	local x = argx or room.x + 128
-	local y = argy or room.y
-	if (x >= 1024) then
-		x = 0
-		y = y + 128
-		if (y >= 512) then -- We are at the end of the map
-		y = 0
-		end
-	end
-	-- ! ---- ! --
-	-- ! TEST ! --
-	-- ! ---- ! -- 
-	super_lulu = true
-	-- !!END TEST
-	local w = x + 128
-	local h = y + 128
+	local x, y = argx or room.x + 128, argy or room.y
+	if x >= 1024 then x, y = 0, y + 128 end
+	if y >= 512 then y = 0 end -- We are at the end of the map
+	local w, h = x + 128, y + 128
 	local id = room.id + 1
-	if (id == 33) then
-		id = 1
-	end
+	if id == 33 then id = 1 end
 
 	room = new_room(id, x, y, w, h)
 	i_room = index_room(room.x, room.y)
@@ -1069,12 +1014,7 @@ function next_room(argx, argy)
 end
 
 function reset_music(pat)
-	if pat then
-		music_object[1] = true
-		music_object[2] = pat
-	else
-		music_object[1] = true
-	end
+	music_object[1], music_object[2] = true, pat
 end
 
 function create_room()
@@ -1142,7 +1082,13 @@ end
 --objects
 
 function init_objects()
-	-- coordonnれたes pour lvl 1, a update れき chaque changement de room
+	-- coordonnées pour lvl 1, à update chaque changement de room
+	ima_light = {
+		x = lulu.x + 4,
+		y = lulu.x + 4,
+		r = 16,
+		c = 12
+	}
 	doors = {
 		lulu = {x = 0, y = 0},
 		hades = {x = 0, y = 0}
