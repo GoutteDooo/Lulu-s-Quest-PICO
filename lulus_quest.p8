@@ -828,7 +828,7 @@ function init_room()
 	},
 	--18
 	{
-		lights = {{25,33,8},{30,43,16,"black"}},
+		lights = {{25,33,8,"black"},{30,43,16,"black"}},
 		powers = {3,1},
 		butterflies = {{23,46,23,46,31,46,2,0.6,12,"white"},},
 		chests = {{false, true, false, {"wkey"},16,37}},
