@@ -1125,7 +1125,7 @@ function update_objects()
 		delay_switch = 10
 		-- cas particulier : end choice
 		if i_room == 24 then
-			if pactual == lulu then
+			if pactual == hades then
 				end_finish()
 			else
 				end_continue()
