@@ -2,13 +2,13 @@ pico-8 cartridge // http://www.pico-8.com
 version 42
 __lua__
 	
-menuitem(1, "music on/off", function() 
+menuitem(3, "music on/off", function() 
 	music_object[3] = not music_object[3]
 	if not music_object[3] then music(-1) else music(music_object[2]) end
  end)
-menuitem(2, "sfxs on/off", function() sfx_enabled = not sfx_enabled end)
-menuitem(3, "next lvl", function() next_room() end)
-menuitem(4, "pass 5 lvls", function()
+menuitem(4, "sfxs on/off", function() sfx_enabled = not sfx_enabled end)
+menuitem(1, "next lvl", function() next_room() end)
+menuitem(2, "pass 5 lvls", function()
 for i=1,5 do
 	next_room()
 end
@@ -78,6 +78,9 @@ function update_game()
 		music_object[1] = false
 		music(music_object[2])
 	end
+	update_room()
+	camx = room.x
+	camy = room.y
 	--messages
 	if messages[1] then
 		if btnp(❎) then
@@ -86,11 +89,8 @@ function update_game()
 		return
 	end
 	update_chars()
-	update_room()
 	update_light()
 	update_objects()
-	camx = room.x
-	camy = room.y
 end
 
 function _draw()

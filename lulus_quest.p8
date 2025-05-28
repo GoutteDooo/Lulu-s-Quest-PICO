@@ -39,10 +39,10 @@ function _init()
 	clock_timer = 0
 	deaths = 0
 	--!! DEPLOIEMENT
-	-- create_room()
+	create_room()
 	-- !! FIN DEPLOIEMENT
 	--!! TEST
-	next_room(128 * 7, 128 * 1)
+	-- next_room(128 * 7, 128 * 1)
 	super_lulu = false
 	--!! FIN TEST
 end
@@ -78,6 +78,9 @@ function update_game()
 		music_object[1] = false
 		music(music_object[2])
 	end
+	update_room()
+	camx = room.x
+	camy = room.y
 	--messages
 	if messages[1] then
 		if btnp(❎) then
@@ -86,11 +89,8 @@ function update_game()
 		return
 	end
 	update_chars()
-	update_room()
 	update_light()
 	update_objects()
-	camx = room.x
-	camy = room.y
 end
 
 function _draw()
@@ -1223,10 +1223,6 @@ function update_objects()
 	--butterflies
 	for b in all(butterflies) do
 		update_butterfly(b)
-	end
-	--messages
-	if messages[1] and (btnp(❎)) then
-		deli(messages, 1)
 	end
 	--pulsator
 	update_pulsator()
