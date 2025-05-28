@@ -78,6 +78,13 @@ function update_game()
 		music_object[1] = false
 		music(music_object[2])
 	end
+	--messages
+	if messages[1] then
+		if btnp(❎) then
+			deli(messages, 1)
+		end
+		return
+	end
 	update_chars()
 	update_room()
 	update_light()
@@ -1216,10 +1223,6 @@ function update_objects()
 	--butterflies
 	for b in all(butterflies) do
 		update_butterfly(b)
-	end
-	--messages
-	if messages[1] and (btnp(❎)) then
-		deli(messages, 1)
 	end
 	--pulsator
 	update_pulsator()
