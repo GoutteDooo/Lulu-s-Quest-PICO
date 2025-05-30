@@ -43,7 +43,7 @@ function _init()
 	-- !! FIN DEPLOIEMENT
 	--!! TEST
 	next_room(128 * 1, 128 * 0)
-	super_lulu = false
+	super_lulu = true
 	--!! FIN TEST
 end
 
@@ -204,30 +204,37 @@ function init_player()
 end
 
 function draw_chars()
+	--animations
+	pactual.sprite = pactual.default_sprite
+	if not pactual.on_ground then
+		pactual.sprite = pactual.default_sprite + 3
+	elseif pactual.dx > 0.2 or pactual.dx < -0.2 then
+		pactual.sprite = frames % 8 >= 4 and pactual.default_sprite + 1 or pactual.default_sprite
+	end
 	--if they already in current room
 	if game_state == 2 then
 		if not lulu.in_light then 
 			lulu.sprite = 16
 		end
 		if hades.in_light then hades.sprite = 17 end
-	end
-	foreach(chars, function(c)
-		if game_state == 1 then
+	else
+		foreach(chars, function(c)
 			if not (c.passed) then
 				c.sprite = pactual == c and c.sprite or c.sprite_hide
 			else c.sprite = 0
 			end
-		end
-	end)
+		end)
+	end
 	if super_lulu then
-		--hairs | 9 orange to pink
-		--coat | 8 red to purple
-		--eyes | 12 blue to green
-		--feet | 4 brown to red
+		--hairs | 9 orange to pink 14
+		--coat | 8 red to purple 2
+		--eyes | 12 blue to green 3
+		--feet | 4 brown to red 8
 		pal(9,14)
 		-- pal(8,2)
 		pal(12,3)
 	end
+
 	spr(lulu.sprite, lulu.x, lulu.y, 1, 1, lulu.flipx)
 	pal(9,9)
 	-- pal(8,8)
@@ -361,15 +368,6 @@ function update_chars()
 			end
 		end)
 	end
-
-	--animations
-	pactual.sprite = pactual.default_sprite
-	if not pactual.on_ground then
-		pactual.sprite = pactual.default_sprite + 3
-	elseif pactual.dx > 0.2 or pactual.dx < -0.2 then
-		pactual.sprite = frames % 8 >= 4 and pactual.default_sprite + 1 or pactual.default_sprite
-		if pactual.using_light then pactual.sprite = pactual.default_sprite end
-	end
 end
 
 function move_characters(c)
@@ -429,7 +427,7 @@ end
 
 function reinit_characters()
 	foreach(chars, function(c)
-		c.dx, c.dy, c.on_ground = 0, 0, false
+		c.dx, c.dy = 0, 0
 	end)
 	is_in_switch = true
 end
@@ -1147,7 +1145,7 @@ function update_objects()
 		room_transition_pending = true
 		door_sound_played = false
 		reinit_characters()
-		delay_switch = 15
+		delay_switch = dflt_delay_switch * 3
 	end
 
 	
@@ -1943,6 +1941,12 @@ end
 
 function debug_print()
 	print("delay_switch: "..delay_switch)
+	print("lulu_dx:"..lulu.dx)
+	print("hades_dx:"..hades.dx)
+	print("lulu_og:")
+	print(lulu.on_ground and "true" or "false")
+	print("hades_og:")
+	print(hades.on_ground and "true" or "false")
 	-- if pulsator and rooms_data[i_room].p_data then
 	-- 	print(" state: ")
 	-- 	print(pulsator.is_broken and "broken" or "working")
