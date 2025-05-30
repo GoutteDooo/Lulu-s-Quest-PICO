@@ -1118,29 +1118,18 @@ function init_objects()
 end
 
 function update_objects()
-	-- When someone enter its door, passed will be turn on and character will disappear
+	-- Door collision and passing logic
 	if not pactual.passed and collision(pactual, pactual == lulu and doors.lulu or doors.hades) then
 		pactual.passed = true
 		-- cas particulier : end choice
 		if i_room == 24 then
-			if pactual == hades then
-				end_finish()
-			else
-				end_continue()
-			end
+			if pactual == hades then end_finish() else end_continue() end
 		end
-		if lulu.passed and lulu.shield.active then
-			disable_shield(lulu)
-		end
-		if hades.passed and hades.shield.active then
-			disable_shield(hades)
-		end
-		if not door_sound_played then
-			psfx(60)
-			door_sound_played = true
-		end
+		foreach(chars, function(c) if c.passed and c.shield.active then disable_shield(c) end end)
+		if not door_sound_played then psfx(60); door_sound_played = true end
 	end
-	-- nouvelle verification
+
+	-- Room transition
 	if lulu.passed and hades.passed and not room_transition_pending then
 		room_transition_pending = true
 		door_sound_played = false
@@ -1148,82 +1137,68 @@ function update_objects()
 		delay_switch = dflt_delay_switch * 3
 	end
 
-	
-	--chests
+	-- Chests
 	foreach(chests, function(c)
-		if collision(pactual,c) and c.opened == false then
-			if c.locked and gkeys > 0 then
-				gkeys -= 1
-				open_chest(c)
-			elseif c.locked and gkeys == 0 then
-				if c.check_lock then
+		if collision(pactual, c) and not c.opened then
+			if c.locked then
+				if gkeys > 0 then
+					gkeys -= 1
+					open_chest(c)
+				elseif c.check_lock then
 					c.check_lock = false
 					psfx(50)
 				end
-			elseif c.locked == false then
+			else
 				open_chest(c)
 			end
 		end
-		if not collision(pactual,c) and c.locked and not c.check_lock then
+		if not collision(pactual, c) and c.locked and not c.check_lock then
 			c.check_lock = true
 		end
 	end)
 
-	--keys
+	-- Keys
 	foreach(keys, function(k)
-		if not k.collected and collision(pactual,k) then
+		if not k.collected and collision(pactual, k) then
 			psfx(60)
-			if k.style == "door" then
-				wkeys += 1
-			else
-				gkeys += 1
-			end
+			if k.style == "door" then wkeys += 1 else gkeys += 1 end
 			k.collected = true
 		end
 	end)
 
-	--shield cristals
+	-- Shield crystals
 	foreach(shield_cristals, function(sc)
-		for c in all(chars) do
-			if collision(c,sc) then
-				if not c.shield.active or c.shield.timer < (sc.timer*30)/2 then
-					psfx(57)
-					if sc.lives then sc.lives = sc.lives - 1 end
-					if sc.lives and sc.lives <= 0 then
-						del(shield_cristals,sc)
-					end
-					c.shield = {
-						active = true,
-						timer = sc.timer * 30,
-						def_r = sc.r,
-						r = sc.r
-					}
-				end
+		foreach(chars, function(c)
+			if collision(c, sc) and (not c.shield.active or c.shield.timer < (sc.timer*30)/2) then
+				psfx(57)
+				if sc.lives then sc.lives -= 1 end
+				if sc.lives and sc.lives <= 0 then del(shield_cristals, sc) end
+				c.shield = {
+					active = true,
+					timer = sc.timer * 30,
+					def_r = sc.r,
+					r = sc.r
+				}
 			end
-		end
+		end)
 	end)
-	--gates
-	foreach(gates, function(g)
-		if collision_gate(pactual,g) then
-			if wkeys > 0 and not g.opened then
-				psfx(54)
-				wkeys -= 1
-				mset(g.x/8, g.y/8, g.tile+1)
-				g.opened = true
-			end
-		end
-	end)
-	--butterflies
-	for b in all(butterflies) do
-		update_butterfly(b)
-	end
-	--pulsator
-	update_pulsator()
 
-	--acristals
+	-- Gates
+	foreach(gates, function(g)
+		if collision_gate(pactual, g) and wkeys > 0 and not g.opened then
+			psfx(54)
+			wkeys -= 1
+			mset(g.x/8, g.y/8, g.tile+1)
+			g.opened = true
+		end
+	end)
+
+	-- Update various game objects
+	foreach(butterflies, update_butterfly)
+	update_pulsator()
 	update_acristals()
 
-	--mushroom
+	-- Mushroom powerup
 	if mushroom[1] and collision(lulu, mushroom[1]) then
 		local m = mushroom[1]
 		super_lulu = true
@@ -1940,13 +1915,13 @@ end
 --helper functions
 
 function debug_print()
-	print("delay_switch: "..delay_switch)
-	print("lulu_dx:"..lulu.dx)
-	print("hades_dx:"..hades.dx)
-	print("lulu_og:")
-	print(lulu.on_ground and "true" or "false")
-	print("hades_og:")
-	print(hades.on_ground and "true" or "false")
+	-- print("delay_switch: "..delay_switch)
+	-- print("lulu_dx:"..lulu.dx)
+	-- print("hades_dx:"..hades.dx)
+	-- print("lulu_og:")
+	-- print(lulu.on_ground and "true" or "false")
+	-- print("hades_og:")
+	-- print(hades.on_ground and "true" or "false")
 	-- if pulsator and rooms_data[i_room].p_data then
 	-- 	print(" state: ")
 	-- 	print(pulsator.is_broken and "broken" or "working")
