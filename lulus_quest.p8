@@ -1550,8 +1550,9 @@ end
 function draw_clock()
 	local offset = clock[1] > 99 and 8 or clock[1] > 9 and 4 or 0
 	if clock[2] < 10 then clock[2] = "0"..clock[2] end
-	print(clock[1],room.x+50-offset,room.y+4,9)
-	print(":"..clock[2],room.x+54,room.y+4,9)
+	rectfill(room.x+108-offset,room.y+2,room.x+126,room.y+10,0)
+	print(clock[1],room.x+110-offset,room.y+4,7)
+	print(":"..clock[2],room.x+114,room.y+4,7)
 end
 
 -->8
