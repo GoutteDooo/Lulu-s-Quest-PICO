@@ -42,7 +42,7 @@ function _init()
 	-- create_room()
 	-- !! FIN DEPLOIEMENT
 	--!! TEST
-	next_room(128 * 3, 128 * 1)
+	next_room(128 * 6, 128 * 1)
 	-- super_lulu = true
 	--!! FIN TEST
 end
@@ -995,6 +995,11 @@ function update_room()
 		room_transition_pending = false
 		lulu.passed, hades.passed = false, false
 	end
+
+	-- Update pulsator pulse timer
+	if pulsator and pulsator.pulse_timer > 0 then
+		pulsator.pulse_timer -= 1
+	end
 end
 
 function next_room(argx, argy)
@@ -1239,7 +1244,7 @@ function draw_objects()
 		draw_spr(20, sc.x, sc.y + (move and 1 or 0))
 	end)
 
-	if pulsator then draw_pulsator() end
+	draw_pulsator()
 end
 
 function draw_doors(d)
@@ -1559,11 +1564,11 @@ end
 --pulsator
 
 function draw_pulsator()
-	if not pulsator_state then return end
+	if not pulsator_state or not pulsator then return end
 	-- osciller uniquement si pulse_timer actif
 	local pr = pulsator.spr_r
 	local pulse_ratio = pulsator.pulse_timer / pulsator.pulse_dur
-	local scale = pr / 10 + 0.5 * pulse_ratio -- grossit れき chaque battement
+	local scale = pr / 10 + 0.5 * pulse_ratio -- grossit chaque battement
 	local broke = pulsator.is_broken
 	-- flips
 	local flipx = frames % 15 < 7
@@ -1621,49 +1626,54 @@ function draw_pulsator()
 end
 
 function update_pulsator()
-	if cannot_pulse() then return end
-	if pulsator then
-		--Aprれそs chaque pulsation, on rejoue le SFX electrical effects
-		-- if pulsator.timer == 30 and i_room == 15 then sfx(47, 0, 0, 14) end
-		local broken = pulsator.is_broken
-		--A less before the next pulsation, prevent the player
-		local beat_delay = broken and pulsator.beat_delay / 2 or pulsator.beat_delay
-		if pulsator.timer == beat_delay - 30 and i_room != pulsator_room then fsfx(48, 3, pulsator.light_data.type == "white" and 6 or 13, 1) end
+	if cannot_pulse() or not pulsator then return end
 
-		pulsator.timer += 1
-		if pulsator.timer >= beat_delay then
-			local ptype = pulsator.light_data.type
-			-- un battement se produit
-			pulsator.pulse_timer = pulsator.pulse_dur -- dれたclenche une pulsation visuelle
-			pulsator.timer = 0
-			shake = 10
-			-- SFX
-			if sfx_timer == 0 and i_room != pulsator_room then
-				fsfx(48, -1)
-				sfx_timer = 30
-				-- fsfx(48, 3, ptype == "white" and 7 or 14, 1)
-				fsfx(48,3, ceil((rnd(1)*2))*7,1)
-			end
-			local pr = pulsator.spr_r
-			-- update light from pulsator
-			local new_dyna_light = create_dynamic_light(pulsator.x + pr, pulsator.y + pr, ptype, pulsator.light_data.spd, pulsator.light_data.r_max, pr)
-			add(dynamic_lights, new_dyna_light)
-			if broken then
-				local types = {"white", "black", "anti"}
-				local last_type = ptype
-				local new_type = types[flr(rnd(1) * #types) + 1]
-				while (new_type == last_type) do
-					new_type = types[flr(rnd(1) * #types) + 1]
-				end
-				pulsator.light_data.type = new_type
-			else
-				pulsator.light_data.type = ptype == "anti" and "white" or "anti"
-			end
-		end
-		-- diminuer le pulse progressivement
-		if pulsator.pulse_timer > 0 then
-			pulsator.pulse_timer -= 1
-		end
+	local broken = pulsator.is_broken
+		--A less before the next pulsation, prevent the player
+	local beat_delay = broken and pulsator.beat_delay / 2 or pulsator.beat_delay
+	local ptype = pulsator.light_data.type
+
+	-- Play warning sound before the next pulsation
+	if pulsator.timer == beat_delay - 30 and i_room != pulsator_room then 
+		fsfx(48, 3, ptype == "white" and 6 or 13, 1) 
+	end
+
+	pulsator.timer += 1
+	if pulsator.timer < beat_delay then return end
+
+	-- Trigger pulse
+	pulsator.pulse_timer = pulsator.pulse_dur
+	pulsator.timer = 0
+	shake = 10
+
+	-- Play pulse sound effect
+	if sfx_timer == 0 and i_room != pulsator_room then
+		fsfx(48, -1)
+		sfx_timer = 30
+		fsfx(48, 3, ceil(rnd(1) * 2) * 7, 1)
+	end
+
+	-- Update dynamic light from pulsator
+	local pr = pulsator.spr_r
+	local new_dyna_light = create_dynamic_light(
+		pulsator.x + pr, pulsator.y + pr, ptype, 
+		pulsator.light_data.spd, pulsator.light_data.r_max, pr
+	)
+	add(dynamic_lights, new_dyna_light)
+
+	-- Randomly change light type if broken, otherwise alternate type
+	if not broken then
+		-- local types = {"white", "black", "anti"}
+		-- repeat
+		-- 	pulsator.light_data.type = types[flr(rnd(1) * #types) + 1]
+		-- until pulsator.light_data.type != ptype
+	-- else
+		pulsator.light_data.type = (ptype == "anti") and "white" or "anti"
+	end
+	
+	-- Gradually reduce the pulse timer
+	if pulsator.pulse_timer > 0 then
+		pulsator.pulse_timer -= 1
 	end
 end
 
