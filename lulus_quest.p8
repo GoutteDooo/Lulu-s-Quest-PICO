@@ -42,8 +42,8 @@ function _init()
 	-- create_room()
 	-- !! FIN DEPLOIEMENT
 	--!! TEST
-	next_room(128 * 1, 128 * 0)
-	super_lulu = true
+	next_room(128 * 3, 128 * 1)
+	-- super_lulu = true
 	--!! FIN TEST
 end
 
@@ -107,6 +107,7 @@ function _draw()
 	map(0, 0, 0, 0, 128, 64, 0)
 	draw_light()
 	draw_objects()
+	draw_imaginary_light()
 	draw_walls()
 	map(0, 0, 0, 0, 128, 64, 3)
 	map(0, 0, 0, 0, 128, 64, 0x10)
@@ -575,7 +576,6 @@ function draw_light()
 	--disable possibility to player to draw ima lights
 	if game_state != 1 then return end
 	if messages[1] then return end
-	draw_imaginary_light()
 	draw_hades_turnoff()
 end
 
@@ -583,8 +583,8 @@ function draw_imaginary_light()
 	local lulu_light = btn(🅾️) and lulu.select and lulu.powers_left > 0
 	local i_light = lulu_light and ima_light or casting_bl and ima_light_bo or nil
 	if i_light then
-		circfill(i_light.x, i_light.y, i_light.r, i_light.c)
-		circ(i_light.x, i_light.y, i_light.r, i_light.c+1)
+		-- circfill(i_light.x, i_light.y, i_light.r, 11)
+		circ(i_light.x, i_light.y, i_light.r, 12)
 		circ(pactual.x_g, pactual.y_g, pactual.ima_range, 8)
 	end
 end
@@ -601,7 +601,7 @@ function draw_lights()
 	foreach(
 		lights, function(l)
 			circfill(l.x, l.y, l.r,l.color)
-			circ(l.x, l.y, l.r, 6)
+			circ(l.x, l.y, l.r, 7)
 		end
 	)
 	--black lights
@@ -792,7 +792,7 @@ function init_room()
     {
         lights = {{84, 29}},
         powers = {0,0},
-        shield_cristals = {{88,18,60,32,1,"red"}},
+        shield_cristals = {{88,18,60,32,1}},
         butterflies = {{86,17,86,17,85, 27,2, 0.5,24,"white"}}
     },
     --15
@@ -1086,7 +1086,7 @@ function init_objects()
 		x = lulu.x + 4,
 		y = lulu.x + 4,
 		r = 16,
-		c = 12
+		c = 14
 	}
 	doors = {
 		lulu = {x = 0, y = 0},
@@ -1215,53 +1215,31 @@ end
 
 --animations
 function draw_objects()
-	--black orbs
-	foreach(
-		black_orbs, function(bo)
-			spr(22, bo.x, bo.y, 1, 1, false, false)
-			if frames > 20 then
-				spr(23, bo.x, bo.y, 1, 1, false, false)
-			end
-		end)
-	--butterflies
-	foreach(butterflies, function(b)
-		draw_butterfly_light(b)
-	end)
-	--shields
-	draw_shields()
-	--grey lights
-	draw_grey_lights()
-	--chests
-	foreach(chests, function(c)
-		if c.opened then
-			spr(56, c.x, c.y, 1, 1, false, false)
-		else
-			spr(55, c.x, c.y, 1, 1, false, false)
-		end
-	end)
-	--keys
-	foreach(keys, function(k)
-		draw_keys(k)
-	end)
-	--shield cristals
-	foreach(shield_cristals, function(sc)
-		if sc.lives then print(sc.lives, sc.x + 8, sc.y - 2, 11) end
-		spr(sc.c == "red" and 21 or 20, sc.x, sc.y, 1, 1, false, false)
-    -- points scintillants
-    if frames % 15 < 7 then
-			pset(sc.x+3, sc.y+1, 7)
-			pset(sc.x+5, sc.y+3, 7)
-		else
-			pset(sc.x+5, sc.y+1, 7)
-			pset(sc.x+3, sc.y+3, 7)
-		end
-	end)
-	--gates & butterflies in _draw fct
-	--pulsator
-	if pulsator then
-		draw_pulsator()
+	local function draw_spr(sprite_id, x, y, flip_x, flip_y)
+		spr(sprite_id, x, y, 1, 1, flip_x or false, flip_y or false)
 	end
-	--acristals and walls are in _draw()
+
+	foreach(black_orbs, function(bo)
+		draw_spr(frames > 20 and 23 or 22, bo.x, bo.y)
+	end)
+
+	foreach(butterflies, draw_butterfly_light)
+	draw_shields()
+	draw_grey_lights()
+
+	foreach(chests, function(c)
+		draw_spr(c.opened and 56 or 55, c.x, c.y)
+	end)
+
+	foreach(keys, draw_keys)
+
+	foreach(shield_cristals, function(sc)
+		local move = frames % 15 < 7
+		if sc.lives then print(sc.lives, sc.x + 8, sc.y - 2, 11) end
+		draw_spr(20, sc.x, sc.y + (move and 1 or 0))
+	end)
+
+	if pulsator then draw_pulsator() end
 end
 
 function draw_doors(d)
@@ -1351,7 +1329,7 @@ function create_objects()
 	-- end
 	--shield cristals
 	foreach(c_room.shield_cristals, function(sc)
-		add(shield_cristals, {x = sc[1] * 8, y = sc[2] * 8, timer = sc[3], r = sc[4], lives = sc[5], c = sc[6]})
+		add(shield_cristals, {x = sc[1] * 8, y = sc[2] * 8, timer = sc[3], r = sc[4], lives = sc[5]})
 	end)
 	--butterflies
 	foreach(c_room.butterflies, function(b)
@@ -1998,13 +1976,13 @@ __gfx__
 000000000088880000888800001111000088880001dddd0010dddd00c05555cc01dddd00cc040ccc0000000000000000000111533ddddddd3dddd3dd55111000
 00000000004004000004500000500500040000400140040010045000c02cc2cc04000040ccc0cccc00000000000000000011155d3ddddddd3dddd3ddd5511100
 08888880c888888c0002e000ccc0cccc0000000000000000000000000000000000000000000000004444444440000004001155dd33dddddd33dd33dddd551100
-88888888888888880022ee00cc030ccc0000c0000000800000000000000000000004000000040000454545455000000501115dddd33dddddd33333ddddd51110
-8888888888888888022eeee0c03630cc000c7c000008780000000000000000000004000000464000454545455000000501155ddddd3dddddddddd3ddddd55110
-88888888c889889822eeeeee0366630c0000c0000000800000088000000880000004000000040000444444444000000401155ddddd3dddddddddd3ddddd55110
-88898898c888888800054000c03630cc0000100000002000008838000088b800000400000004000000000000000000001115dddddd3ddd11111d33dddddd5111
-08888880c88888c800054000cc030ccc00001000000020000838888008b88880000400000004400000000000000000001155dddddd3dd111111133dddddd5511
-00888800c88888cc00044000ccc0cccc00001000000020000004400000044000000400000004000000000000000000001155dddddd3d1111111113ddddddd511
-00800800c88cc8cc00044000cccccccc00001000000020000004400000044000000000000000000000000000000000001155dddddd311111111113ddddddd511
+88888888888888880022ee00cc030ccc000000000000000000000000000000000004000000040000454545455000000501115dddd33dddddd33333ddddd51110
+8888888888888888022eeee0c03630cc0088e0000000000000000000000000000004000000464000454545455000000501155ddddd3dddddddddd3ddddd55110
+88888888c889889822eeeeee0366630c08888e000000000000088000000880000004000000040000444444444000000401155ddddd3dddddddddd3ddddd55110
+88898898c888888800054000c03630cc0088e00000000000008838000088b800000400000004000000000000000000001115dddddd3ddd11111d33dddddd5111
+08888880c88888c800054000cc030ccc000e0000000000000838888008b88880000400000004400000000000000000001155dddddd3dd111111133dddddd5511
+00888800c88888cc00044000ccc0cccc00000000000000000004400000044000000400000004000000000000000000001155dddddd3d1111111113ddddddd511
+00800800c88cc8cc00044000cccccccc00000000000000000004400000044000000000000000000000000000000000001155dddddd311111111113ddddddd511
 6666666607070a00070700000005500008800880000000000000000000000000000000000000000000000000000000001155ddddd3311111111133ddddddd511
 6555555600444a4000444a400055550088888888000000000000000000000000000a0000000a0000000000000000000011555ddd33d33111111131dddddd5511
 655555560000000000000a000558855088888888080800000007000000080000000a000000a9a000888888880000000011555ddd3dd13333311131dddddd3311
