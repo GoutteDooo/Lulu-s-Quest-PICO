@@ -1909,9 +1909,6 @@ function collision_light(p, l)
 	local dx = lx - rx
 	local dy = ly - ry
 	local dist = sqrt(dx*dx + dy*dy)
-	-- print("dist: "..flr(dx*dx + dy*dy), pactual.x, pactual.y - 10, 7)
-	-- pset(rx, ry, 11)  -- centre du joueur
-	-- pset(lx, ly, 8)   -- centre du cercle
 	return dist + 2 <= l.r
 end
 
