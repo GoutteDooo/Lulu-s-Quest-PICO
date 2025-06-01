@@ -42,7 +42,7 @@ function _init()
 	-- create_room()
 	-- !! FIN DEPLOIEMENT
 	--!! TEST
-	next_room(128 * 6, 128 * 1)
+	next_room(128 * 4, 128 * 2)
 	-- super_lulu = true
 	--!! FIN TEST
 end
@@ -123,18 +123,6 @@ function _draw()
 	rectfill(-5+camx,-5+camy,133+camx,-1+camy,0)
 	rectfill(-5+camx,128+camy,133+camx,133+camy,0)
 	rectfill(128+camx,-5+camy,133+camx,133+camy,0)
-	--DEBUG
-	-- if btn(🅾️) and lulu.select then
-		-- Dessiner la grid de la map
-		-- for i=0,1 do
-		-- 	for j=0,16 do
-		-- 		if (i == 0) line(0, max(0,room.y + (j*8)),room.x + 128,max(0,room.y + (j*8)), 8)
-		-- 		if (i == 1) line(max(0,room.x + (j*8)),0,max(0,room.x + (j*8)),room.y + 128,8)
-		-- 	end
-		-- end
-		-- pset(ima_light.x,ima_light.y,11)
-	-- end
-
 	draw_ui()
 	draw_messages()
 	if clock_timer > 0 and game_state != 3 then draw_clock() end
@@ -583,8 +571,7 @@ function draw_imaginary_light()
 	local lulu_light = btn(🅾️) and lulu.select and lulu.powers_left > 0
 	local i_light = lulu_light and ima_light or casting_bl and ima_light_bo or nil
 	if i_light then
-		-- circfill(i_light.x, i_light.y, i_light.r, 11)
-		circ(i_light.x, i_light.y, i_light.r, 12)
+		circ(i_light.x, i_light.y, i_light.r, i_light.c)
 		circ(pactual.x_g, pactual.y_g, pactual.ima_range, 8)
 	end
 end
@@ -1053,11 +1040,6 @@ function create_room()
 		music(-1)
 		fsfx(48,0)
 	end
-	--the end
-	if i_room == 31 then
-		--afficher le nombre de morts
-		--afficher le temps
-	end
 end
 
 function new_room(id, x, y, w, h)
@@ -1091,7 +1073,7 @@ function init_objects()
 		x = lulu.x + 4,
 		y = lulu.x + 4,
 		r = 16,
-		c = 14
+		c = 12
 	}
 	doors = {
 		lulu = {x = 0, y = 0},
@@ -1103,7 +1085,7 @@ function init_objects()
 		x = 0,
 		y = 0,
 		r = 24,
-		c = 1
+		c = 11
 	}
 	black_lights = {}
 	chests = {}
@@ -1207,7 +1189,7 @@ function update_objects()
 	if mushroom[1] and collision(lulu, mushroom[1]) then
 		local m = mushroom[1]
 		super_lulu = true
-		ima_light.c = 1
+		ima_light.c = 11
 		sfx_timer = 30
 		music(-1)
 		fsfx(59,3)
@@ -1247,13 +1229,15 @@ function draw_objects()
 	draw_pulsator()
 end
 
-function draw_doors(d)
-	--doors
-	local flip = frames % 10 >= 5  -- Alterne toutes les 5 frames
-	spr(35, doors.lulu.x, doors.lulu.y, 1, 1, flip, false)
-	spr(35, doors.lulu.x, doors.lulu.y + 8, 1, 1, not flip, true)
-	spr(51, doors.hades.x, doors.hades.y, 1, 1, flip, false)
-	spr(51, doors.hades.x, doors.hades.y + 8, 1, 1, not flip, true)
+function draw_door(d,s, flip)
+	spr(s, d.x, d.y, 1, 1, flip, false)
+	spr(s, d.x, d.y + 8, 1, 1, not flip, true)
+end
+
+function draw_doors()
+	local flip = frames % 10 >= 5
+	draw_door(doors.lulu, 35, flip)
+	draw_door(doors.hades, 51, flip)
 end
 
 function create_black_orb(x, y,r)
