@@ -14,6 +14,22 @@ menuitem(3, "next lvl", function() next_room() end)
 -- end
 -- end)
 
+function title_screen()
+	game_state = 0
+	cls()
+	print("lulu's quest", 40, 32, 7)
+	print("press ❎ to start", 32, 64, 7)
+	music(44)
+	while true do
+		if btnp(❎) then
+			game_state = 1
+			create_room()
+			return
+		end
+		flip()
+	end
+end
+
 function _init()
 	init_player()
 	init_room()
@@ -39,10 +55,10 @@ function _init()
 	clock_timer = 0
 	deaths = 0
 	--!! DEPLOIEMENT
-	-- create_room()
+	title_screen()
 	-- !! FIN DEPLOIEMENT
 	--!! TEST
-	next_room(128 * 7, 128 * 2)
+	-- next_room(128 * 7, 128 * 2)
 	-- super_lulu = true
 	--!! FIN TEST
 end
