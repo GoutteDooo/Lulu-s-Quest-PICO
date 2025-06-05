@@ -37,6 +37,7 @@ function _init()
 	sfx_enabled = true
 	game_state = 0 -- 0 = title, 1 = game, 2 = restart_level, 3 = end
 	pulsator_room = 17
+	finish_room = 25
 	clock = {0,0} --{min, sec}
 	clock_timer = 0
 	deaths = 0
@@ -1167,8 +1168,8 @@ function update_objects()
 	if not pactual.passed and collision(pactual, pactual == lulu and doors.lulu or doors.hades) then
 		pactual.passed = true
 		-- cas particulier : end choice
-		if i_room == 24 then
-			if pactual == hades then end_finish() else end_continue() end
+		if i_room == finish_room then
+			if pactual == hades then end_finish() else next_room() end
 		end
 		foreach(chars, function(c) if c.passed and c.shield.active then disable_shield(c) end end)
 		if not door_sound_played then psfx(60); door_sound_played = true end
@@ -1915,10 +1916,6 @@ end
 function end_finish()
 	next_room(128 * 6, 128 * 3)
 	game_state = 3
-end
-
-function end_continue()
-	next_room()
 end
 
 function draw_end()
