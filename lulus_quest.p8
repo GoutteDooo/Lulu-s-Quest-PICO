@@ -50,7 +50,7 @@ function _init()
 	-- !! FIN DEPLOIEMENT
 	--!! TEST
 	game_state = 1
-	next_room(128 * 6, 128 * 1)
+	next_room(128 * 7, 128 * 2)
 	-- super_lulu = true
 		--!! FIN TEST
 end
@@ -877,49 +877,49 @@ function init_room()
 	},
 	--19
 	{
-		lights = {{25,33,8,"black"},{30,43,16,"black"}},
+		lights = {{41,33,8,"black"},{46,43,16,"black"}},
 		powers = {3,1},
-		butterflies = {{23,46,23,46,31,46,2,0.6,12,"white"},},
-		chests = {{false, true, false, {"wkey"},16,37}},
-		p_data = {22.5,37.5,46,"white",180,12}
+		butterflies = {{39,46,39,46,47,46,2,0.6,12,"white"},},
+		chests = {{false, true, false, {"wkey"},32,37}},
+		p_data = {38.5,37.5,46,"white",180,12}
 	},
 	--20
 	{
 		lights = {
-			{35,33,8,"grey"},
-			{45,33,12,"black"},
-			{40,39,10,"grey"},
-			{40,46,10,"white"},
+			{51,33,8,"grey"},
+			{61,33,12,"black"},
+			{56,39,10,"grey"},
+			{56,46,10,"white"},
 		},
 		powers = {0,0},
 		messages = {{"hint","white lights take priority\n over any light"}},
-		shield_cristals = {{43,40,7,26,1}},
+		shield_cristals = {{59,40,7,26,1}},
 		butterflies = {
-			{36,43,33,43,47,43,2,0.4,12,"black"},
-			{36,46,33,46,47,46,2,0.4,12,"black"},
+			{52,43,49,43,63,43,2,0.4,12,"black"},
+			{52,46,49,46,63,46,2,0.4,12,"black"},
 		},
-		p_data = {38,30,108,"white",190,14,3}
+		p_data = {54,30,108,"white",190,14,3}
 	},
 	--21
 	{
 		lights = {
-			{57,34,8},
-			{50,34,12, "grey"},
-			{51,38,10,"black"},
-			{56,41.5,10,"grey"},
+			{73,34,8},
+			{66,34,12, "grey"},
+			{67,38,10,"black"},
+			{72,41.5,10,"grey"},
 		},
 		powers = {1,0},
-		shield_cristals = {{53,39,60,20,1},{48,45,12,12,1}},
-		p_data = {54.25,46,128,"white",0,14,2}
+		shield_cristals = {{69,39,60,20,1},{64,45,12,12,1}},
+		p_data = {70.25,46,128,"white",0,14,2}
 	},
 	--22
 	{
 		lights = {
-			{73,35,8},
-			{66,42,16,"black"},
-			{79,39},
-			{77,42,12,"grey"},
-			{71,39,16,"grey"},
+			{89,35,8},
+			{82,42,16,"black"},
+			{95,39},
+			{93,42,12,"grey"},
+			{87,39,16,"grey"},
 		},
 		powers = {3,1},
 		p_data = false,
@@ -928,45 +928,45 @@ function init_room()
 	--23
 	{
 		lights = {
-			{81,44,12,"black"},
-			{88,38,28},
-			{90,33},
+			{97,44,12,"black"},
+			{104,38,28},
+			{106,33},
 		},
 		powers = {1,1},
-		chests = {{false, true, false, {"black_orb",86,43,20},85,43}},
-		p_data = {94.5,29.5,240,"white",200,16,1.5},
+		chests = {{false, true, false, {"black_orb",86,43,20},101,43}},
+		p_data = {110.5,29.5,240,"white",200,16,1.5},
 		music = 27
 	},
 	--24
 	{
 		lights = {
 			--lulu
-			{99,43},
-			{107,43},
-			{107,36},
-			{99,36},
+			{115,43},
+			{123,43},
+			{123,36},
+			{115,36},
 			--hades
-			{98,46,12,"black"},
-			{111,46,12,"black"},
+			{114,46,12,"black"},
+			{127,46,12,"black"},
 			--lvl
-			{103,45},
-			{103,33},
+			{119,45},
+			{119,33},
 		},
 		powers = {3,1},
 		butterflies = {
-			{112,33,94,33,114,33,2,1,12,"black"},
-			{100,46,97,46,110,46,1,0.6,12,"black"},
-			{103,33,103,33,103,46,2,1,12,"dark"},
-			{97,40,97,40,112,40,2,1,12,"dark"},
+			{128,33,110,33,130,33,2,1,12,"black"},
+			{116,46,113,46,126,46,1,0.6,12,"black"},
+			{119,33,119,33,119,46,2,1,16,"dark"},
+			{113,40,113,40,128,40,2,1,20,"dark"},
 		},
-		p_data = {101.5,38,128,"white",200,13},
+		p_data = {117.5,38,128,"white",200,13},
 		messages = {
 			{"hint","red lights kill anyone\nwho enters them"}
 		}
 	},
 	--25
 	{
-		lights = {{119,39,55,"black"}},
+		lights = {{7,55,55,"black"}},
 		powers = {7,0},
 		messages = {
 			{"a voice","you made a good job."},
@@ -977,8 +977,8 @@ function init_room()
 		},
 		music = 47,
 		display = {
-			{900,288,"   <-finish"},
-			{940,276,"   continue->"},
+			{4,412,"   <-finish"},
+			{40,402,"   continue->"},
 		},
 	},
 	--26
