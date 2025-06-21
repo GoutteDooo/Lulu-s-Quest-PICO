@@ -1035,13 +1035,8 @@ function init_room()
 	{
 		lights = {{104,57,64,"black"}},
 		powers = {0,0},
-		p_data = false
-	},
-	--32
-	{
-		lights = {{104,57,64,"black"}},
-		powers = {0,0},
-		p_data = false
+		p_data = false,
+		sound = 2,
 	},
 }
 end
@@ -1117,6 +1112,9 @@ function create_room()
 	if i_room == pulsator_room then
 		music(-1)
 		fsfx(48,0)
+	end
+	if i_room == 31 then
+		game_state = 3
 	end
 end
 
