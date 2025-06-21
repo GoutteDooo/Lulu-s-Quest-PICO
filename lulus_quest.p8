@@ -51,7 +51,7 @@ function _init()
 	-- !! FIN DEPLOIEMENT
 	--!! TEST
 	game_state = 1
-	next_room(128 * 5, 128 * 1)
+	-- next_room(128 * 5, 128 * 1)
 	-- super_lulu = true
 		--!! FIN TEST
 end
@@ -1373,7 +1373,7 @@ function delete_objects()
 		pulsator.light_data.room_ac[2] = false
 	end
 	--reset sfxs
-	sfx(-2)
+	sfx(-2,3)
 end
 
 
@@ -1948,7 +1948,11 @@ end
 --helper functions
 
 function debug_print()
-	print("power_counter: "..power_counter)
+	-- print("power_counter: "..power_counter)
+	print("c1:"..stat(46))
+	print("c2:"..stat(47))
+	print("c3:"..stat(48))
+	print("c4:"..stat(49))
 	print("lvl:"..i_room)
 	-- print("delay_switch: "..delay_switch)
 	-- print("lulu_dx:"..lulu.dx)
