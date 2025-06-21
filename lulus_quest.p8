@@ -51,7 +51,7 @@ function _init()
 	-- !! FIN DEPLOIEMENT
 	--!! TEST
 	game_state = 1
-	-- next_room(128 * 5, 128 * 1)
+	next_room(128 * 7, 128 * 2)
 	-- super_lulu = true
 		--!! FIN TEST
 end
@@ -978,7 +978,7 @@ function init_room()
 			{"a voice","or go left, and finish\nyour mission."},
 			{"a voice","it's much safer."},
 		},
-		music = 47,
+		sound = 2,
 		display = {
 			{4,412,"   <-finish"},
 			{40,402,"   continue->"},
@@ -997,7 +997,8 @@ function init_room()
 			{28,58,17,58,30,58,1,0.5,16,"dark"},
 			{17,62,17,62,30,62,2,0.4,12,"dark"},
 		},
-		black_orbs = {{23,52,16}}
+		black_orbs = {{23,52,16}},
+		music = 36
 	},
 	--27
 	{
@@ -1095,6 +1096,7 @@ function create_room()
 
 	delete_objects()
 	create_objects()
+
 	--characters
 	local room = rooms_data[i_room]
 	foreach(chars, function(c) 
@@ -1102,6 +1104,11 @@ function create_room()
 		c.in_light = c == lulu and true or false
 		disable_shield(c)
 	end)
+	--sound
+	if room.sound then 
+		music(-1)
+		fsfx(room.sound,0) 
+	end
 	--powers
 	lulu.powers_left = room.powers[1]
 	hades.powers_left = room.powers[2]
@@ -1476,6 +1483,7 @@ function create_objects()
 	end
 	--handle music
 	if c_room.music and music_object[2] != c_room.music then
+		sfx(-1) --for any sound
 		reset_music(c_room.music)
 	end
 end
