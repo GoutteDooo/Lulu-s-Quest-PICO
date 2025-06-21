@@ -59,136 +59,133 @@ function begin_game()
     init_objects()
 end
 
--- Player entity
---------------
+-- Player class
+Player = {}
+Player.__index = Player
 
-player = {
-    init = function(this)
-        this.x = 0
-        this.y = 0
-        this.x_g = 0
-        this.y_g = 0
-        this.h = 8
-        this.w = 8
-        this.dx = 0
-        this.dy = 0
-        this.g = false
-        this.c_jump = false
-        this.using_light = false
-        this.flip = {x=false, y=false}
-        this.spd = {x=0, y=0}
-        this.hitbox = {x=1, y=3, w=6, h=5}
-        this.spr_off = 0
-        this.was_on_ground = false
-        this.p_jump = false
-        this.p_dash = false
-        this.grace = 0
-        this.jbuffer = 0
-        this.djump = 1
-        this.dash_time = 0
-        this.dash_effect_time = 0
-        this.dash_target = {x=0, y=0}
-        this.dash_accel = {x=0, y=0}
-    end,
-    
-    update = function(this)
-        if freeze > 0 then return end
-        
-        local input = btn(1) and 1 or (btn(0) and -1 or 0)
-        
-        local on_ground = this.is_solid(0,1)
-        local on_ice = this.is_ice(0,1)
-        
-        if on_ground then
-            this.grace = 6
-            if this.djump < 1 then
-                psfx(54)
-                this.djump = 1
-            end
-        elseif this.grace > 0 then
-            this.grace -= 1
+function Player:new()
+    local self = setmetatable({}, Player)
+    self.x = 0
+    self.y = 0
+    self.x_g = 0
+    self.y_g = 0
+    self.h = 8
+    self.w = 8
+    self.dx = 0
+    self.dy = 0
+    self.g = false
+    self.c_jump = false
+    self.using_light = false
+    self.flip = {x=false, y=false}
+    self.spd = {x=0, y=0}
+    self.hitbox = {x=1, y=3, w=6, h=5}
+    self.spr_off = 0
+    self.was_on_ground = false
+    self.p_jump = false
+    self.p_dash = false
+    self.grace = 0
+    self.jbuffer = 0
+    self.djump = 1
+    self.dash_time = 0
+    self.dash_effect_time = 0
+    self.dash_target = {x=0, y=0}
+    self.dash_accel = {x=0, y=0}
+    self.hair = {}
+    return self
+end
+
+function Player:update()
+    if freeze > 0 then return end
+    local input = btn(1) and 1 or (btn(0) and -1 or 0)
+    local on_ground = self:is_solid(0,1)
+    local on_ice = self:is_ice(0,1)
+    if on_ground then
+        self.grace = 6
+        if self.djump < 1 then
+            psfx(54)
+            self.djump = 1
         end
-        
-        local jump = btn(4) and not this.p_jump
-        this.p_jump = btn(4)
-        
-        if jump then
-            this.jbuffer = 4
-        elseif this.jbuffer > 0 then
-            this.jbuffer -= 1
-        end
-        
-        if this.dash_time > 0 then
-            init_object(smoke, this.x, this.y)
-            this.dash_time -= 1
-            this.spd.x = appr(this.spd.x, this.dash_target.x, this.dash_accel.x)
-            this.spd.y = appr(this.spd.y, this.dash_target.y, this.dash_accel.y)
-        else
-            local maxrun = 1
-            local accel = 0.6
-            local deccel = 0.15
-            
-            if not on_ground then
-                accel = 0.4
-            elseif on_ice then
+    elseif self.grace > 0 then
+        self.grace -= 1
+    end
+    local jump = btn(4) and not self.p_jump
+    self.p_jump = btn(4)
+    if jump then
+        self.jbuffer = 4
+    elseif self.jbuffer > 0 then
+        self.jbuffer -= 1
+    end
+    if self.dash_time > 0 then
+        init_object(smoke, self.x, self.y)
+        self.dash_time -= 1
+        self.spd.x = appr(self.spd.x, self.dash_target.x, self.dash_accel.x)
+        self.spd.y = appr(self.spd.y, self.dash_target.y, self.dash_accel.y)
+    else
+        local maxrun = 1
+        local accel = 0.6
+        local deccel = 0.15
+        if not on_ground then
+            accel = 0.4
+        elseif on_ice then
+            accel = 0.05
+            if input == (self.flip.x and -1 or 1) then
                 accel = 0.05
-                if input == (this.flip.x and -1 or 1) then
-                    accel = 0.05
-                end
-            end
-            
-            if abs(this.spd.x) > maxrun then
-                this.spd.x = appr(this.spd.x, sign(this.spd.x) * maxrun, deccel)
-            else
-                this.spd.x = appr(this.spd.x, input * maxrun, accel)
-            end
-            
-            if this.spd.x != 0 then
-                this.flip.x = (this.spd.x < 0)
-            end
-            
-            local maxfall = 2
-            local gravity = 0.21
-            
-            if abs(this.spd.y) <= 0.15 then
-                gravity *= 0.5
-            end
-            
-            this.spd.y = min(this.spd.y + gravity, maxfall)
-            
-            if on_ground then
-                this.spd.y = 0
-                this.djump = 1
-            elseif this.jbuffer > 0 then
-                this.spd.y = -2.5
-                this.jbuffer = 0
             end
         end
-        
-        this.x += this.spd.x
-        this.y += this.spd.y
-        
-        -- Check collisions
-        if this.is_solid(0, this.spd.y) then
-            this.y -= this.spd.y
-            this.spd.y = 0
+        if abs(self.spd.x) > maxrun then
+            self.spd.x = appr(self.spd.x, sign(self.spd.x) * maxrun, deccel)
+        else
+            self.spd.x = appr(self.spd.x, input * maxrun, accel)
         end
-        
-        if this.is_solid(this.spd.x, 0) then
-            this.x -= this.spd.x
-            this.spd.x = 0
+        if self.spd.x != 0 then
+            self.flip.x = (self.spd.x < 0)
         end
-    end,
-    
-    draw = function(this)
-        local spr = this.spr_off + (this.flip.x and 1 or 0)
-        spr(this.flip.x and 1 or 0, this.x, this.y)
-        
-        -- Draw hair
-        for _, hair in pairs(this.hair) do
-            spr(hair.spr, hair.x, hair.y)
+        local maxfall = 2
+        local gravity = 0.21
+        if abs(self.spd.y) <= 0.15 then
+            gravity *= 0.5
+        end
+        self.spd.y = min(self.spd.y + gravity, maxfall)
+        if on_ground then
+            self.spd.y = 0
+            self.djump = 1
+        elseif self.jbuffer > 0 then
+            self.spd.y = -2.5
+            self.jbuffer = 0
         end
     end
+    self.x += self.spd.x
+    self.y += self.spd.y
+    -- Check collisions
+    if self:is_solid(0, self.spd.y) then
+        self.y -= self.spd.y
+        self.spd.y = 0
+    end
+    if self:is_solid(self.spd.x, 0) then
+        self.x -= self.spd.x
+        self.spd.x = 0
+    end
+end
+
+function Player:draw()
+    local spr_id = self.spr_off + (self.flip.x and 1 or 0)
+    spr(spr_id, self.x, self.y)
+    -- Draw hair
+    for _, hair in pairs(self.hair) do
+        spr(hair.spr, hair.x, hair.y)
+    end
+end
+
+function Player:is_solid(dx, dy)
+    -- Implement collision logic here or delegate to map/room
+    return false
+end
+
+function Player:is_ice(dx, dy)
+    -- Implement ice logic here or delegate to map/room
+    return false
+end
+
 }
 
 -- Room entity
