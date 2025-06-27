@@ -1941,8 +1941,7 @@ end
 --helper functions
 
 function debug_print()
-	-- print("power_counter: "..power_counter)
-	-- print("lvl:"..i_room)
+	print("lv:"..i_room, room.x + 104, room.y+4, 11)
 	-- print("delay_switch: "..delay_switch)
 	-- print("lulu_dx:"..lulu.dx)
 	-- print("hades_dx:"..hades.dx)
