@@ -352,12 +352,12 @@ function update_chars()
 			c.shield.timer -= 1
 			c_in_light = c == lulu and true or false
 			local target = c == lulu and hades or lulu
+			if c.shield.timer <= 0 then
+				disable_shield(c)
+			end
 			if collision_light(target, {x = c.x or 0, y = c.y or 0, r = c.shield.r or 0}) then
 				target.in_light = true
 				break
-			end
-			if c.shield.timer <= 0 then
-				disable_shield(c)
 			end
 		end
 
