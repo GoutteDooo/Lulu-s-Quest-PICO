@@ -744,12 +744,13 @@ function init_room()
 				{60,26,"⬅️➡️  move"},
 				{60,33,"🅾️❎  cast"},
 			},
-			music = 0
+			sound = 5
 		},
     --2
     {
-        lights = {{19,13,20},{28,13,24}},
-        powers = {1,1},
+			lights = {{19,13,20},{28,13,24}},
+			powers = {1,1},
+			music = 0
     },
     --3
     {
@@ -757,7 +758,7 @@ function init_room()
         powers = {3,1},
 				messages={
 					{"hint","you can cast lights\n inside of lights"}
-				}
+				},
     },
     --4
     {
@@ -865,12 +866,12 @@ function init_room()
 			lights = {{22.5, 40, 24, "black"}},
 			powers = {2,0},
 			p_data = {30,46,256,"white",180},
-			music = 27
+			music = 21
 	},
 	--19
 	{
 		lights = {{41,33,8,"black"},{46,43,16,"black"}},
-		powers = {3,1},
+		powers = {4,2},
 		butterflies = {{39,46,39,46,47,46,2,0.6,12,"white"},},
 		chests = {{false, true, false, {"wkey"},32,37}},
 		p_data = {38.5,37.5,46,"white",180,12}
