@@ -42,7 +42,7 @@ function _init()
 	--!! DEPLOIEMENT
 	PI = 3.141592653589793
 	title_animation_frame = 0
-	title_animation_duration = 45
+	title_animation_duration = 60
 	title_light_animation = false
 	sfx(10)
 	-- !! FIN DEPLOIEMENT
@@ -89,8 +89,9 @@ end
 function _draw()
 	if game_state == 0 then
 		cls()
-		print("lulu's quest", 40, 32, 7)
+		print("lulu's quest", 40, 32, 10)
 		print("press ❎ to start", 32, 64, 7)
+		print("gouttedo\n\n flieen", 48, 92, 13)
 		
 		if title_light_animation then
 			local progress = title_animation_frame / title_animation_duration
@@ -712,7 +713,7 @@ function init_room()
 	-- powers = { lulu (number), hades (number) }
 	-- black_orbs = { x, y, r }
 	-- shield_cristals = { x, y, timer (seconds), r, lives, c (couleur)}
-	-- chests = { { opened (boolean), locked (boolean), check_lock (boolean), content = { name (string), r (number)}, x, y } }
+	-- chests = { { locked (boolean), check_lock (boolean), content = { name (string), r (number)}, x, y } }
 		-- pour les chests : si content.name = "turnoff" -> aucune autre data れき insれたrer
 		-- si content.name = "black_orb" -> content = { name, x, y, r }
 	-- butterflies = { x, y, x1, y1, x2, y2, target (1 ou 2), speed (number), r (number), light (string = "white" ou "black") }
@@ -797,7 +798,7 @@ function init_room()
         lights = {{24, 17},{17, 19, 20},{21, 20},{29, 22, 28},{21, 23},{23, 28, 24}},
         powers = {4,7},
         chests = {
-            {false,true,false,{"black_orb",27,30,36,},28,30,}},
+            {true,false,{"black_orb",27,30,36,},28,30}},
     },
     --11
     {
@@ -816,7 +817,7 @@ function init_room()
         lights = {{67, 18},{72, 22, 8},{70, 24, 8},{74, 24, 8},{72, 26, 8},{72, 28, 8},{72, 30, 8},{79, 30, 8}},
         powers = {2,1,},
         shield_cristals = {{70,17, 8,16,1},{67,21,10,16,2},{64,30,12,24,1}},
-        chests = {{false,true,false,{ "turnoff" },74,21}},
+        chests = {{true,false,{ "turnoff" },74,21}},
     },
     --14
     {
@@ -872,8 +873,8 @@ function init_room()
 	{
 		lights = {{41,33,8,"black"},{46,43,16,"black"}},
 		powers = {4,2},
-		butterflies = {{39,46,39,46,47,46,2,0.6,12,"white"},},
-		chests = {{false, true, false, {"wkey"},32,37}},
+		butterflies = {{39,46,39,46,47,46,2,0.6,12,"white"}},
+		chests = {{true, false, {"wkey"},32,37}},
 		p_data = {38.5,37.5,46,"white",180,12}
 	},
 	--20
@@ -927,7 +928,7 @@ function init_room()
 			{106,33},
 		},
 		powers = {1,1},
-		chests = {{false, true, false, {"black_orb",102,43,20},101,43}},
+		chests = {{true, false, {"black_orb",102,43,20},101,43}},
 		p_data = {110.5,29.5,240,"white",200,16,1.5},
 		music = 27
 	},
@@ -963,9 +964,9 @@ function init_room()
 		lights = {{7,55,55,"black"}},
 		powers = {7,0},
 		messages = {
-			{"a voice","you made a good job."},
+			{"a voice","you did a good job."},
 			{"a voice","congratulations for all\nthese steps you reached."},
-			{"a voice","you have now the choice."},
+			{"a voice","you now have the choice."},
 			{"a voice","go right, but it will\nbe hard."},
 			{"a voice","frankly, i wouldn't\nrecommend it."},
 			{"a voice","or go left, and finish\nyour mission."},
@@ -981,7 +982,7 @@ function init_room()
 	{
 		lights = {{25,50}},
 		messages = {
-			{"terrible voice","you will regret it !!\n gha ha ha ha !!!"}
+			{"terrible voice","you will regret it!!\n gha ha ha ha!!!"}
 		},
 		butterflies = {
 			{30,50,30,50,18,50,2,0.4,15,"dark"},
@@ -991,7 +992,7 @@ function init_room()
 			{22,56,22,56,14,56,2,0.3,20,"dark"},
 			{17,61,17,61,30,61,2,0.4,15,"dark"},
 		},
-		chests = {{false, false, false, {"light"},27,62}},
+		chests = {{false, false, {"light"},27,62}},
 		shield_cristals = {
 			{19,50,8,10,1}
 		},
@@ -1001,7 +1002,7 @@ function init_room()
 	{
 		lights = {{44,51,26},{44,55,26},{44,60,28,"black"}},
 		chests = {
-			{false, true, false, {"wkey"},46,62}
+			{true, false, {"wkey"},46,62}
 		},
 		butterflies = {
 			{33,47,33,47,33,63,2,0.4,14,"dark"},
@@ -1027,7 +1028,7 @@ function init_room()
 		},
 		p_data = {54,54,180,"white",0,12},
 		messages = {
-			{"terrible voice","you'll never pass this !!\n just give up!!!"}
+			{"terrible voice","you'll never pass this!!\n just give up!!!"}
 		}
 	},
 	--29
@@ -1278,7 +1279,7 @@ function update_objects()
 		del(mushroom, m)
 		mset(m.x/8, m.y/8, 0)
 		animation_timer = 75
-		reset_music(27)
+		reset_music(21)
 	end
 end
 
@@ -1398,7 +1399,7 @@ function create_objects()
 	end
 	--chests
 	for c in all(c_room.chests) do
-		add(chests, {opened = c[1],locked = c[2],check_lock = c[3],content = c[4],x = c[5] * 8,y = c[6] * 8})
+		add(chests, {opened = false,locked = c[1],check_lock = c[2],content = c[3],x = c[4] * 8,y = c[5] * 8})
 	end
 	--shield cristals
 	foreach(c_room.shield_cristals, function(sc)
@@ -2354,7 +2355,7 @@ bc110000099500995012965099500995009950129651592509950099501296509950099500995012
 301100000e2220e2220e2220e2220e2120e2120e2120e212122221222212222122221221212212122121221211222112221122211222112121121211212112121622216222162221622216212162121621216212
 304400002ab452cb4533b452cb452ab452eb4531b4535b45000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 141100000b8450b8450b8450b8450b8450b8450a8450a8450a8450a8450a8450a8450884508845088450884508845088450881508815088150881508815088150b8000b8000b8000b8000b8000b8000b8000b800
-90060004177201c7302174026750227501d7502175026750177501c7502175026750177501c75021750267502f7003170033700367003a7003d7001b70000700147000c700207000570005700057000570005700
+900c000805020120300c04016050110501c050150501f050175501c5502155026550175501c55021550265502f5003150033500365003a5003d5001b50000500145000c500205000550005500055000550005500
 0605000c166301864018630176401663015640166301864019630196401763016640196300b6400163001600126552e65501600226552a6550260002600016000060001600016000060001600026000160000000
 0679010f016300164001630016400263000650126552e655036200163001620026300a650226552a65501600126552e65501600226552a6550260002600016000060001600016000060001600026000160000000
 320400000202005030080400c05010050160501805003020080300d040140501a0501d050080100a0200b0200c0300e0301003013030170401b0401f040250502c05031050350503c0603c0503c0413c0313c021
