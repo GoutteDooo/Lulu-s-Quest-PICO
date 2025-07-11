@@ -2,11 +2,11 @@ pico-8 cartridge // http://www.pico-8.com
 version 42
 __lua__
 	
-menuitem(3, "music on/off", function() 
-	music_object[3] = not music_object[3]
-	if not music_object[3] then music(-1) else music(music_object[2]) end
- end)
-menuitem(4, "sfxs on/off", function() sfx_enabled = not sfx_enabled end)
+-- menuitem(3, "music on/off", function() 
+-- 	music_object[3] = not music_object[3]
+-- 	if not music_object[3] then music(-1) else music(music_object[2]) end
+--  end)
+-- menuitem(4, "sfxs on/off", function() sfx_enabled = not sfx_enabled end)
 menuitem(1, "next lvl", function() next_room() end)
 menuitem(2, "pass 5 lvls", function()
 for i=1,5 do
@@ -406,17 +406,17 @@ end
 
 function move_characters(c)
 	--handle input
-	local move, jump = 0, btn(❎) and not pactual.c_jump
+	local move = 0
 	pactual.c_jump = btn(❎)
 	if not pactual.using_light then
 		move = btn(⬅️) and -1 or btn(➡️) and 1 or 0
 		if move ~= 0 then pactual.flipx = (move == -1) end
 	end
-	if jump and pactual.on_ground then
+	if pactual.c_jump and pactual.on_ground then
 		pactual.dy, pactual.on_ground, pactual.is_jumping = JUMP_VELOCITY, false, true
 		psfx(62, 3)
-	elseif not btn(❎) and pactual.is_jumping and pactual.dy < 0 then
-		pactual.dy *= 0.5
+	elseif not btn(❎) and pactual.is_jumping then
+		pactual.dy += 0.05
 	end
 	if c.dy > 0 then c.on_ground = false end
 
@@ -494,8 +494,7 @@ function update_light()
 			end
 		end
 	if not btn(🅾️) then 
-		lulu.using_light = false
-		hades.using_light = false
+		lulu.using_light, hades.using_light = false, false
 		hades.light_selected[1] = nil
 		if super_lulu then fsfx(52,-2) end
 		fsfx(55,-2)
@@ -507,8 +506,7 @@ end
 function update_light_lulu()
 	if not lulu.using_light then
 		--setting position of light
-		ima_light.y = lulu.y_g
-		ima_light.x = lulu.x_g
+		ima_light.y, ima_light.x = lulu.y_g, lulu.x_g
 		lulu.using_light = true
 		if super_lulu then psfx(52,3) else psfx(58,3) end
 	end
@@ -517,16 +515,15 @@ end
 
 function update_light_hades()
 	-- hades a une variable qui stocke temporairement la light selected
-	nb_lights = #lights
-	if nb_lights > 0 and hades.powers_left > 0 then
+	if #lights > 0 and hades.powers_left > 0 then
 		if not hades.using_light then
 			psfx(55,3)
 			hades.using_light = true
 		end
 		local index = hades.light_selected[2]
 		hades.light_selected[1] = lights[index + 1]
-		if (btnp(➡️)) hades.light_selected[2] = (hades.light_selected[2] + 1) % nb_lights
-		if (btnp(⬅️)) hades.light_selected[2] = (hades.light_selected[2] - 1) % nb_lights
+		if (btnp(➡️)) hades.light_selected[2] = (hades.light_selected[2] + 1) % #lights
+		if (btnp(⬅️)) hades.light_selected[2] = (hades.light_selected[2] - 1) % #lights
 		--flip hades when light selected x is > hades.x
 		if hades.light_selected[1].x < hades.x then
 			hades.flipx = true
@@ -585,20 +582,19 @@ function using_light(magic_used, c)
 	end
 
 	if btnp(❎) then
-		local x = i_light.x
-		local y = i_light.y
+		local x,y = i_light.x, i_light.y
 		if c == lulu and lulu.powers_left > 0 and magic_used != "orb" then
-				create_light(x, y, ima_light.r,super_lulu and "black" or "white",10) 
-				if super_lulu then psfx(51) else psfx(57) end
-				shake = 6
-				lulu.powers_left -= 1
-			else
-				create_light(x, y, i_light.r, "black")
-				psfx(51)
-				casting_bl = false
-				shake = 12
-				c.c_jump = true --to prevent char from jumping
+			create_light(x, y, ima_light.r,super_lulu and "black" or "white",10) 
+			if super_lulu then psfx(51) else psfx(57) end
+			shake = 6
+			lulu.powers_left -= 1
+		else
+			create_light(x, y, i_light.r, "black")
+			psfx(51)
+			casting_bl = false
+			shake = 12
 		end
+		c.dy = 0
 	end
 end
 
