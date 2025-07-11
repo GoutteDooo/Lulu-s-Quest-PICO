@@ -45,7 +45,7 @@ function _init()
 	title_anim_duration = 60
 	title_light_anim = false
 	end_on = false
-	end_game_dark = 180
+	end_game_dark = 10
 	sfx(10)
 	-- !! FIN DEPLOIEMENT
 	--!! TEST
@@ -118,6 +118,8 @@ function _draw()
 		draw_end()
 		if end_game_dark < -60 then
 			cls(0)
+			pal()
+			draw_end_text()
 			return
 		end
 	end
@@ -1943,20 +1945,26 @@ end
 function draw_end()
 	local c=10
 	if end_game_dark>120 then
-			if frames%10<5 then
-					c=7
-			end
+		if frames%10<5 then
+			c=7
+		end
 	elseif end_game_dark>60 then
-			c=2
+		c=2
 	elseif end_game_dark>0 then
-			c=1
+		c=1
 	else 
-			c=0
+		c=0
 	end
 	if c<10 then
 		for i=0,15 do
-			pal(i,c) -- force tout en gris
+			pal(i,c)
 		end
+	end
+end
+
+function draw_end_text()
+	if end_game_dark < 0 then
+		print("congratulations!!", room.x + 4, room.y+4, 11)
 	end
 end
 
