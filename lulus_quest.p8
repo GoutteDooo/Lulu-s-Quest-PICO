@@ -225,9 +225,8 @@ function init_player()
 	casting_bl = false
 	FRICTION = 0.8
 	accel = 0.6
-	accel_air = 0.4
 	JUMP_VELOCITY = -2.5
-	MAX_DX = 2.2
+	MAX_DX = 2
 	super_lulu = false
 	chars = { lulu, hades }
 end
@@ -421,8 +420,7 @@ function move_characters(c)
 	if c.dy > 0 then c.on_ground = false end
 
   -- 2) apply horizontal acceleration & friction
-	local acc = c.on_ground and accel or accel_air
-	pactual.dx = mid(-MAX_DX, pactual.dx + move * acc, MAX_DX) * FRICTION
+	pactual.dx = mid(-MAX_DX, pactual.dx + move * accel, MAX_DX) * FRICTION
 	if abs(pactual.dx) < 0.1 then pactual.dx = 0 end
 
   -- 3) apply gravity to both characters
@@ -1403,9 +1401,12 @@ function create_objects()
 		end
 	end)
 	--messages
-	foreach(c_room.messages, function(m)
-		add(messages, m)
-	end)
+	if c_room.messages then
+		while (#c_room.messages > 0) do
+			add(messages, c_room.messages[1])
+			del(c_room.messages,c_room.messages[1])
+		end
+	end
 	--display
 	foreach(c_room.display, function(d)
 		add(display, d)
@@ -1586,8 +1587,8 @@ function draw_messages()
 		rectfill(x1+3, y1-2, x1 + 3  + #messages[1][1]*4, y1+4, 2)
 		print(messages[1][1],x1+4,y1-1,9)
 		print(messages[1][2],x1+4,y1+8,1)
-		if messages[2] then print("❎->",x2-16,y2-6,13) end
-		if not messages[2] then print("❎end",x2-20,y2-6,13) end
+		if messages[2] then print("❎->",x2-16,y2-6,13)
+		else print("❎end",x2-20,y2-6,13) end
 	end
 end
 
