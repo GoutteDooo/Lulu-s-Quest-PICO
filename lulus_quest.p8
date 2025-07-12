@@ -7,12 +7,12 @@ __lua__
 -- 	if not music_object[3] then music(-1) else music(music_object[2]) end
 --  end)
 -- menuitem(4, "sfxs on/off", function() sfx_enabled = not sfx_enabled end)
-menuitem(1, "next lvl", function() next_room() end)
-menuitem(2, "pass 5 lvls", function()
-for i=1,5 do
-	next_room()
-end
-end)
+-- menuitem(1, "next lvl", function() next_room() end)
+-- menuitem(2, "pass 5 lvls", function()
+-- for i=1,5 do
+-- 	next_room()
+-- end
+-- end)
 
 
 function _init()
@@ -47,9 +47,9 @@ function _init()
 	sfx(10)
 	-- !! FIN DEPLOIEMENT
 	--!! TEST
-	-- game_state = 1
-	-- next_room(128 * 3, 128 * 3)
-	-- super_lulu = true
+	game_state = 1
+	next_room(128 * 0, 128 * 3)
+	super_lulu = true
 		--!! FIN TEST
 end
 
@@ -1938,7 +1938,8 @@ function fade_in(counter, start_count)
 		if frames%10<5 then
 			c=7
 		else
-			c=2
+			if end_on then return end
+			c= 2
 		end
 	elseif counter>start_count/2 then
 		c=2
@@ -1947,25 +1948,33 @@ function fade_in(counter, start_count)
 	else 
 		c=0
 	end
-	-- if c<10 then
-		for i=0,15 do
-			pal(i,c)
-		end
-	-- end
+	for i=0,15 do
+		pal(i,c)
+	end
 end
 
 function draw_end_text()
-	if end_game_dark < -120 then
-		print("congratulations!!", room.x + 4, room.y+4, 7)
+	next_dialog(-120, "congratulations!!", 30, 8, 7)
+	next_dialog(-240, "you died : "..deaths.." times", 26, 30, 8)
+	if end_game_dark < -320 then
+		if finish == "easy" then
+			print("the voice: you made the good choice.", room.x + 26, room.y+40)
+		else
+			print("the voice: you're very reckless.", room.x + 0, room.y+50, 12)
+			next_dialog(-440, "it was risky,\nbut you went through with it.", 0, 60,12)
+			next_dialog(-570, "\nfor that, bravo.", 0, 70,10)
+		end
 	end
-	if end_game_dark < -240 then
-		print("thank you for playing")
+	if end_game_dark < -780 then
+		cls()
 	end
-	if end_game_dark < -360 then
-		print("...")
-	end
-	if end_game_dark < -420 then
-		print("to be continued")
+	next_dialog(-900, "thank you for playing with\n\n    hades and lulu!!", 12, 40, 7)
+	next_dialog(-1200, "to be continued", 34, 90, 2)
+end
+
+function next_dialog(count, dialog, x, y, c)
+	if end_game_dark < count then
+		print(dialog, room.x + x, room.y + y, c or 7)
 	end
 end
 
