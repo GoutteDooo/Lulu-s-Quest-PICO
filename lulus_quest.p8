@@ -409,13 +409,13 @@ end
 
 function move_characters(c)
 	--handle input
-	local move = 0
-	pactual.c_jump = btn(❎) and not pactual.using_light
+	local move, jump = 0, btn(❎) and not pactual.c_jump and not pactual.using_light
+	pactual.c_jump = btn(❎)
 	if not pactual.using_light then
 		move = btn(⬅️) and -1 or btn(➡️) and 1 or 0
 		if move ~= 0 then pactual.flipx = (move == -1) end
 	end
-	if pactual.c_jump and pactual.on_ground then
+	if jump and pactual.on_ground then
 		pactual.dy, pactual.on_ground, pactual.is_jumping = JUMP_VELOCITY, false, true
 		psfx(62, 3)
 	elseif not btn(❎) and c.is_jumping then
