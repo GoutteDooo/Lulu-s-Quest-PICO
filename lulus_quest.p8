@@ -1061,8 +1061,8 @@ function next_room(argx, argy)
 	-- if music_object[2] != 27 then reset_music(27) end
 	-- gkeys = 2
 	-- wkeys = 2
-	lulu.shield.active = true
-	lulu.shield.timer = 60
+	-- lulu.shield.active = true
+	-- lulu.shield.timer = 60
 	-- !!END TEST
 end
 
@@ -1169,7 +1169,7 @@ function update_objects()
 		if i_room == fountain_room then
 			if pactual == hades then 
 				finish = "easy"
-				end_finish()
+				game_state = 3
 			else
 				finish = "hard"
 				next_room()
@@ -1919,11 +1919,6 @@ end
 
 -->8 end
 
-function end_finish()
-	next_room(128 * 4, 128 * 3)
-	game_state = 3
-end
-
 function is_ending()
 	return lulu.passed and hades.passed and i_room == 28
 end
@@ -1958,7 +1953,7 @@ function draw_end_text()
 	next_dialog(-240, "you died : "..deaths.." times", 26, 30, 8)
 	if end_game_dark < -320 then
 		if finish == "easy" then
-			print("the voice: you made the good choice.", room.x + 26, room.y+40)
+			print("           the voice:\n\n    you made the good choice.", room.x + 0, room.y+50,12)
 		else
 			print("the voice: you're very reckless.", room.x + 0, room.y+50, 12)
 			next_dialog(-440, "it was risky,\nbut you went through with it.", 0, 60,12)
