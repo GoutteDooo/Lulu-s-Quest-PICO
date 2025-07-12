@@ -418,7 +418,7 @@ function move_characters(c)
 	if jump and pactual.on_ground then
 		pactual.dy, pactual.on_ground, pactual.is_jumping = JUMP_VELOCITY, false, true
 		psfx(62, 3)
-	elseif not btn(❎) and c.is_jumping then
+	elseif c.is_jumping and c.dy > 0 then
 		c.dy += c == lulu and 0.05 or 0.1
 	end
 	if c.dy > 0 then c.on_ground = false end
@@ -1988,7 +1988,8 @@ end
 --helper functions
 
 function debug_print()
-	print("lv:"..i_room, room.x + 80, room.y+4, 11)
+	-- print("lv:"..i_room, room.x + 80, room.y+4, 11)
+	print(hades.dy, hades.x, hades.y-10)
 	-- print("frame:"..frames)
 	-- print("lulu_dx:"..lulu.dx)
 	-- print("hades_dx:"..hades.dx)
