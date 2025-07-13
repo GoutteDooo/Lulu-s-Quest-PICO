@@ -2,17 +2,17 @@ pico-8 cartridge // http://www.pico-8.com
 version 42
 __lua__
 	
-menuitem(3, "music on/off", function() 
-	music_object[3] = not music_object[3]
-	if not music_object[3] then music(-1) else music(music_object[2]) end
- end)
-menuitem(4, "sfxs on/off", function() sfx_enabled = not sfx_enabled end)
+-- menuitem(3, "music on/off", function() 
+-- 	music_object[3] = not music_object[3]
+-- 	if not music_object[3] then music(-1) else music(music_object[2]) end
+--  end)
+-- menuitem(4, "sfxs on/off", function() sfx_enabled = not sfx_enabled end)
 menuitem(1, "next lvl", function() next_room() end)
-menuitem(2, "pass 5 lvls", function()
-for i=1,5 do
-	next_room()
-end
-end)
+-- menuitem(2, "pass 5 lvls", function()
+-- for i=1,5 do
+-- 	next_room()
+-- end
+-- end)
 
 
 function _init()
@@ -29,60 +29,59 @@ function _init()
 	delay_switch = dflt_delay_switch
 	sfx_timer = 0
 	pulsator_state = false
-	animation_timer = 0
+	anim_timer = 0
 	shake = 0
 	music_object = {false, nil, true}-- {bool = change music, value = music pattern, bool = music on/off}
 	sfx_enabled = true
 	game_state = 0 -- 0 = title, 1 = game, 2 = restart_level, 3 = end
 	pulsator_room = 17
-	finish_room = 25
+	fountain_room = 25
 	deaths = 0
 	power_counter = 0
 	finish = "" -- if easy or hard chosen
 	--!! DEPLOIEMENT
-	PI = 3.141592653589793
-	title_animation_frame = 0
-	title_animation_duration = 60
-	title_light_animation = false
+	title_screen_dur = 60
+	title_screen_anim = false
+	end_on = false
+	end_game_dark = 120
 	sfx(10)
 	-- !! FIN DEPLOIEMENT
 	--!! TEST
 	-- game_state = 1
-	-- next_room(128 * 3, 128 * 3)
+	-- next_room(128 * 0, 128 * 3)
 	-- super_lulu = true
 		--!! FIN TEST
 end
 
 function _update()
+	frames=((frames+1)%30)
 	if game_state == 0 then
-		if btnp(❎) and not title_light_animation then
-			title_light_animation = true
-			title_animation_frame = 0
+		if btnp(❎) and not title_screen_anim then
+			title_screen_anim = true
 			sfx(-1)
 			sfx(46)
 		end
 		
-		if title_light_animation then
-			title_animation_frame += 1
-			
-			if title_animation_frame >= title_animation_duration then
-				title_light_animation = false
+		if title_screen_anim then
+			title_screen_dur -= 1
+			if title_screen_dur <= -30 then
+				title_screen_anim = false
 				game_state = 1
 				create_room()
 			end
-			
 		end
 		return
 	end
 
-	if animation_timer > 0 then
-		animation_timer -= 1
+	if anim_timer > 0 then
+		anim_timer -= 1
 		return
 	end
-	if game_state != 2 then
-		update_game()
-	else
+
+	if game_state == 2 then
 		restart_level()
+	else
+		update_game()
 	end
 end
 
@@ -91,26 +90,25 @@ function _draw()
 		cls()
 		print("lulu's quest", 40, 32, 10)
 		print("press ❎ to start", 32, 64, 7)
-		print("gouttedo\n\n flieen", 48, 92, 13)
+		print("donovan goudal\n\n    flieen", 36, 92, 13)
 		
-		if title_light_animation then
-			local progress = title_animation_frame / title_animation_duration
-			local pulse = sin(progress * PI * 2) * 0.5 + 0.5
-			
-			-- Create a circular wave effect
-			for i = 1, 15 do
-					local base = 15  -- base color (bright white)
-					local wave = sin((i + progress * 10) * PI) * 2  -- smaller wave pattern
-					local final_color = (base + wave) * pulse
-					if final_color > 15 then final_color = 15 end
-					if final_color < 8 then final_color = 8 end  -- minimum brightness
-					pal(i, final_color)
-			end
+		if title_screen_anim then
+			fade_in(title_screen_dur, 30)
 		end
 		return
 	end
+
 	pal()
 	cls()
+	if game_state == 3 then 
+		draw_end()
+		if end_game_dark < -60 then
+			cls(0)
+			pal()
+			draw_end_text()
+			return
+		end
+	end
 	camera(camx, camy)
 	-- screenshake
 	if shake>0 then
@@ -142,11 +140,9 @@ function _draw()
 	draw_messages()
 	draw_display()
 	debug_print()
-	if game_state == 3 then draw_end() end
 end
 
 function update_game() 
-	frames=((frames+1)%30)
 	if sfx_timer > 0 then
 		sfx_timer -= 1
 	end
@@ -166,9 +162,13 @@ function update_game()
 		end
 		return
 	end
+
 	update_chars()
 	update_light()
 	update_objects()
+	if game_state == 3 then 
+		end_screen()
+	end
 end
 
 -->8
@@ -225,15 +225,14 @@ function init_player()
 	casting_bl = false
 	FRICTION = 0.8
 	accel = 0.6
-	accel_air = 0.4
 	JUMP_VELOCITY = -2.5
-	MAX_DX = 2.2
+	MAX_DX = 2
 	super_lulu = false
 	chars = { lulu, hades }
 end
 
 function draw_chars()
-	--animations
+	--anims
 	pactual.sprite = pactual.default_sprite
 	if not pactual.on_ground then
 		pactual.sprite = pactual.default_sprite + 3
@@ -288,6 +287,9 @@ function update_chars()
 	end
 
 	if pactual.passed then
+		if is_ending() then
+			return
+		end
 		switch_characters(pactual)
 		return
 	end
@@ -357,13 +359,14 @@ function update_chars()
 				disable_shield(c)
 			end
 			if collision_light(target, {x = c.x or 0, y = c.y or 0, r = c.shield.r or 0}) then
-				target.in_light = true
+				target.in_light = true --si lulu collide avec le shield de hades
 				break
 			end
 		end
 
 		for b in all(butterflies) do
 			if collision_light(c, b) then
+				if c == hades and c.shield.active then return end
 				c_in_light = b.light == "white" or b.light == "grey" or (b.light == "black" and c == lulu) or (b.light == "dark" and c == hades)
 			end
 		end
@@ -381,7 +384,7 @@ function update_chars()
 	local condition_1 = not lulu.in_light and not lulu.passed
 	local condition_2 = hades.in_light and not hades.passed
 	if condition_1 or condition_2 or pactual.y >= room.h-1 then
-		animation_timer, game_state, sfx_timer = 30, 2, 45
+		anim_timer, game_state, sfx_timer = 30, 2, 45
 		fsfx(53,3)
 	end
 
@@ -412,17 +415,16 @@ function move_characters(c)
 		move = btn(⬅️) and -1 or btn(➡️) and 1 or 0
 		if move ~= 0 then pactual.flipx = (move == -1) end
 	end
-	if jump and pactual.on_ground then
+	if jump and pactual.on_ground and not pactual.using_light then
 		pactual.dy, pactual.on_ground, pactual.is_jumping = JUMP_VELOCITY, false, true
 		psfx(62, 3)
-	elseif not btn(❎) and pactual.is_jumping and pactual.dy < 0 then
-		pactual.dy *= 0.5
+	elseif (not btn(❎) or c.dy > 0) and c.is_jumping then
+		c.dy += c == lulu and 0.05 or 0.1
 	end
 	if c.dy > 0 then c.on_ground = false end
 
   -- 2) apply horizontal acceleration & friction
-	local acc = c.on_ground and accel or accel_air
-	pactual.dx = mid(-MAX_DX, pactual.dx + move * acc, MAX_DX) * FRICTION
+	pactual.dx = mid(-MAX_DX, pactual.dx + move * accel, MAX_DX) * FRICTION
 	if abs(pactual.dx) < 0.1 then pactual.dx = 0 end
 
   -- 3) apply gravity to both characters
@@ -494,8 +496,7 @@ function update_light()
 			end
 		end
 	if not btn(🅾️) then 
-		lulu.using_light = false
-		hades.using_light = false
+		lulu.using_light, hades.using_light = false, false
 		hades.light_selected[1] = nil
 		if super_lulu then fsfx(52,-2) end
 		fsfx(55,-2)
@@ -507,8 +508,7 @@ end
 function update_light_lulu()
 	if not lulu.using_light then
 		--setting position of light
-		ima_light.y = lulu.y_g
-		ima_light.x = lulu.x_g
+		ima_light.y, ima_light.x = lulu.y_g, lulu.x_g
 		lulu.using_light = true
 		if super_lulu then psfx(52,3) else psfx(58,3) end
 	end
@@ -517,16 +517,15 @@ end
 
 function update_light_hades()
 	-- hades a une variable qui stocke temporairement la light selected
-	nb_lights = #lights
-	if nb_lights > 0 and hades.powers_left > 0 then
+	if #lights > 0 and hades.powers_left > 0 then
 		if not hades.using_light then
 			psfx(55,3)
 			hades.using_light = true
 		end
 		local index = hades.light_selected[2]
 		hades.light_selected[1] = lights[index + 1]
-		if (btnp(➡️)) hades.light_selected[2] = (hades.light_selected[2] + 1) % nb_lights
-		if (btnp(⬅️)) hades.light_selected[2] = (hades.light_selected[2] - 1) % nb_lights
+		if (btnp(➡️)) hades.light_selected[2] = (hades.light_selected[2] + 1) % #lights
+		if (btnp(⬅️)) hades.light_selected[2] = (hades.light_selected[2] - 1) % #lights
 		--flip hades when light selected x is > hades.x
 		if hades.light_selected[1].x < hades.x then
 			hades.flipx = true
@@ -585,19 +584,17 @@ function using_light(magic_used, c)
 	end
 
 	if btnp(❎) then
-		local x = i_light.x
-		local y = i_light.y
+		local x,y = i_light.x, i_light.y
 		if c == lulu and lulu.powers_left > 0 and magic_used != "orb" then
-				create_light(x, y, ima_light.r,super_lulu and "black" or "white",10) 
-				if super_lulu then psfx(51) else psfx(57) end
-				shake = 6
-				lulu.powers_left -= 1
-			else
-				create_light(x, y, i_light.r, "black")
-				psfx(51)
-				casting_bl = false
-				shake = 12
-				c.c_jump = true --to prevent char from jumping
+			create_light(x, y, ima_light.r,super_lulu and "black" or "white",10) 
+			if super_lulu then psfx(51) else psfx(57) end
+			shake = 6
+			lulu.powers_left -= 1
+		else
+			create_light(x, y, i_light.r, "black")
+			psfx(51)
+			casting_bl = false
+			shake = 12
 		end
 	end
 end
@@ -906,7 +903,7 @@ function init_room()
 		shield_cristals = {{69,39,60,20,1},{64,45,12,12,1}},
 		p_data = {70.25,46,128,"white",0,14,2}
 	},
-	--22
+	--22 super lulu
 	{
 		lights = {
 			{89,35,8},
@@ -918,7 +915,7 @@ function init_room()
 		powers = {3,1},
 		p_data = false,
 		music = -1,
-		sound = 3
+		sound = 2
 	},
 	--23
 	{
@@ -930,7 +927,6 @@ function init_room()
 		powers = {1,1},
 		chests = {{true, false, {"black_orb",102,43,20},101,43}},
 		p_data = {110.5,29.5,240,"white",200,16,1.5},
-		music = 27
 	},
 	--24
 	{
@@ -962,7 +958,7 @@ function init_room()
 	--25
 	{
 		lights = {{7,55,55,"black"}},
-		powers = {7,0},
+		powers = {1,0},
 		messages = {
 			{"a voice","you did a good job."},
 			{"a voice","congratulations for all\nthese steps you reached."},
@@ -978,19 +974,19 @@ function init_room()
 			{40,402,"   continue->"},
 		}
 	},
-	--26
+	--26 HARD
 	{
 		lights = {{25,50}},
 		messages = {
 			{"terrible voice","you will regret it!!\n gha ha ha ha!!!"}
 		},
 		butterflies = {
-			{30,50,30,50,18,50,2,0.4,15,"dark"},
+			{31,50,31,50,18,50,2,0.4,15,"dark"},
 			{18,52,18,52,34,52,2,0.6,8,"dark"},
 			{29.5,60,29.5,48,29.5,64,1,0.4,12,"dark"},
 			{24,56,24,56,34,56,2,0.3,20,"dark"},
-			{22,56,22,56,14,56,2,0.3,20,"dark"},
-			{17,61,17,61,30,61,2,0.4,15,"dark"},
+			{22,56,22,56,13,56,2,0.3,20,"dark"},
+			{16,61,16,61,30,61,2,0.4,15,"dark"},
 		},
 		chests = {{false, false, {"light"},27,62}},
 		shield_cristals = {
@@ -1020,8 +1016,8 @@ function init_room()
 		},
 		powers = {10,1},
 		butterflies = {
-			{64,49,66,49,46,49,2,0.6,16,"dark"},
-			{47,62,47,62,63,62,2,0.6,16,"dark"},
+			{66,49,66,49,46,49,2,0.6,16,"dark"},
+			{45,62,47,62,63,62,2,0.6,16,"dark"},
 			{63,53,63,53,48,53,2,1,12,"dark"},
 			{62,68,62,68,62,51,2,0.1,12,"dark"},
 			{59,68,59,68,59,53,2,0.15,16,"dark"},
@@ -1030,15 +1026,7 @@ function init_room()
 		messages = {
 			{"terrible voice","you'll never pass this!!\n just give up!!!"}
 		}
-	},
-	--29
-	{
-		lights = {{72,57,64,"black"},
-		{72,57,64},{72,57,64},{72,57,64},},
-		powers = {10,3},
-		p_data = false,
-		sound = 2,
-	},
+	}
 }
 end
 
@@ -1062,7 +1050,6 @@ function next_room(argx, argy)
 	if y >= 512 then y = 0 end -- We are at the end of the map
 	local w, h = x + 128, y + 128
 	local id = room.id + 1
-	if id == 33 then id = 1 end
 	--adding powers left into counter before loading next room
 	power_counter += lulu.powers_left + hades.powers_left
 	room = new_room(id, x, y, w, h)
@@ -1074,6 +1061,8 @@ function next_room(argx, argy)
 	-- if music_object[2] != 27 then reset_music(27) end
 	-- gkeys = 2
 	-- wkeys = 2
+	-- lulu.shield.active = true
+	-- lulu.shield.timer = 60
 	-- !!END TEST
 end
 
@@ -1099,11 +1088,6 @@ function create_room()
 		c.in_light = c == lulu and true or false
 		disable_shield(c)
 	end)
-	--sound
-	if room.sound then 
-		music(-1)
-		fsfx(room.sound,0) 
-	end
 	--powers
 	lulu.powers_left = room.powers and room.powers[1] or 0
 	hades.powers_left = room.powers and room.powers[2] or 0
@@ -1112,9 +1096,6 @@ function create_room()
 	if i_room == pulsator_room then
 		music(-1)
 		fsfx(48,0)
-	end
-	if i_room == 29 then
-		game_state = 3
 	end
 end
 
@@ -1185,10 +1166,10 @@ function update_objects()
 	if not pactual.passed and collision(pactual, pactual == lulu and doors.lulu or doors.hades) then
 		pactual.passed = true
 		-- cas particulier : end choice
-		if i_room == finish_room then
+		if i_room == fountain_room then
 			if pactual == hades then 
 				finish = "easy"
-				end_finish()
+				game_state = 3
 			else
 				finish = "hard"
 				next_room()
@@ -1200,6 +1181,10 @@ function update_objects()
 
 	-- Room transition
 	if lulu.passed and hades.passed and not room_transition_pending then
+		if is_ending() then --si level de fin
+			game_state = 3
+			return 
+		end 
 		room_transition_pending = true
 		door_sound_played = false
 		reinit_characters()
@@ -1278,12 +1263,12 @@ function update_objects()
 		fsfx(59,3)
 		del(mushroom, m)
 		mset(m.x/8, m.y/8, 0)
-		animation_timer = 75
+		anim_timer = 75
 		reset_music(21)
 	end
 end
 
---animations
+--anims
 function draw_objects()
 	local function draw_spr(sprite_id, x, y, flip_x, flip_y)
 		spr(sprite_id, x, y, 1, 1, flip_x or false, flip_y or false)
@@ -1414,9 +1399,12 @@ function create_objects()
 		end
 	end)
 	--messages
-	foreach(c_room.messages, function(m)
-		add(messages, m)
-	end)
+	if c_room.messages then
+		while (#c_room.messages > 0) do
+			add(messages, c_room.messages[1])
+			del(c_room.messages,c_room.messages[1])
+		end
+	end
 	--display
 	foreach(c_room.display, function(d)
 		add(display, d)
@@ -1485,9 +1473,18 @@ function create_objects()
 		end
 	end
 	--handle music
-	if c_room.music and music_object[2] != c_room.music then
+	if c_room.music and music_object[2] != c_room.music and not c_room.sound then
 		sfx(-1) --for any sound
 		reset_music(c_room.music)
+	end
+	-- si son on prれたfれそre le jouer
+	if c_room.sound then
+		-- cas particulier pour super lulu
+		if i_room == 22 and super_lulu then
+			return
+		end
+		music(-1)
+		fsfx(c_room.sound,0)
 	end
 end
 
@@ -1588,8 +1585,8 @@ function draw_messages()
 		rectfill(x1+3, y1-2, x1 + 3  + #messages[1][1]*4, y1+4, 2)
 		print(messages[1][1],x1+4,y1-1,9)
 		print(messages[1][2],x1+4,y1+8,1)
-		if messages[2] then print("❎->",x2-16,y2-6,13) end
-		if not messages[2] then print("❎end",x2-20,y2-6,13) end
+		if messages[2] then print("❎->",x2-16,y2-6,13)
+		else print("❎end",x2-20,y2-6,13) end
 	end
 end
 
@@ -1731,7 +1728,7 @@ function break_pulsator()
 		-- timer of pulsator reset to 0
 		pulsator.timer = 0
 		-- wait 1 sec
-		animation_timer = 60
+		anim_timer = 60
 		-- screenshake
 		shake = 60
 		-- wait 2 sec and delete acristals
@@ -1740,8 +1737,8 @@ function break_pulsator()
 		sfx_timer = 120
 		fsfx(63)
 	end
-		--when animation is finished, delete the acristals and destroy walls
-	if animation_timer == 0 then 
+		--when anim is finished, delete the acristals and destroy walls
+	if anim_timer == 0 then 
 		foreach(acristals, function(ac)
 			ac.used = true
 		end)
@@ -1922,29 +1919,78 @@ end
 
 -->8 end
 
-function end_finish()
-	next_room(128 * 4, 128 * 3)
-	game_state = 3
+function is_ending()
+	return lulu.passed and hades.passed and i_room == 28
 end
 
 function draw_end()
-	local x1, x2 = 530, 620
-	local y1, y2 = 399, 441
-	rectfill(x1, y1, x2, y2, 8)
-	rectfill(x1+1, y1+1, x2-1, y2-1, 15)
-	print("congratulations!!", x1+14, y1+6,11)
-	local dString = deaths <= 1 and " time" or " times"
-	print("you died: "..deaths..dString, x1+12, y1+16,1)
-	print("powers economy: "..power_counter, x1+12, y1+24,1)
-	print("your end choice:"..finish, x1+7,y1+33,finish == "easy" and 11 or 8)
+	fade_in(end_game_dark, 60)
+end
+
+function fade_in(counter, start_count)
+	local c=10
+	if counter>start_count then
+		if frames%10<5 then
+			c=7
+		else
+			if end_on then return end
+			c= 2
+		end
+	elseif counter>start_count/2 then
+		c=2
+	elseif counter>0 then
+		c=1
+	else 
+		c=0
+	end
+	for i=0,15 do
+		pal(i,c)
+	end
+end
+
+function draw_end_text()
+	next_dialog(-120, "congratulations!!", 30, 8, 7)
+	next_dialog(-240, "you died : "..deaths.." times", 26, 30, 8)
+	if end_game_dark < -320 then
+		if finish == "easy" then
+			print("           the voice:\n\n    you made the good choice.", room.x + 0, room.y+50,12)
+		else
+			print("the voice: you're very reckless.", room.x + 0, room.y+50, 12)
+			next_dialog(-440, "it was risky,\nbut you went through with it.", 0, 60,12)
+			next_dialog(-570, "\nfor that, bravo.", 0, 70,10)
+		end
+	end
+	if end_game_dark < -780 then
+		cls()
+	end
+	next_dialog(-900, "thank you for playing with\n\n    hades and lulu!!", 12, 40, 7)
+	next_dialog(-1200, "to be continued", 34, 90, 2)
+end
+
+function next_dialog(count, dialog, x, y, c)
+	if end_game_dark < count then
+		print(dialog, room.x + x, room.y + y, c or 7)
+	end
+end
+
+function end_screen()
+	if not end_on then
+		-- assombrir progressivement
+		music(-1)
+		fsfx(-1)
+		fsfx(44)
+		end_on = true
+	end
+	end_game_dark -= 1
 end
 
 -->8
 --helper functions
 
 function debug_print()
-	print("lv:"..i_room, room.x + 104, room.y+4, 11)
-	-- print("delay_switch: "..delay_switch)
+	print("lv:"..i_room, room.x + 80, room.y+4, 11)
+	-- print(hades.dy, hades.x, hades.y-10)
+	-- print("frame:"..frames)
 	-- print("lulu_dx:"..lulu.dx)
 	-- print("hades_dx:"..hades.dx)
 	-- print("lulu_og:")
@@ -2079,11 +2125,11 @@ c0cccc0ccccccccccccccccc5d2772d50045540000455400000000009999999999999999ccc0cccc
 11111111011111110000000000111100004444005555555565666565555555555555555555555555555555555567665556600655565005555050000505550555
 11111111111111110000000000011000000550000555555555555555555555500555555555555555555555500555555055656655556565665555550500400040
 272704461504141050164607170675339696969696f5959596959596969696f5363536b6005000000010b5757575750094a4545464b500002436250000005085
-f4969696969696f596969696969696f595969696969695959596959696969595004300170600008595e600000000b000550000000000000000001746460665f5
+f4969696969696f596969696969696f595969696969695959596959696969595004300170600008595e600000000b00065969655000000000000174646060065
 62174606000515d5e5001646063575005474061646d695a654d6a6543754548536b43600007500001787b6757575876795a5100000b500002436250000849495
-a5000005140000b61000003716753285a600360024366596552474000000d695a1b4170600000085a50000620000000000359135000000000017464606000065
+a5000005140000b61000003716753285a600360024366596552474000000d695a1b4170600000085a50000620000000056359135000000000017464606000000
 94949494a40414d6e60017468494d4d4910507174615b500000024250000918536869774a77500041536257475640024f595e50000b5000024362500006595f5
-a5918494a71400d5e526260017750085000036002436000000242500000044d662b5060000576796966767a4000000009494676767a7757575757584a4000044
+a5918494a71400d5e526260017750085000036002436000000242500000044d662b5060000576796966767a4000000009594676767a7757575757584a4000044
 f59595f5a506164607174657969595f5946767677700b57400002425876797f5362536b67575757500362500746200249595a50004b654545454643500006595
 f56796a6000514d6e6464674757557965000362624360000472425260000000017b500000000044646461486a700000095a500370000001746460665a5000075
 95959696e60000164646464646869696a55454545454b5747400041400876785a775b475757575757574250000b4072495955504461500002436253600000085
@@ -2103,18 +2149,18 @@ e6461500b400867700b604b41500d59507171426849555006595a426000000000000000546460785
 955517461516460700000036251465f59577470005157533328595e61607003767a43562740026000000007575430000a5747575477475757536747517071785
 46150700b5000043000446b5004785f5676797679655000000659667676767a40000000005464685a5461591d5e60092f5a50600000000000036362475000000
 55174646141746060000003625051465a500b4002425750000d6a6000016070000866767676777545484679767679767959767676797676797679767a7757585
-1500879767676767676767a600d59595a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2500000b4a2576795a5a2a284a50000d596a68767976777a18797a75767775454
+1500879767676767676767a600d5959534343434343434343434343434343434500000b4a2576795a5a2a284a50000d596a68767976777a18797a75767775454
 00164646464646140000003625000514a55485a42425879767a7000026001607002425361607000000b6164646063600a5323300753600757500750514747585
-4100001607a000044606a0000085a3a39595b386969695959596969696969696676767a6a3a3a39595a3a395a500d59555000036000000002604460616060000
+4100001607a000044606a0000085a3a395954586969695959596969696969696676767a6a3a3a39595a3a395a500d59555000036000000002604460616060000
 00001646464646060000003625140005a5008595a414004362b500353600001691242536001607750000174646073692a5000074753675757475757505147585
-a4000062160717460600a0006285a30295f5b30000008696a600000000000000a3a3a3a3a3a3a39596969696e60085a3565062360000d594e505460717070062
+a4000062160717460600a0006285a30295f5450000008696a600000000000000a3a3a3a3a3a3a39596969696e60085a3565062360000d594e505460717070062
 000000054646460700000036250514009594f5f595e4e4e494a5003636260000e4d494e4d494d4e4d494e494d494e494959494949494949494949494949494f5
-95949494a40446060000a0d59495a3029595b3a2a2a2a2a2a2a2a28494949494b3b3b3b3b3b3b3a691910000430085a355849494d4a4d696e6849494e494d494
-f5959595550000000000000016070000a39596969696b5969696969696a3a3a39596969696969655b46596969696959500000000000446464646141000000066
+95949494a40446060000a0d59495a30295954534343434343434348494949494b3b3b3b3b3b3b3a691910000430085a355849494d4a4d696e6849494e494d494
+f5959595550000000000000016070000a39596969696b5969696969696a3a3a39596969696969655b465969696969595a6000000000446464646141000000066
 95959595959595556595959595959595020202020202020202020200000000000000000000000000a0a0a0a0a0a0a00000000000000000000000000000000000
-95f59555000000000000000000160732a3a546150546b6142716464615a3a3a3a500000000430000b500360005156595008467676767676767676767676767a6
+95f59555000000000000000000160732a3a546150546b6142716464615a3a3a3a500000000430000b500360005156595000057676767676767676767676767a6
 95959595959555041465959595959595000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-95965500000000000000000000001600a3a50600b4164615b41016d594a3a3a3a544644487a40000b41436041400048500b50004464646464646464614000000
+95965500000000000000000000001600a3a50600b4164615b41016d594a3a3a3a544644487a40000b41436041400048500b40004464646464646464614000000
 95959595955500051500659595959595000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 a5330000000000000000000000879767a3a500d5956767679667679696969695a50000002485a700b5545454b400468500b60484676767676767676767a40000
 95959595550004140414006595959595000002020202020202020202020000000000000000000000000000000000000000000000000000000000000000000000
@@ -2126,21 +2172,21 @@ a5000000000000000000847700454545a3a500d6a50027000000270016460785a5a1000024b62500
 95550000000515051505150000006595020002000000000200000200000002020000000000000000000000000000000000000000000000000000000000000000
 95550000005767679797770000459595a5460717b5000074044646b514000085a5000000a1b52500b5063616b5a7008546b646b532b500000000b54646b51500
 55000000041404140414041400000065000002000000000200020200000202020000000000000000000000000000000000000000000000000000000000000000
-a5105000000000000000000000459595a546879767679767a74606b516145767a500001707b61400b5a73600b600108505b646b500b600000000b54687b60000
+a5105000000000000000000000459595a546879767679767a74606b516145767a500001707b61400b5a73600b6001085057446b500b600000000b54687b60000
 00000000051505150515051500000000000202020202000200000200000000020000000000000000000000000000000000000000000000000000000000000000
-a5d5e500000000000000000057459595a546061614000546464607b517150085a55017061685a764b5073617b400879500b5468667676767a733b54646b4a700
+a5d5e500000000000000000057459595a546061614000546464607b517150085a55017061685a764b5073617b400879500b4468667676767a733b54646b4a700
 00000004140414041404140414000000000000000002000202000202000000020000000000000000000000000000000000000000000000000000000000000000
-a5d6e60000000000000000000045959595a4071715000005464684a515000085a5a1160717b51500b6063687b526008500b44646063737373716b5a715b50000
+a5d6e60000000000000000000045959595a4071715000005464684a515000085a5a1160717b51500b6063687b526008500b64646063737373700b5a715b50000
 10000005150515051505150515000050020000000000000000000200000002020000000000000000000000000000000000000000000000000000000000000000
-9594949494a476767676767676459595a3a367676767676767679696a7000085a500001646b51492b5913616b5a7008500866767676767676767a62700b40000
+9594949494a476767676767676459595a3a367676767676767679696a7000085a500001646b51492b5913616b5a7008500005767676757676767a62700b40000
 67676777747674767474765767676767020200000000000000020200000000020000000000000000000000000000000000000000000000000000000000000000
-95f5959595954545454545454545454595a3000000a000000005150000000085a500000016b6158496a73600b500008500000000054646464606000084a50087
+95f5959595954545454545454545454595a3000000a000000005150000000085a500000016b6158496a73600b5000085e5000000054646464606000084a500b4
 454545454545454545454545454545450202020202000002020202a1020092020000000000000000000000000000000000000000000000000000000000000000
-9595954545454545454545454545454595a3000000a0000000041400d594949555000000a1b514b633323617b600879567676767676767676767676796a60000
+9595954545454545454545454545454595a3000000a0000000041400d594949555000000a1b514b633323617b6008795e6576767576767676777576796a600b5
 45454545454545454545454545454545020000020000000233320000020202020000000000000000000000000000000000000000000000000000000000000000
-4545454545454545454545454545454595a3a38494e5500004d5e51485a2a2a200b0b0b0b0b51543000036d5b526008500000000002750270000000000000000
+4545454545454545454545454545454595a3a38494e5500004d5e51485a2a2a200b0b0b0b0b51543000036d5b5260085000000005027002700000000000000b6
 45454545454545454545454545454545021050000000020200000000000073020000000000000000000000000000000000000000000000000000000000000000
-454545454545454545454545454545459595a39595959494a4d6e68495a3a3a300b0b0b0b085e494e494e4d6b5d4e49500000066949494949494949494949494
+454545454545454545454545454545459595a39595959494a4d6e68495a3a3a300b0b0b0b085e494e494e4d6b5d4e495000000669494949494e5d5949494a4b4
 45454545454545454545454545454545020202020202020202020202020202020000000000000000000000000000000000000000000000000000000000000000
 __label__
 88888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888
@@ -2290,7 +2336,7 @@ __map__
 0000630000425200470061510000000063006b51000000530000405100005d49594949766a00000000000068764d4d594949494a00787a0048494a00484d4e594d4d4e4d76767976767679764d4d4e4e7a7f0000630100000073005b000000583a3a594a00630040410042520048495f5a05737f405171604051005347474859
 000063000042520047000000000000007300630000000063004051000075695f5f59592a2a2a2a2a2a2a2a2a2a5959595959595a0071707458595a6f585959595f59696a000000000000000068595f59007876797679767a000000584d4976593a3a5f594a63005051004252485f2a2a597676767976767676797679797a6859
 0000636f004252234b3300000000000500006300006274634051005300002358593a3a3a3a3a3a3a3a3a3a3a3a3a59593a3a5959494949495959594959593a3a59592a2a2a2a2a2a2a2a2a2a2a2a595900000000630078797a007869696a23583a3a59595a63000000004248593a3a3a5a014060716040510000006300002358
-0100635d5e4252006b000062006f757600006301004d4d4e51000063000000583a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a593a3a3a3a3a3a3a3a3a3a3a3a3a3a59593a3a3a3a3a3a3a3a3a3a3a3a3a3a5905000000630074720000000000610058593a3a3a5a234b2a2a4b33583a3a3a595a40517160405d495e007463006f0058
+0100635d5e4252006b000062006f757600006301004d4d4e51000063000000583a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a593a3a3a3a3a3a3a3a3a3a3a3a3a3a59593a3a3a3a3a3a3a3a3a3a3a3a3a3a5905000000630074720000000000610058593a3a3a5a234849494a33583a3a3a595a40517160405d495e007463006f0058
 4d4e4a6d6e484d4e474d4d4e4d4d494d4d4d4e4e4d4f4f4f594e4d4d4e4d4d593b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b5959593a59595f3a5f3a5959593a59593b3b3b3b3b3b3b3b3b3b3b3b3b3a3a3a594e4d4d4e4d4e4d4e4d4d4d4e4d4d59595f3b3b5a005b3b3b5b00583b3b59595f494949494959595f49494949494959
 5a00405161645b000063000042586a2a59596a600071600000000040646061585a5200004041000063000071606d69595f596969696959595969695959596959596a600000007160005041006d593a3a593a59595969696969696969595f5965595a4768595a425859596561700056590040516170000000335b470000406061
 5a40510000615b000063000042583a3a596a60007160010040410550647071585a52000050510000630071600061645859550040606168696a63616d696e42586e6000000071600000005041006d593a3a3a59596a4100004252000068595959595a4747585a42585f595965617000564051000061700001005b000071647071
@@ -2309,7 +2355,7 @@ __map__
 3a3a5f59593a595a007f00620000583a3a3a3a3a3a5a63000051000044583a3a5a00583b3b3b3b3a3b3b3b3b3b3a5f593a3a3a593a595a0000583a59593a595f70717000000074006300006f347200475f3a594d4d4a19005b005d4d49593a5f550b0b0b0b0b0b0b0b0b0b0b5659595f617034005300615b23056f0053004064
 59595959593b59594949494949495f593b3b3b3b3b59494949494949495f3b3b5949593b3b3b3b3b3b3b3b3b3b3b3b593b593b593b59594949593b5f593b3b594d4e4d4e4e4d4e4d4d4d4d4e4d4e4d49593b59595f5949495949595f593b3b59000000000000000000000000005859594e4d4e4d4d4e4d6b004e4d4e4d4d4e4d
 __sfx__
-000300001827018260182501825018242182421823218232182321822218222182221823218232182321822218222182221822218222182221821218212182121821218212182121821218212182121821218212
+010300001827018260182501825018242182421823218232182321822218222182221823218232182321822218222182221822218222182221821218212182121821218212182121821218212182121821218212
 a1011c2034670290701e07017070130700f0700c070090700c4100c4200c4300c4400c4500c4600c4700c4700c4700c4700c4700c4700c4700c4700c4700c4700c4700c4700c4700c4700c4700c4700c4700c470
 32031c203f6703f6603f6503f6403f6403f6303f6303f6303f6203f6203f6203f6203f6303f6303f6303f6303f6303f6203f6203f6203f6203f6203f6203f6203f6103f6103f6103f6103f6103f6103f6103f610
 000110202456024550245402453018730187401875018760187601876018760187501875018750187501875018742187421874218742187421874218742187421875218752187521875218752187521875218752
@@ -2353,9 +2399,9 @@ bc110000099500995012965099500995009950129651592509950099501296509950099500995012
 44110000314303143231432314322d4312d4322d4322d43228430284322843228432284302643026435254302643226432264322643226432264322643026430214302143221432214302a4322a4322a4302a430
 101100003f6103f6151ea450b4450b4000b4451ea450b4000b4450b4451ea450b4450b4000b4451ea450b4000b4450b4451ea450b4450b4000b4451ea450b4000b4450a4451ea450d4450e4450d4451ea450a445
 301100000e2220e2220e2220e2220e2120e2120e2120e212122221222212222122221221212212122121221211222112221122211222112121121211212112121622216222162221622216212162121621216212
-314400002ab452cb4533b452cb452ab452eb4531b4535b4536b452fb4533b452cb452bb4531b452eb4534b4532b452db452ab4526b4525b4528b4526b452fb452bb462eb3631b2635b162bb462cb362eb2633b16
+304400202ab452cb4533b452cb452ab452eb4531b4535b4536b452fb4533b452cb452bb4531b452eb4534b4532b452db452ab4526b4525b4528b4526b452fb452bb462eb3631b2635b162bb462cb362eb2633b16
 141100000b8450b8450b8450b8450b8450b8450a8450a8450a8450a8450a8450a8450884508845088450884508845088450881508815088150881508815088150b8000b8000b8000b8000b8000b8000b8000b800
-900c000805020120300c04016050110501c050150501f050175501c5502155026550175501c55021550265502f5003150033500365003a5003d5001b50000500145000c500205000550005500055000550005500
+010c00201da4224e511de4124e511da4224e511de4124e511da3224e511de3124e511da2224e411de2124e411da1224e311de1124e311da1224e311de1124e311da1224e111de0124e011da0224e011de0124e01
 0605000c166301864018630176401663015640166301864019630196401763016640196300b6400163001600126552e65501600226552a6550260002600016000060001600016000060001600026000160000000
 0679010f016300164001630016400263000650126552e655036200163001620026300a650226552a65501600126552e65501600226552a6550260002600016000060001600016000060001600026000160000000
 320400000202005030080400c05010050160501805003020080300d040140501a0501d050080100a0200b0200c0300e0301003013030170401b0401f040250502c05031050350503c0603c0503c0413c0313c021
