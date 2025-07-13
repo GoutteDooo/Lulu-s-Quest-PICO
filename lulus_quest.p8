@@ -1988,7 +1988,7 @@ end
 --helper functions
 
 function debug_print()
-	print("lv:"..i_room, room.x + 80, room.y+4, 11)
+	-- print("lv:"..i_room, room.x + 80, room.y+4, 11)
 	-- print(hades.dy, hades.x, hades.y-10)
 	-- print("frame:"..frames)
 	-- print("lulu_dx:"..lulu.dx)
