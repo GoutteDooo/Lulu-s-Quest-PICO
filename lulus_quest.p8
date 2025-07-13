@@ -1163,21 +1163,26 @@ end
 
 function update_objects()
 	-- Door collision and passing logic
-	if not pactual.passed and collision(pactual, pactual == lulu and doors.lulu or doors.hades) then
-		pactual.passed = true
-		-- cas particulier : end choice
-		if i_room == fountain_room then
-			if pactual == hades then 
-				finish = "easy"
-				game_state = 3
-			else
-				finish = "hard"
-				next_room()
+	foreach(chars, function(ch)
+		if not ch.passed and collision(ch, ch == lulu and doors.lulu or doors.hades) then
+			ch.passed = true
+			-- cas particulier : end choice
+			if i_room == fountain_room then
+				if ch == hades then 
+					finish = "easy"
+					game_state = 3
+				else
+					finish = "hard"
+					next_room()
+				end
+			end
+			disable_shield(ch)
+			if not door_sound_played then 
+				psfx(60)
+				door_sound_played = true 
 			end
 		end
-		foreach(chars, function(c) if c.passed and c.shield.active then disable_shield(c) end end)
-		if not door_sound_played then psfx(60); door_sound_played = true end
-	end
+	end)
 
 	-- Room transition
 	if lulu.passed and hades.passed and not room_transition_pending then
@@ -1186,65 +1191,66 @@ function update_objects()
 			return 
 		end 
 		room_transition_pending = true
-		door_sound_played = false
 		reinit_characters()
 		delay_switch = dflt_delay_switch * 3
 	end
 
 	-- Chests
-	foreach(chests, function(c)
-		if collision(pactual, c) and not c.opened then
-			if c.locked then
-				if gkeys > 0 then
-					gkeys -= 1
+	foreach(chars, function(ch)
+		foreach(chests, function(c)
+			if collision(ch, c) and not c.opened then
+				if c.locked then
+					if gkeys > 0 then
+						gkeys -= 1
+						open_chest(c)
+					elseif c.check_lock then
+						c.check_lock = false
+						psfx(50)
+					end
+				else
 					open_chest(c)
-				elseif c.check_lock then
-					c.check_lock = false
-					psfx(50)
 				end
-			else
-				open_chest(c)
 			end
-		end
-		if not collision(pactual, c) and c.locked and not c.check_lock then
-			c.check_lock = true
-		end
-	end)
-
-	-- Keys
-	foreach(keys, function(k)
-		if not k.collected and collision(pactual, k) then
-			psfx(60)
-			if k.style == "door" then wkeys += 1 else gkeys += 1 end
-			k.collected = true
-		end
-	end)
-
-	-- Shield crystals
-	foreach(shield_cristals, function(sc)
-		foreach(chars, function(c)
-			if collision(c, sc) and (not c.shield.active or c.shield.timer < (sc.timer*30)/2) then
-				psfx(57)
-				if sc.lives then sc.lives -= 1 end
-				if sc.lives and sc.lives <= 0 then del(shield_cristals, sc) end
-				c.shield = {
-					active = true,
-					timer = sc.timer * 30,
-					def_r = sc.r,
-					r = sc.r
-				}
+			if not collision(ch, c) and c.locked and not c.check_lock then
+				c.check_lock = true
 			end
 		end)
-	end)
-
-	-- Gates
-	foreach(gates, function(g)
-		if collision_gate(pactual, g) and wkeys > 0 and not g.opened then
-			psfx(54)
-			wkeys -= 1
-			mset(g.x/8, g.y/8, g.tile+1)
-			g.opened = true
-		end
+		
+		-- Keys
+		foreach(keys, function(k)
+			if not k.collected and collision(ch, k) then
+				psfx(60)
+				if k.style == "door" then wkeys += 1 else gkeys += 1 end
+				k.collected = true
+			end
+		end)
+		
+		-- Shield crystals
+		foreach(shield_cristals, function(sc)
+			foreach(chars, function(c)
+				if collision(c, sc) and (not c.shield.active or c.shield.timer < (sc.timer*30)/2) then
+					psfx(57)
+					if sc.lives then sc.lives -= 1 end
+					if sc.lives and sc.lives <= 0 then del(shield_cristals, sc) end
+					c.shield = {
+						active = true,
+						timer = sc.timer * 30,
+						def_r = sc.r,
+						r = sc.r
+					}
+				end
+			end)
+		end)
+		
+		-- Gates
+		foreach(gates, function(g)
+			if collision_gate(ch, g) and wkeys > 0 and not g.opened then
+				psfx(54)
+				wkeys -= 1
+				mset(g.x/8, g.y/8, g.tile+1)
+				g.opened = true
+			end
+		end)
 	end)
 
 	-- Update various game objects
