@@ -362,7 +362,7 @@ function update_chars()
 			end
 			if collision_light(target, {x = c.x or 0, y = c.y or 0, r = c.shield.r or 0}) then
 				target.in_light = true --si lulu collide avec le shield de hades
-				if target == hades then
+				if target == hades and not hades.shield.active then
 					break
 				end
 			end
@@ -370,7 +370,6 @@ function update_chars()
 
 		for b in all(butterflies) do
 			if (b.light == "grey" or b.light == "dark") and collision_light(c, b) then
-				if c == hades and c.shield.active then return end
 				c_in_light = b.light == "grey" or (b.light == "dark" and c == hades)
 			end
 		end
