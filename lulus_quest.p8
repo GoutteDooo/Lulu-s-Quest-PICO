@@ -41,15 +41,15 @@ function _init()
 	power_counter = 0
 	finish = "" -- if easy or hard chosen
 	--!! DEPLOIEMENT
-	title_screen_dur = 60
-	title_screen_anim = false
-	end_on = false
-	end_game_dark = 120
+	-- title_screen_dur = 60
+	-- title_screen_anim = false
+	-- end_on = false
+	-- end_game_dark = 120
 	sfx(10)
 	-- !! FIN DEPLOIEMENT
 	--!! TEST
-	-- game_state = 1
-	-- next_room(128 * 4, 128 * 2)
+	game_state = 1
+	next_room(128 * 2, 128 * 1)
 	-- super_lulu = true
 		--!! FIN TEST
 end
@@ -660,7 +660,6 @@ function draw_shields()
 			if c == hades then pal(3,3+128,1) end
 			circfill(cx, cy, r, color_circle)
 			circ(cx, cy, r, 7)
-			print(flr(c.shield.timer / 30), c.x + 4, c.y - 5, 11)
 		end
 	end)
 end
@@ -1899,6 +1898,13 @@ end
 -->8
 --UI
 function draw_ui()
+	--timer shield
+	foreach(chars, function(c)
+		if c.shield.active then
+			print(flr(c.shield.timer / 30), c.x + 4, c.y - 5, 12)
+		end
+	end)
+
 	local x, ry = room.x + 12, {room.y + 4, room.y + 12, room.y + 20, room.y + 28, room.y + 36}
 	local ui = {
 		{lulu.powers_left, super_lulu and 19 or 49, ry[1]},
@@ -1921,7 +1927,6 @@ function draw_ui()
 			print(p[1], x, p[3], 11)
 		end
 	end
-
 	palt()
 end
 
