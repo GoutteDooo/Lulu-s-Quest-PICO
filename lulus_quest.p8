@@ -48,8 +48,8 @@ function _init()
 	sfx(10)
 	-- !! FIN DEPLOIEMENT
 	--!! TEST
-	-- game_state = 1
-	-- next_room(128 * 0, 128 * 3)
+	game_state = 1
+	next_room(128 * 4, 128 * 2)
 	-- super_lulu = true
 		--!! FIN TEST
 end
@@ -348,7 +348,7 @@ function update_chars()
 
 		for b in all(butterflies) do
 			if collision_light(c, b) then
-				c_in_light = b.light == "white" and c == hades
+				c_in_light = b.light == "white" or (b.light == "black" and c == lulu)
 			end
 		end
 
@@ -361,14 +361,13 @@ function update_chars()
 			end
 			if collision_light(target, {x = c.x or 0, y = c.y or 0, r = c.shield.r or 0}) then
 				target.in_light = true --si lulu collide avec le shield de hades
-				break
 			end
 		end
 
 		for b in all(butterflies) do
 			if collision_light(c, b) then
 				if c == hades and c.shield.active then return end
-				c_in_light = b.light == "white" or b.light == "grey" or (b.light == "black" and c == lulu) or (b.light == "dark" and c == hades)
+				c_in_light = b.light == "grey" or (b.light == "dark" and c == hades)
 			end
 		end
 
