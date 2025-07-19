@@ -49,7 +49,7 @@ function _init()
 	-- !! FIN DEPLOIEMENT
 	--!! TEST
 	-- game_state = 1
-	-- next_room(128 * 7, 128 * 2)
+	next_room(128 * 0, 128 * 3)
 	-- super_lulu = true
 		--!! FIN TEST
 end
