@@ -41,15 +41,15 @@ function _init()
 	power_counter = 0
 	finish = "" -- if easy or hard chosen
 	--!! DEPLOIEMENT
-	-- title_screen_dur = 60
-	-- title_screen_anim = false
-	-- end_on = false
-	-- end_game_dark = 120
+	title_screen_dur = 60
+	title_screen_anim = false
+	end_on = false
+	end_game_dark = 120
 	sfx(10)
 	-- !! FIN DEPLOIEMENT
 	--!! TEST
-	game_state = 1
-	next_room(128 * 2, 128 * 1)
+	-- game_state = 1
+	-- next_room(128 * 2, 128 * 1)
 	-- super_lulu = true
 		--!! FIN TEST
 end
@@ -629,6 +629,7 @@ function draw_lights()
 			circ(l.x, l.y, l.r, 7)
 		end
 	)
+	draw_shield(lulu)
 	--black lights
 	pal(3,3+128,1)
 	foreach(
@@ -653,19 +654,18 @@ function draw_grey_lights()
 	)
 end
 
-function draw_shields()
-	foreach(chars, function(c)
-		if c.shield.active then
-			local r = c.shield.r
-			local color_circle = c == hades and 3 or 10
-			local cx = c.x + c.w / 2
-			local cy = c.y + c.h / 2
-			if c == hades then pal(3,3+128,1) end
-			circfill(cx, cy, r, color_circle)
-			circ(cx, cy, r, 7)
-		end
-	end)
+function draw_shield(c)
+	if c.shield.active then
+	local r = c.shield.r
+	local color_circle = c == hades and 3 or 10
+	local cx = c.x + c.w / 2
+	local cy = c.y + c.h / 2
+	if c == hades then pal(3,3+128,1) end
+	circfill(cx, cy, r, color_circle)
+	circ(cx, cy, r, 7)
+	end
 end
+
 
 function draw_hades_turnoff()
 	if (hades.light_selected[1] != nil) and #lights > 0 then
@@ -1285,11 +1285,14 @@ function draw_objects()
 		draw_spr(frames > 20 and 23 or 22, bo.x, bo.y)
 	end)
 
-	foreach(butterflies, draw_butterfly_light)
-	draw_shields()
+	foreach(butterflies, function(b)
+		if b.light == "white" then draw_butterfly_light(b) end
+	end)
+	draw_shield(lulu)
+	draw_shield(hades)
 	draw_imaginary_light()
 	foreach(butterflies, function(b)
-		if b.light == "dark" then draw_butterfly_light(b) end
+		if b.light != "white" then draw_butterfly_light(b) end
 	end)
 	draw_grey_lights()
 
