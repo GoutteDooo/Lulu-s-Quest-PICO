@@ -48,9 +48,9 @@ function _init()
 	sfx(10)
 	-- !! FIN DEPLOIEMENT
 	--!! TEST
-	-- game_state = 1
-	-- next_room(128 * 2, 128 * 1)
-	-- super_lulu = true
+	game_state = 1
+	next_room(128 * 7, 128 * 0)
+	super_lulu = true
 		--!! FIN TEST
 end
 
@@ -226,6 +226,7 @@ function init_player()
 	gkeys = 0
 	wkeys = 0
 	casting_bl = false
+	has_cast_bl = false
 	FRICTION = 0.8
 	accel = 0.6
 	JUMP_VELOCITY = -2.5
@@ -298,7 +299,7 @@ function update_chars()
 	end
 
 	if casting_bl then
-		update_black_light(pactual)
+		using_light("orb",pactual)
 		return
 	end
 
@@ -312,9 +313,10 @@ function update_chars()
 	end
 
 	for c in all(chars) do
-		if not c.using_light then move_characters(c) end
+		if not pactual.using_light and not has_cast_bl then move_characters(c) end
 	end
-
+	if has_cast_bl then has_cast_bl = false end
+	
 	if check_flag(1, pactual.x + 4, pactual.y) then
 		game_state = 2
 		sfx_timer = 45
@@ -412,11 +414,9 @@ function move_characters(c)
 	--handle input
 	local move, jump = 0, btn(❎) and not pactual.c_jump
 	pactual.c_jump = btn(❎)
-	if not pactual.using_light then
-		move = btn(⬅️) and -1 or btn(➡️) and 1 or 0
-		if move ~= 0 then pactual.flipx = (move == -1) end
-	end
-	if jump and pactual.on_ground and not pactual.using_light then
+	move = btn(⬅️) and -1 or btn(➡️) and 1 or 0
+	if move ~= 0 then pactual.flipx = (move == -1) end
+	if jump and pactual.on_ground then
 		pactual.dy, pactual.on_ground, pactual.is_jumping = JUMP_VELOCITY, false, true
 		psfx(62, 3)
 	elseif (not btn(❎) or c.dy > 0) and c.is_jumping then
@@ -546,9 +546,6 @@ function update_light_hades()
 	end
 end
 
-function update_black_light(char)
-	using_light("orb",char)
-end
 
 function using_light(magic_used, c)
 	local i_light = magic_used == "orb" and ima_light_bo or ima_light
@@ -594,7 +591,8 @@ function using_light(magic_used, c)
 		else
 			create_light(x, y, i_light.r, "black")
 			psfx(51)
-			casting_bl = false
+		has_cast_bl = true
+		casting_bl = false
 			shake = 12
 		end
 	end
