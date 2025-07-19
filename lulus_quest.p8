@@ -138,6 +138,7 @@ function _draw()
 	rectfill(-5+camx,-5+camy,133+camx,-1+camy,0)
 	rectfill(-5+camx,128+camy,133+camx,133+camy,0)
 	rectfill(128+camx,-5+camy,133+camx,133+camy,0)
+	draw_ima_range()
 	draw_ui()
 	draw_messages()
 	draw_display()
@@ -336,6 +337,29 @@ function update_chars()
 				c_in_light = true
 			end
 		end
+		
+		if c == lulu and c.shield.active then c_in_light = true end
+		
+		for b in all(butterflies) do
+			if b.light == "white" and collision_light(c, b) then
+				c_in_light = true
+			end
+		end
+		
+		
+		local c_shield = c == lulu and hades or lulu
+		if c_shield.shield.active then
+			c_shield.shield.timer -= 1
+			if c_shield.shield.timer <= 0 then
+				disable_shield(c_shield)
+			end
+			if collision_light(c, {x = c_shield.x or 0, y = c_shield.y or 0, r = c_shield.shield.r or 0}) then
+				c_in_light = true
+			end
+		end
+
+		if c == hades and c.shield.active then c_in_light = false end
+		
 		for bl in all(black_lights) do
 			if collision_light(c, bl) then
 				c_in_light = c == lulu
@@ -343,29 +367,8 @@ function update_chars()
 		end
 
 		for b in all(butterflies) do
-			if (b.light == "white" or b.light == "black") and collision_light(c, b) then
-				c_in_light = b.light == "white" or (b.light == "black" and c == lulu)
-			end
-		end
-
-		if c.shield.active then
-			c.shield.timer -= 1
-			c_in_light = c == lulu
-			local target = c == lulu and hades or lulu
-			if c.shield.timer <= 0 then
-				disable_shield(c)
-			end
-			if collision_light(target, {x = c.x or 0, y = c.y or 0, r = c.shield.r or 0}) then
-				target.in_light = true --si lulu collide avec le shield de hades
-				if target == hades and not hades.shield.active then
-					break
-				end
-			end
-		end
-
-		for b in all(butterflies) do
-			if (b.light == "grey" or b.light == "dark") and collision_light(c, b) then
-				c_in_light = b.light == "grey" or (b.light == "dark" and c == hades)
+			if (b.light == "grey" or b.light == "dark" or b.light == "black") and collision_light(c, b) then
+				c_in_light = b.light == "grey" or (b.light == "dark" and c == hades) or (b.light == "black" and c == lulu)
 			end
 		end
 
@@ -597,12 +600,22 @@ function using_light(magic_used, c)
 	end
 end
 
-function draw_imaginary_light()
+function choose_ima_light()
 	local lulu_light = btn(🅾️) and lulu.select and lulu.powers_left > 0
 	local i_light = lulu_light and ima_light or casting_bl and ima_light_bo or nil
+	return i_light
+end
+
+function draw_imaginary_light()
+	local i_light = choose_ima_light()
 	if i_light then
 		circfill(i_light.x, i_light.y, i_light.r, i_light.c+2)
 		circ(i_light.x, i_light.y, i_light.r, i_light.c)
+	end
+end
+
+function draw_ima_range()
+	if choose_ima_light() then
 		circ(pactual.x_g, pactual.y_g, pactual.ima_range, 8)
 	end
 end
