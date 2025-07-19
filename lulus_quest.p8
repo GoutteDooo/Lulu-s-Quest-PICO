@@ -331,11 +331,6 @@ function update_chars()
 				c_in_light = dl.type == "white"
 			end
 		end
-		for al in all(anti_lights) do
-			if collision_light(c, al) then
-				c_in_light = false
-			end
-		end
 		for l in all(lights) do
 			if collision_light(c, l) then
 				c_in_light = true
@@ -614,13 +609,6 @@ end
 
 function draw_lights()
 	draw_dynamic_lights()
-	--anti lights before
-	foreach(
-		anti_lights, function(al)
-			circfill(al.x, al.y, al.r,0)
-			circ(al.x, al.y, al.r, 7)
-		end
-	)
 	--lights
 	foreach(
 		lights, function(l)
@@ -694,8 +682,6 @@ function create_light(x, y, r, type, color)
 		add(black_lights, new_light)
 	elseif (type == "grey") then
 		add(grey_lights, new_light)
-	elseif type == "anti" then
-		add(anti_lights, new_light)
 	else
 		add(lights, new_light)
 	end
@@ -1158,7 +1144,6 @@ function init_objects()
 	acristals = {}
 	walls = {}
 	grey_lights = {}
-	anti_lights = {}
 	mushroom = {}
 	display = {}
 end
@@ -1329,7 +1314,6 @@ function delete_objects()
 	local lists_to_clear = {
 		lights,
 		black_lights,
-		anti_lights,
 		chests,
 		keys,
 		gates,
@@ -1715,13 +1699,8 @@ function update_pulsator()
 	)
 	add(dynamic_lights, new_dyna_light)
 
-	-- Randomly change light type if broken, otherwise alternate type
+	-- Alternate type
 	if not broken then
-		-- local types = {"white", "black", "anti"}
-		-- repeat
-		-- 	pulsator.light_data.type = types[flr(rnd(1) * #types) + 1]
-		-- until pulsator.light_data.type != ptype
-	-- else
 		pulsator.light_data.type = (ptype == "anti") and "white" or "anti"
 	end
 	
@@ -1870,10 +1849,6 @@ end
 function draw_dynamic_lights()
 	foreach(dynamic_lights, function(dl)
 		local c = dl.type == "anti" and 0 or 9
-		if dl.type == "black" then
-			pal(3,3+128,1)
-			c = 3
-		end
 		circfill(dl.x, dl.y, dl.r, c)
 		circ(dl.x, dl.y, dl.r, c+1)
 	end)
