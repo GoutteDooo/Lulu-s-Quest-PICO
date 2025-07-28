@@ -45,12 +45,12 @@ function _init()
 	title_screen_anim = false
 	end_on = false
 	end_game_dark = 120
-	sfx(10)
+	-- sfx(10)
 	-- !! FIN DEPLOIEMENT
 	--!! TEST
 	-- game_state = 1
 	next_room(128 * 0, 128 * 3)
-	-- super_lulu = true
+	super_lulu = true
 		--!! FIN TEST
 end
 
@@ -1965,11 +1965,11 @@ function draw_end_text()
 	if end_game_dark < -780 then
 		cls()
 	end
-	next_dialog(-900, "       game by:\n    dONOVAN gOUDAL\n\nmusic and cover art by:\n        fLIEEN", 18, 20, 7)
-	next_dialog(-1100, "  special thanks to:\n\n      rANDOMgAMER\n\n        sYMbIOS\n\n    tHIBAULT bRANLY\n\n   cHRISTOPHE gOUDAL", 16, 60, 7)
-	if end_game_dark < -1400 then cls() end
-		next_dialog(-1500, "thank you for playing with\n\n    hades and lulu!!", 12, 40, 7)
-	next_dialog(-1650, "to be continued", 34, 90, 2)
+	next_dialog(-900, "       game by:\n    dONOVAN gOUDAL\n\nmusic and cover art by:\n        fLIEEN", 18, 8, 7)
+	next_dialog(-1100, "  special thanks to:\n\n      rANDOMgAMER\n\n        sYMbIOS\n\n   mEGGY pOISSON rOSE\n\n    tHIBAULT bRANLY\n\n     rOBIN dELBART\n\n   cHRISTOPHE gOUDAL", 16, 48, 7)
+	if end_game_dark < -1600 then cls() end
+		next_dialog(-1700, "thank you for playing with\n\n    hades and lulu!!", 12, 40, 7)
+	next_dialog(-1850, "to be continued", 34, 90, 2)
 end
 
 function next_dialog(count, dialog, x, y, c)
