@@ -45,12 +45,12 @@ function _init()
 	title_screen_anim = false
 	end_on = false
 	end_game_dark = 120
-	-- sfx(10)
+	sfx(10)
 	-- !! FIN DEPLOIEMENT
 	--!! TEST
 	-- game_state = 1
-	next_room(128 * 0, 128 * 3)
-	super_lulu = true
+	-- next_room(128 * 0, 128 * 3)
+	-- super_lulu = true
 		--!! FIN TEST
 end
 
@@ -1372,6 +1372,8 @@ function delete_objects()
 	end
 	--reset sfxs
 	sfx(-2,3)
+
+	casting_bl = false
 end
 
 
