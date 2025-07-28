@@ -2,19 +2,8 @@ pico-8 cartridge // http://www.pico-8.com
 version 42
 __lua__
 
-	
--- menuitem(3, "music on/off", function() 
--- 	music_object[3] = not music_object[3]
--- 	if not music_object[3] then music(-1) else music(music_object[2]) end
---  end)
--- menuitem(4, "sfxs on/off", function() sfx_enabled = not sfx_enabled end)
-menuitem(1, "next lvl", function() next_room() end)
--- menuitem(2, "pass 5 lvls", function()
--- for i=1,5 do
--- 	next_room()
--- end
--- end)
 
+menuitem(1, "next lvl", function() next_room() end)
 
 function _init()
 	init_player()
@@ -40,18 +29,11 @@ function _init()
 	deaths = 0
 	power_counter = 0
 	finish = "" -- if easy or hard chosen
-	--!! DEPLOIEMENT
 	title_screen_dur = 60
 	title_screen_anim = false
 	end_on = false
 	end_game_dark = 120
 	sfx(10)
-	-- !! FIN DEPLOIEMENT
-	--!! TEST
-	-- game_state = 1
-	-- next_room(128 * 0, 128 * 3)
-	-- super_lulu = true
-		--!! FIN TEST
 end
 
 function _update()
@@ -351,7 +333,7 @@ function update_chars()
 		
 		local c_shield = c == lulu and hades or lulu
 		if c_shield.shield.active then
-			c_shield.shield.timer -= 1
+			c_shield.shield.timer -= not lulu.using_light and not hades.using_light and 1 or 0 
 			if c_shield.shield.timer <= 0 then
 				disable_shield(c_shield)
 			end
@@ -1053,13 +1035,6 @@ function next_room(argx, argy)
 	create_room()
 	sfx_timer = 30
 	fsfx(61,3)
-	-- !!  TEST !!
-	-- if music_object[2] != 27 then reset_music(27) end
-	-- gkeys = 2
-	-- wkeys = 2
-	-- lulu.shield.active = true
-	-- lulu.shield.timer = 60
-	-- !!END TEST
 end
 
 function reset_music(pat)
