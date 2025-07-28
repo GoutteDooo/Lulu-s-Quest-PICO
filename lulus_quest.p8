@@ -805,7 +805,7 @@ function init_room()
     --12
     {
         lights = {{51, 19},{56, 28,  8}},
-        powers = {1,0},
+        powers = {0,0},
         shield_cristals = {{54, 19, 4, 12}},
     },
     --13
