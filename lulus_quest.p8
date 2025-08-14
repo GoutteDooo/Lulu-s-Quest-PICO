@@ -4,6 +4,7 @@ __lua__
 
 
 menuitem(1, "next lvl", function() next_room() end)
+menuitem(2, "restart lvl", function() restart_level() end)
 
 function _init()
 	init_player()
