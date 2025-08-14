@@ -582,7 +582,7 @@ function using_light(magic_used, c)
 end
 
 function choose_ima_light()
-	local lulu_light = btn(🅾️) and lulu.select and lulu.powers_left > 0
+	local lulu_light = btn(🅾️) and lulu.select and lulu.powers_left > 0  and not messages[1]
 	local i_light = lulu_light and ima_light or casting_bl and ima_light_bo or nil
 	return i_light
 end
@@ -705,11 +705,11 @@ function init_room()
 			powers = {1,1},
 			messages = {
 				{"tutorial","welcome to lulu's quest!"},
+				{"tutorial","lulu (left) can only live\n inside of lights"},
+				{"tutorial","hades (right) can only\n live outside of lights"},
 				{"tutorial","hold 🅾️ and press ⬆️⬅️➡️or⬇️\n to prepare a light"},
 				{"tutorial","press ❎ while holding 🅾️\n to cast a light"},
-				{"tutorial","lulu (left) can only live\n inside of lights"},
 				{"tutorial","press ⬇️ to switch characters"},
-				{"tutorial","hades (right) can only\n live outside of lights"},
 				{"tutorial","as hades, hold 🅾️+⬅️➡️ to\n prepare a turnoff and..."},
 				{"tutorial","...press ❎ while holding 🅾️\n to turn off a light"},
 				{"tutorial","your remaining powers are\n shown at the top left"}, 
@@ -735,10 +735,7 @@ function init_room()
     --3
     {
         lights = {{45,  9, 24},{37,  8}},
-        powers = {3,1},
-				messages={
-					{"hint","you can cast lights\n inside of lights"}
-				},
+        powers = {3,1}
     },
     --4
     {
